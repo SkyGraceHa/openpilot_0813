@@ -471,18 +471,15 @@ static void ui_draw_vision_scc_gap(UIState *s) {
   else {ui_draw_image(s, {x, y, w, h}, "lead_car_dist_0", 0.3f);}
 }
 
-static void ui_draw_vision_brake(UIState *s) {
-  const UIScene *scene = &s->scene;
-
-  const int radius = 85;
-  const int center_x = radius + bdr_s + radius*2 + 30;
-  const int center_y = 1080 - 85 - 30;
-
-  bool brake_valid = scene->car_state.getBrakeLights();
-  float brake_img_alpha = brake_valid ? 1.0f : 0.15f;
-  float brake_bg_alpha = brake_valid ? 0.3f : 0.1f;
-  NVGcolor brake_bg = nvgRGBA(0, 0, 0, (255 * brake_bg_alpha));
-  ui_draw_circle_image_rotation(s, center_x, center_y, radius, "brake", brake_bg, brake_img_alpha);
+static void ui_draw_compass(UIState *s) {
+  if (s->scene.gpsAccuracyUblox != 0.00) {
+    //Hoya Center Compass
+    const int radius = 100;
+    const int center_x = radius + radius*2 - 30;
+    const int center_y = 1080 - 85 - 30;
+    ui_draw_circle_image_rotation(s, center_x, center_y, radius, "direction", nvgRGBA(0, 0, 0, 0), 0.7f, s->scene.bearingUblox);
+    ui_draw_circle_image_rotation(s, center_x, center_y, radius, "compass", nvgRGBA(0, 0, 0, 0), 0.9f);
+  }
 }
 
 static void ui_draw_vision_autohold(UIState *s) {
@@ -492,7 +489,7 @@ static void ui_draw_vision_autohold(UIState *s) {
     return;
 
   const int radius = 85;
-  const int center_x = radius + bdr_s + (radius*2 + 30) * 2;
+  const int center_x = radius + bdr_s + (radius*2 + 10) * 2;
   const int center_y = 1080 - 85 - 30;
 
   float autohold_img_alpha = autohold > 0 ? 1.0f : 0.15f;
@@ -501,6 +498,48 @@ static void ui_draw_vision_autohold(UIState *s) {
 
   ui_draw_circle_image_rotation(s, center_x, center_y, radius,
         autohold > 1 ? "autohold_warning" : "autohold_active", autohold_bg, autohold_img_alpha);
+}
+
+static void ui_draw_vision_brake(UIState *s) {
+  const UIScene *scene = &s->scene;
+  const int radius = 85;
+  const int center_x = radius + bdr_s + (radius*2 + 10) * 3;
+  const int center_y = 1080 - 85 - 30;
+
+  bool brake_valid = scene->car_state.getBrakeLights();
+  float brake_img_alpha = brake_valid ? 1.0f : 0.15f;
+  float brake_bg_alpha = brake_valid ? 0.3f : 0.1f;
+  NVGcolor brake_bg = nvgRGBA(0, 0, 0, (255 * brake_bg_alpha));
+  ui_draw_circle_image_rotation(s, center_x, center_y, radius, "brake", brake_bg, brake_img_alpha);
+}
+
+static void ui_draw_center_wheel(UIState *s) {
+  const int wheel_size = 185;
+  const int wheel_x = 1920 / 2 - 20;
+  const int wheel_y = 1080 - 40;
+  const QColor &color = bg_colors[s->status];
+  NVGcolor nvg_color = nvgRGBA(color.red(), color.green(), color.blue(), color.alpha());
+  if (s->scene.controls_state.getEnabled() || s->scene.comma_stock_ui) {
+    float angleSteers = s->scene.car_state.getSteeringAngleDeg();
+    if (s->scene.controlAllowed) {
+      ui_draw_circle_image_rotation(s, wheel_x, wheel_y, wheel_size, "center_wheel", nvg_color, 0.9f, angleSteers);
+    } else {
+      ui_draw_circle_image_rotation(s, wheel_x, wheel_y, wheel_size, "center_wheel", nvgRGBA(0x17, 0x33, 0x49, 0xc8), 0.9f, angleSteers);
+    }
+  }
+}
+
+static void ui_draw_vision_accel(UIState *s) {
+  const UIScene &scene = s->scene;  
+  const int radius = 85;
+  const int center_x = radius + bdr_s + (radius*2 + 10) * 6 + 50;
+  const int center_y = 1080 - 85 - 30;
+
+  bool accel_valid = scene.gasPress;
+  float accel_img_alpha = accel_valid ? 0.9f : 0.15f;
+  float accel_bg_alpha = accel_valid ? 0.3f : 0.1f;
+  NVGcolor accel_bg = nvgRGBA(0, 0, 0, (255 * accel_bg_alpha));
+  ui_draw_circle_image_rotation(s, center_x, center_y, radius, "accel", accel_bg, accel_img_alpha);
 }
 
 static void ui_draw_vision_maxspeed_org(UIState *s) {
@@ -1189,59 +1228,6 @@ static void draw_safetysign(UIState *s) {
   }
 }
 
-static void draw_compass(UIState *s) {
-  //draw compass by opkr
-  if (s->scene.gpsAccuracyUblox != 0.00) {
-    //Hoya Center Compass
-    const int compass_size = 185;
-    const int compass_x = 1920 / 2 - 20;
-    const int compass_y = 1080 - 40;
-    ui_draw_circle_image_rotation(s, compass_x, compass_y, compass_size + 40, "direction", nvgRGBA(0, 0, 0, 0), 0.7f, s->scene.bearingUblox);
-    ui_draw_circle_image_rotation(s, compass_x, compass_y, compass_size + 40, "compass", nvgRGBA(0, 0, 0, 0), 0.8f);
-    // OPKR Compass
-    // const int compass_size = 140;
-    // const int compass_x = s->fb_w - compass_size - 35;
-    // const int compass_y = 1080 - compass_size - 35;
-    // const int from_center = 58;
-    // const Rect rect = {compass_x, compass_y, compass_size, compass_size};
-    // char degree[64];
-    // snprintf(degree, sizeof(degree), "%.0f", s->scene.bearingUblox);
-    // ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(0), 0, 0);
-    // nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
-    // ui_draw_text(s, rect.centerX()+from_center, rect.centerY(), "E", 35, COLOR_WHITE_ALPHA(200), "sans-bold");
-    // ui_draw_text(s, rect.centerX()-from_center, rect.centerY(), "W", 35, COLOR_WHITE_ALPHA(200), "sans-bold");
-    // ui_draw_text(s, rect.centerX(), rect.centerY()+from_center, "S", 35, COLOR_WHITE_ALPHA(200), "sans-bold");
-    // ui_draw_text(s, rect.centerX(), rect.centerY()-from_center, "N", 35, COLOR_WHITE_ALPHA(200), "sans-bold");
-    // if (337.5 < s->scene.bearingUblox || s->scene.bearingUblox <= 22.5) {
-    //   ui_draw_text(s, rect.centerX(), rect.centerY()-16, "N", 65, COLOR_GREEN_ALPHA(200), "sans-bold");
-    // } else if (s->scene.bearingUblox <= 67.5) {
-    //   ui_draw_text(s, rect.centerX(), rect.centerY()-16, "NE", 58, COLOR_GREEN_ALPHA(200), "sans-bold");
-    // } else if (s->scene.bearingUblox <= 112.5) {
-    //   ui_draw_text(s, rect.centerX(), rect.centerY()-16, "E", 65, COLOR_GREEN_ALPHA(200), "sans-bold");
-    // } else if (s->scene.bearingUblox <= 157.5) {
-    //   ui_draw_text(s, rect.centerX(), rect.centerY()-16, "SE", 58, COLOR_GREEN_ALPHA(200), "sans-bold");
-    // } else if (s->scene.bearingUblox <= 202.5) {
-    //   ui_draw_text(s, rect.centerX(), rect.centerY()-16, "S", 65, COLOR_GREEN_ALPHA(200), "sans-bold");
-    // } else if (s->scene.bearingUblox <= 247.5) {
-    //   ui_draw_text(s, rect.centerX(), rect.centerY()-16, "SW", 58, COLOR_GREEN_ALPHA(200), "sans-bold");
-    // } else if (s->scene.bearingUblox <= 292.5) {
-    //   ui_draw_text(s, rect.centerX(), rect.centerY()-16, "W", 65, COLOR_GREEN_ALPHA(200), "sans-bold");
-    // } else if (s->scene.bearingUblox <= 337.5) {
-    //   ui_draw_text(s, rect.centerX(), rect.centerY()-16, "NW", 58, COLOR_GREEN_ALPHA(200), "sans-bold");
-    // }
-    // ui_draw_text(s, rect.centerX(), rect.centerY()+18, degree, 48, COLOR_WHITE_ALPHA(200), "sans-bold");
-    // float niddle_rotation = s->scene.bearingUblox/180*3.141592;
-    // nvgSave(s->vg);
-    // nvgTranslate(s->vg, compass_x+compass_size/2, compass_y+compass_size/2);
-    // nvgRotate(s->vg, niddle_rotation);
-    // nvgFontFace(s->vg, "sans-bold");
-    // nvgFontSize(s->vg, 78);
-    // nvgFillColor(s->vg, COLOR_RED_ALPHA(200));
-    // nvgText(s->vg, 0, -43, "^", NULL);
-    // nvgRestore(s->vg);
-  }
-}
-
 static void draw_navi_button(UIState *s) {
   int btn_w = 140;
   int btn_h = 140;
@@ -1380,7 +1366,6 @@ static void ui_draw_vision_header(UIState *s) {
       ui_draw_standstill(s);
       draw_safetysign(s);
     }
-    draw_compass(s);
     if (s->scene.navi_select == 0 || s->scene.navi_select == 1 || s->scene.mapbox_running) {
       draw_navi_button(s);
     }
@@ -1457,8 +1442,11 @@ static void ui_draw_vision_footer(UIState *s) {
     ui_draw_vision_scc_gap(s);
     ui_draw_gear(s);
     if (!s->scene.mapbox_running) {    
-      ui_draw_vision_brake(s);
+      ui_draw_compass(s);
       ui_draw_vision_autohold(s);
+      ui_draw_vision_brake(s);
+      ui_draw_center_wheel(s);
+      ui_draw_vision_accel(s);
     }
   }
 }
@@ -1726,6 +1714,7 @@ void ui_nvg_init(UIState *s) {
   // init images
   std::vector<std::pair<const char *, const char *>> images = {
     {"wheel", "../assets/img_chffr_wheel.png"},
+    {"center_wheel", "../assets/img_center_wheel.png"},
     {"driver_face", "../assets/img_driver_face.png"},
     {"speed_S30", "../assets/addon/img/img_S30_speedahead.png"},
     {"speed_bump", "../assets/addon/img/img_speed_bump.png"},   
@@ -1734,6 +1723,7 @@ void ui_nvg_init(UIState *s) {
     {"compass", "../assets/addon/img/img_compass.png"},
     {"direction", "../assets/addon/img/img_direction.png"},
     {"brake", "../assets/addon/img/img_brake_disc.png"},      
+    {"accel", "../assets/addon/img/img_accel.png"},      
     {"autohold_warning", "../assets/addon/img/img_autohold_warning.png"},
     {"autohold_active", "../assets/addon/img/img_autohold_active.png"}, 
     {"lead_car_dist_0", "../assets/addon/img/car_dist_0.png"},
