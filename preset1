@@ -26,7 +26,7 @@ PidKp:25
 PidKi:50
 PidKd:150
 PidKf:5
-CameraOffsetAdj:65
+CameraOffsetAdj:60
 PathOffsetAdj:30
 SteerRatioAdj:1370
 SteerRatioMaxAdj:1750
