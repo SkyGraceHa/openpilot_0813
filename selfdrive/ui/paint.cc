@@ -501,16 +501,20 @@ static void ui_draw_compass(UIState *s) {
 // }
 
 static void ui_draw_vision_brake(UIState *s) {
-  const UIScene *scene = &s->scene;
   const int radius = 85;
   const int center_x = radius + bdr_s + (radius*2 + 10) * 3 + 20;
   const int center_y = 1080 - 85 - 30;
 
-  bool brake_valid = scene->car_state.getBrakeLights();
-  float brake_img_alpha = brake_valid ? 1.0f : 0.15f;
+  bool brake_valid = s->scene.brakePress;
+  bool cruise_valid = s->scene.cruiseAccStatus;
+  float brake_img_alpha = brake_valid ? 0.9f : 0.15f;
   float brake_bg_alpha = brake_valid ? 0.3f : 0.1f;
   NVGcolor brake_bg = nvgRGBA(0, 0, 0, (255 * brake_bg_alpha));
-  ui_draw_circle_image_rotation(s, center_x, center_y, radius, "brake", brake_bg, brake_img_alpha);
+  if (cruise_valid && !brake_valid) {
+    ui_draw_circle_image_rotation(s, center_x, center_y, radius, "scc", nvgRGBA(0, 0, 0, 80), 1.0f);
+  } else {
+    ui_draw_circle_image_rotation(s, center_x, center_y, radius, "brake", brake_bg, brake_img_alpha);
+  }
 }
 
 static void ui_draw_center_wheel(UIState *s) {
@@ -526,20 +530,26 @@ static void ui_draw_center_wheel(UIState *s) {
     } else {
       ui_draw_circle_image_rotation(s, wheel_x, wheel_y, wheel_size, "center_wheel", nvgRGBA(0x17, 0x33, 0x49, 0xc8), 0.9f, angleSteers);
     }
+  } else {
+    ui_draw_circle_image_rotation(s, wheel_x, wheel_y, wheel_size, "center_wheel", nvg_color, 0.9f);
   }
 }
 
 static void ui_draw_vision_accel(UIState *s) {
-  const UIScene &scene = s->scene;  
   const int radius = 85;
   const int center_x = radius + bdr_s + (radius*2 + 10) * 6 + 50 - 20;
   const int center_y = 1080 - 85 - 30;
 
-  bool accel_valid = scene.gasPress;
+  bool accel_valid = s->scene.gasPress;
+  bool cruise_valid = s->scene.cruiseAccStatus;
   float accel_img_alpha = accel_valid ? 0.9f : 0.15f;
   float accel_bg_alpha = accel_valid ? 0.3f : 0.1f;
   NVGcolor accel_bg = nvgRGBA(0, 0, 0, (255 * accel_bg_alpha));
-  ui_draw_circle_image_rotation(s, center_x, center_y, radius, "accel", accel_bg, accel_img_alpha);
+  if (cruise_valid && !accel_valid) {
+    ui_draw_circle_image_rotation(s, center_x, center_y, radius, "scc", nvgRGBA(0, 0, 0, 80), 1.0f);
+  } else {  
+    ui_draw_circle_image_rotation(s, center_x, center_y, radius, "accel", accel_bg, accel_img_alpha);
+  }
 }
 
 static void ui_draw_vision_maxspeed_org(UIState *s) {
@@ -1722,8 +1732,9 @@ void ui_nvg_init(UIState *s) {
     {"do_not_change_lane", "../assets/addon/img/do_not_change_lane.png"},
     {"compass", "../assets/addon/img/img_compass.png"},
     {"direction", "../assets/addon/img/img_direction.png"},
-    {"brake", "../assets/addon/img/img_brake_disc.png"},      
-    {"accel", "../assets/addon/img/img_accel.png"},      
+    {"brake", "../assets/addon/img/img_brake_disc.png"},
+    {"accel", "../assets/addon/img/img_accel.png"},
+    {"scc", "../assets/addon/img/img_scc.png"},
     {"autohold_warning", "../assets/addon/img/img_autohold_warning.png"},
     {"autohold_active", "../assets/addon/img/img_autohold_active.png"}, 
     {"lead_car_dist_0", "../assets/addon/img/car_dist_0.png"},

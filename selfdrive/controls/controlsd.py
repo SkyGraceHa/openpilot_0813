@@ -286,20 +286,20 @@ class Controls:
       if (CS.leftBlindspot and direction == LaneChangeDirection.left) or \
          (CS.rightBlindspot and direction == LaneChangeDirection.right):
         self.events.add(EventName.laneChangeBlocked)
-      else:
-        if direction == LaneChangeDirection.left:
-          if self.lane_change_delay == 0:
-            self.events.add(EventName.preLaneChangeLeft)
-          else:
-            self.events.add(EventName.laneChange)
-        else:
-          if self.lane_change_delay == 0:
-            self.events.add(EventName.preLaneChangeRight)
-          else:
-            self.events.add(EventName.laneChange)
-    elif self.sm['lateralPlan'].laneChangeState in (LaneChangeState.laneChangeStarting,
-                                                 LaneChangeState.laneChangeFinishing):
-      self.events.add(EventName.laneChange)
+    #   else:
+    #     if direction == LaneChangeDirection.left:
+    #       if self.lane_change_delay == 0:
+    #         self.events.add(EventName.preLaneChangeLeft)
+    #       else:
+    #         self.events.add(EventName.laneChange)
+    #     else:
+    #       if self.lane_change_delay == 0:
+    #         self.events.add(EventName.preLaneChangeRight)
+    #       else:
+    #         self.events.add(EventName.laneChange)
+    # elif self.sm['lateralPlan'].laneChangeState in (LaneChangeState.laneChangeStarting,
+    #                                              LaneChangeState.laneChangeFinishing):
+    #   self.events.add(EventName.laneChange)
 
     if not CS.canValid and self.ignore_can_error_on_isg and CS.vEgo > 1:
       self.events.add(EventName.canError)
