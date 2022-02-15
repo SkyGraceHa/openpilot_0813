@@ -474,36 +474,36 @@ static void ui_draw_vision_scc_gap(UIState *s) {
 static void ui_draw_compass(UIState *s) {
   if (s->scene.gpsAccuracyUblox != 0.00) {
     //Hoya Center Compass
-    const int radius = 100;
-    const int center_x = radius + radius*2 - 30;
-    const int center_y = 1080 - 85 - 30;
+    const int radius = 200;
+    const int center_x = 1920 / 4 - 90;
+    const int center_y = 1080 - 40;
     ui_draw_circle_image_rotation(s, center_x, center_y, radius, "direction", nvgRGBA(0, 0, 0, 0), 0.7f, s->scene.bearingUblox);
     ui_draw_circle_image_rotation(s, center_x, center_y, radius, "compass", nvgRGBA(0, 0, 0, 0), 0.9f);
   }
 }
 
-static void ui_draw_vision_autohold(UIState *s) {
-  const UIScene *scene = &s->scene;
-  int autohold = scene->car_state.getBrakeHold();
-  if(autohold < 0)
-    return;
+// static void ui_draw_vision_autohold(UIState *s) {
+//   const UIScene *scene = &s->scene;
+//   int autohold = scene->car_state.getBrakeHold();
+//   if(autohold < 0)
+//     return;
 
-  const int radius = 85;
-  const int center_x = radius + bdr_s + (radius*2 + 10) * 2;
-  const int center_y = 1080 - 85 - 30;
+//   const int radius = 85;
+//   const int center_x = radius + bdr_s + (radius*2 + 10) * 2 + 20;
+//   const int center_y = 1080 - 85 - 30;
 
-  float autohold_img_alpha = autohold > 0 ? 1.0f : 0.15f;
-  float autohold_bg_alpha = autohold > 0 ? 0.3f : 0.1f;
-  NVGcolor autohold_bg = nvgRGBA(0, 0, 0, (255 * autohold_bg_alpha));
+//   float autohold_img_alpha = autohold > 0 ? 1.0f : 0.15f;
+//   float autohold_bg_alpha = autohold > 0 ? 0.3f : 0.1f;
+//   NVGcolor autohold_bg = nvgRGBA(0, 0, 0, (255 * autohold_bg_alpha));
 
-  ui_draw_circle_image_rotation(s, center_x, center_y, radius,
-        autohold > 1 ? "autohold_warning" : "autohold_active", autohold_bg, autohold_img_alpha);
-}
+//   ui_draw_circle_image_rotation(s, center_x, center_y, radius,
+//         autohold > 1 ? "autohold_warning" : "autohold_active", autohold_bg, autohold_img_alpha);
+// }
 
 static void ui_draw_vision_brake(UIState *s) {
   const UIScene *scene = &s->scene;
   const int radius = 85;
-  const int center_x = radius + bdr_s + (radius*2 + 10) * 3;
+  const int center_x = radius + bdr_s + (radius*2 + 10) * 3 + 20;
   const int center_y = 1080 - 85 - 30;
 
   bool brake_valid = scene->car_state.getBrakeLights();
@@ -514,7 +514,7 @@ static void ui_draw_vision_brake(UIState *s) {
 }
 
 static void ui_draw_center_wheel(UIState *s) {
-  const int wheel_size = 185;
+  const int wheel_size = 200;
   const int wheel_x = 1920 / 2 - 20;
   const int wheel_y = 1080 - 40;
   const QColor &color = bg_colors[s->status];
@@ -532,7 +532,7 @@ static void ui_draw_center_wheel(UIState *s) {
 static void ui_draw_vision_accel(UIState *s) {
   const UIScene &scene = s->scene;  
   const int radius = 85;
-  const int center_x = radius + bdr_s + (radius*2 + 10) * 6 + 50;
+  const int center_x = radius + bdr_s + (radius*2 + 10) * 6 + 50 - 20;
   const int center_y = 1080 - 85 - 30;
 
   bool accel_valid = scene.gasPress;
@@ -1443,7 +1443,7 @@ static void ui_draw_vision_footer(UIState *s) {
     ui_draw_gear(s);
     if (!s->scene.mapbox_running) {    
       ui_draw_compass(s);
-      ui_draw_vision_autohold(s);
+      // ui_draw_vision_autohold(s);
       ui_draw_vision_brake(s);
       ui_draw_center_wheel(s);
       ui_draw_vision_accel(s);
