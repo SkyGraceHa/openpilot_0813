@@ -148,6 +148,7 @@ static void update_state(UIState *s) {
     if (scene.leftBlinker!=cs_data.getLeftBlinker() || scene.rightBlinker!=cs_data.getRightBlinker()) {
       scene.blinker_blinkingrate = 120;
     }
+    scene.steeringPress = cs_data.getSteeringPressed();
     scene.brakePress = cs_data.getBrakePressed();
     scene.gasPress = cs_data.getGasPressed();
     scene.brakeLights = cs_data.getBrakeLights();
@@ -318,6 +319,8 @@ static void update_status(UIState *s) {
       s->status = STATUS_WARNING;
     } else if (alert_status == cereal::ControlsState::AlertStatus::CRITICAL) {
       s->status = STATUS_ALERT;
+    } else if (s->scene.steeringPress) {
+      s->status = STATUS_MANUAL; 
     } else if (s->scene.brakePress) {
       s->status = STATUS_BRAKE;      
     } else if (s->scene.cruiseAccStatus) {
