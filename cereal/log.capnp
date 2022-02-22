@@ -573,15 +573,16 @@ struct ControlsState @0x97ff69c53601abf1 {
   # atom
   alertTextMsg1  @60 :Text;
   alertTextMsg2  @61 :Text;
+  alertTextMsg3  @62 :Text;
   # opkr
-  lateralControlMethod  @62 :UInt8;
-  limitSpeedCamera @63 :Float32;
-  limitSpeedCameraDist @64 :Float32;
-  steerRatio @65 :Float32;
-  mapSign @66 :Float32;
-  dynamicTRMode @67 :UInt8;
-  dynamicTRValue @68 :Float32;
-  osmOffSpdLimit @69 :Bool;
+  lateralControlMethod  @63 :UInt8;
+  limitSpeedCamera @64 :Float32;
+  limitSpeedCameraDist @65 :Float32;
+  steerRatio @66 :Float32;
+  mapSign @67 :Float32;
+  dynamicTRMode @68 :UInt8;
+  dynamicTRValue @69 :Float32;
+  osmOffSpdLimit @70 :Bool;
 
   lateralControlState :union {
     indiState @52 :LateralINDIState;

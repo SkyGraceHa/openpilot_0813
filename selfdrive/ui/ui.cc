@@ -130,6 +130,7 @@ static void update_state(UIState *s) {
 
     scene.alertTextMsg1 = scene.controls_state.getAlertTextMsg1(); //debug1
     scene.alertTextMsg2 = scene.controls_state.getAlertTextMsg2(); //debug2
+    scene.alertTextMsg3 = scene.controls_state.getAlertTextMsg3(); //debug3
 
     scene.limitSpeedCamera = scene.controls_state.getLimitSpeedCamera();
     scene.limitSpeedCameraDist = scene.controls_state.getLimitSpeedCameraDist();
@@ -392,6 +393,7 @@ static void update_status(UIState *s) {
     s->scene.driving_record = params.getBool("OpkrDrivingRecord");
     s->scene.nDebugUi1 = params.getBool("DebugUi1");
     s->scene.nDebugUi2 = params.getBool("DebugUi2");
+    s->scene.nDebugUi3 = params.getBool("DebugUi3");
     s->scene.forceGearD = params.getBool("JustDoGearD");
     s->scene.nOpkrBlindSpotDetect = params.getBool("OpkrBlindSpotDetect");
     s->scene.laneless_mode = std::stoi(params.get("LanelessMode"));

@@ -320,7 +320,7 @@ class NaviControl():
           self.cut_in_run_timer -= 1
         elif self.cut_in:
           self.cut_in_run_timer = 800
-        if self.cut_in_run_timer and dRel < self.lead_0.vRel * CV.MS_TO_KPH * 0.45: # keep decel when cut_in, max running time 8sec
+        if self.cut_in_run_timer and dRel < CS.clu_Vanz * 0.4: # keep decel when cut_in, max running time 8sec
           var_speed = min(CS.CP.vFuture, navi_speed)
         elif vRel >= (-3 if CS.is_set_speed_in_mph else -5):
           var_speed = min(CS.CP.vFuture + max(0, int(dRel*(0.1 if CS.is_set_speed_in_mph else 0.15)+vRel)), navi_speed)
@@ -340,11 +340,7 @@ class NaviControl():
         self.t_interval = ttime if not (self.onSpeedControl or self.curvSpeedControl or self.cut_in) else 7
     else:
       var_speed = navi_speed
-      ttime = 35 if CS.is_set_speed_in_mph else 25
-      if not self.osm_speedlimit_enabled:
-        self.t_interval = 7
-      else:
-        self.t_interval = ttime if not ((self.onSpeedControl or self.curvSpeedControl or self.cut_in) and self.sm['controlsState'].osmOffSpdLimit) else 7
+      self.t_interval = 10 if CS.is_set_speed_in_mph else 7
 
     if CS.cruise_set_mode in (1,3,4) and self.curv_decel_option in (1,2):
       if CS.out.vEgo * CV.MS_TO_KPH > 40 and modelSpeed < 90 and path_plan.laneChangeState == LaneChangeState.off and \

@@ -213,7 +213,7 @@ DevicePanel::DevicePanel(SettingsWindow *parent) : ListWidget(parent) {
 void DevicePanel::updateCalibDescription() {
   QString desc =
       "openpilot requires the device to be mounted within 4° left or right and "
-      "within 5° up or down. openpilot is continuously calibrating, resetting is rarely required.";
+      "within 5° up or 8° down. openpilot is continuously calibrating, resetting is rarely required.";
   std::string calib_bytes = Params().get("CalibrationParams");
   if (!calib_bytes.empty()) {
     try {
@@ -265,7 +265,7 @@ SoftwarePanel::SoftwarePanel(QWidget* parent) : ListWidget(parent) {
   gitBranchLbl = new LabelControl("Git Branch");
   gitCommitLbl = new LabelControl("Git Commit");
   osVersionLbl = new LabelControl("OS Version");
-  versionLbl = new LabelControl("Version");
+  versionLbl = new LabelControl("Fork");
   lastUpdateLbl = new LabelControl("Last Updates Date", "", "");
   updateBtn = new ButtonControl("Check for Updates", "");
   connect(updateBtn, &ButtonControl::clicked, [=]() {
@@ -440,7 +440,7 @@ void SoftwarePanel::updateLabels() {
     lastUpdate = timeAgo(QDateTime::fromString(tm, "yyyy-MM-dd HH:mm:ss"));
   }
 
-  versionLbl->setText(getBrandVersion());
+  versionLbl->setText("OPKR");
   lastUpdateLbl->setText(lastUpdate);
   updateBtn->setText("CHECK");
   updateBtn->setEnabled(true);
@@ -613,6 +613,7 @@ DeveloperPanel::DeveloperPanel(QWidget *parent) : QFrame(parent) {
   // OPKR
   layout->addWidget(new DebugUiOneToggle());
   layout->addWidget(new DebugUiTwoToggle());
+  layout->addWidget(new DebugUiThreeToggle());
   layout->addWidget(new ShowErrorToggle());
   layout->addWidget(new LongLogToggle());
   layout->addWidget(new PrebuiltToggle());

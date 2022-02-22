@@ -149,6 +149,7 @@ typedef struct UIScene {
 
   std::string alertTextMsg1;
   std::string alertTextMsg2;
+  std::string alertTextMsg3;
   float alert_blinking_rate;
   cereal::PandaState::PandaType pandaType;
 
@@ -228,6 +229,7 @@ typedef struct UIScene {
   bool read_params_once = false;
   bool nDebugUi1;
   bool nDebugUi2;
+  bool nDebugUi3;
   bool nOpkrBlindSpotDetect;
   bool auto_gitpull = false;
   bool is_speed_over_limit = false;

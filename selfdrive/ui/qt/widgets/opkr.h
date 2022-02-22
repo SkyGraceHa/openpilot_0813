@@ -312,6 +312,23 @@ public:
   }
 };
 
+class DebugUiThreeToggle : public ToggleControl {
+  Q_OBJECT
+
+public:
+  DebugUiThreeToggle() : ToggleControl("DEBUG UI 3", "", "../assets/offroad/icon_shell.png", Params().getBool("DebugUi3")) {
+    QObject::connect(this, &DebugUiThreeToggle::toggleFlipped, [=](int state) {
+      bool status = state ? true : false;
+      Params().putBool("DebugUi3", status);
+      if (state) {
+        QUIState::ui_state.scene.nDebugUi3 = true;
+      } else {
+        QUIState::ui_state.scene.nDebugUi3 = false;
+      }
+    });
+  }
+};
+
 class LongLogToggle : public ToggleControl {
   Q_OBJECT
 

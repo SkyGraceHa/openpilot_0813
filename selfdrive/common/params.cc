@@ -232,6 +232,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"RightCurvOffsetAdj", PERSISTENT},
     {"DebugUi1", PERSISTENT},
     {"DebugUi2", PERSISTENT},
+    {"DebugUi3", PERSISTENT},
     {"LongLogDisplay", PERSISTENT},
     {"OpkrBlindSpotDetect", PERSISTENT},
     {"OpkrMaxAngleLimit", PERSISTENT},

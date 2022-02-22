@@ -95,6 +95,7 @@ def manager_init() -> None:
     ("RightCurvOffsetAdj", "0"),
     ("DebugUi1", "0"),
     ("DebugUi2", "0"),
+    ("DebugUi3", "0"),
     ("LongLogDisplay", "0"),
     ("OpkrBlindSpotDetect", "1"),
     ("OpkrMaxAngleLimit", "90"),

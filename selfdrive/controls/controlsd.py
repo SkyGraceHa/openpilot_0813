@@ -630,7 +630,8 @@ class Controls:
     if not self.joystick_mode:
       # accel PID loop
       pid_accel_limits = self.CI.get_pid_accel_limits(self.CP, CS.vEgo, self.v_cruise_kph * CV.KPH_TO_MS)
-      actuators.accel, actuators.oaccel = self.LoC.update(self.active and CS.cruiseState.speed > 1., CS, self.CP, long_plan, pid_accel_limits, self.sm['radarState'])
+      t_since_plan = (self.sm.frame - self.sm.rcv_frame['longitudinalPlan']) * DT_CTRL
+      actuators.accel, actuators.oaccel = self.LoC.update(self.active and CS.cruiseState.speed > 1., CS, self.CP, long_plan, pid_accel_limits, t_since_plan, self.sm['radarState'])
 
       # Steering PID loop and lateral MPC
       lat_active = self.active and not CS.steerWarning and not CS.steerError and CS.vEgo > self.CP.minSteerSpeed
@@ -693,6 +694,7 @@ class Controls:
 
     self.log_alertTextMsg1 = trace1.global_alertTextMsg1
     self.log_alertTextMsg2 = trace1.global_alertTextMsg2
+    self.log_alertTextMsg3 = trace1.global_alertTextMsg3
 
     CC = car.CarControl.new_message()
     CC.enabled = self.enabled
@@ -720,10 +722,7 @@ class Controls:
 
     speeds = self.sm['longitudinalPlan'].speeds
     if len(speeds) > 1:
-      if self.CP.openpilotLongitudinalControl:
-        v_future = speeds[0]
-      else:
-        v_future = speeds[-1]
+      v_future = speeds[-1]
     else:
       v_future = 100.0
     v_future_speed= float((v_future * CV.MS_TO_MPH + 10.0) if CS.isMph else (v_future * CV.MS_TO_KPH))
@@ -833,6 +832,7 @@ class Controls:
     controlsState.canErrorCounter = self.can_rcv_error_counter
     controlsState.alertTextMsg1 = self.log_alertTextMsg1
     controlsState.alertTextMsg2 = self.log_alertTextMsg2
+    controlsState.alertTextMsg3 = self.log_alertTextMsg3
     controlsState.osmOffSpdLimit = self.osm_off_spdlimit
     if int(self.sm['liveMapData'].speedLimit) and self.osm_speedlimit_enabled:
       if self.stock_navi_info_enabled and int(CS.safetySign):

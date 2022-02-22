@@ -669,7 +669,7 @@ class CarController():
               self.keep_decel_on = False
               self.change_accel_fast = False
             elif aReqValue > 0.0:
-              stock_weight = interp(CS.lead_distance, [3.5, 8.0, 15.0, 25.0, 30.0], [0.1, 0.8, 1.0, 0.3, 1.0])
+              stock_weight = interp(CS.lead_distance, [3.5, 8.0, 15.0, 25.0, 30.0], [0.1, 0.8, 1.0, 0.5, 1.0])
               accel = accel * (1.0 - stock_weight) + aReqValue * stock_weight
             elif aReqValue < 0.0 and CS.lead_distance <= 4.3 and accel > aReqValue:
               accel = self.accel - (DT_CTRL * clip(CS.out.vEgo*0.9, 1.0, 3.0))
@@ -755,6 +755,10 @@ class CarController():
       str_log2 = 'MDPS={}  LKAS={}  LEAD={}  AQ={:+04.2f}  VF={:03.0f}  CG={:1.0f}  FR={:03.0f}'.format(
        CS.out.steerWarning, CS.lkas_button_on, 0 < CS.lead_distance < 149, self.aq_value if self.longcontrol else CS.scc12["aReqValue"], v_future, CS.cruiseGapSet, self.timer1.sampleTime())
     trace1.printf2( '{}'.format( str_log2 ) )
+
+    str_log3 = 'ST1/ST2={}/{} CI/D={}/{:.1f} TM/D/V={:03.0f}/{:03.0f}/{:03.0f}'.format(int(self.sm['radarState'].leadOne.status), int(self.sm['radarState'].leadTwo.status), \
+     int(self.NC.cut_in), (self.sm['radarState'].leadOne.dRel - self.sm['radarState'].leadTwo.dRel), self.NC.cut_in_run_timer, self.sm['radarState'].leadOne.dRel, (self.sm['radarState'].leadOne.vRel * CV.MS_TO_KPH * 0.45))
+    trace1.printf3('{}'.format(str_log3))
 
     self.cc_timer += 1
     if self.cc_timer > 100:
