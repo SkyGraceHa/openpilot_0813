@@ -6,7 +6,7 @@
  - Old branches are in openpilot_bak repository.
 
 2. How to Install
- - Use fork installer : Type https://opkr.tk/fork/opkr on custom URL window(Short URL. This will install OPKR branch directly.) or you can use Shane's fork installer(https://smiskol.com/fork)
+ - Use fork installer : Type https://opkr.tk/fork/opkr on custom URL window(Short URL. This will install OPKR branch directly. OPKR_test branch is https://opkr.tk/fork/test) or you can use Shane's fork installer(https://smiskol.com/fork)
  - Use a command : cd /data; mv openpilot openpilot_bak; git clone https://github.com/openpilotkr/openpilot.git -b OPKR; reboot
 
 3. Setting Menu

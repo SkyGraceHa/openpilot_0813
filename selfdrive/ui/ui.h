@@ -250,6 +250,7 @@ typedef struct UIScene {
   float a_req_value;
   bool osm_enabled;
   int radar_long_helper;
+  float engine_rpm;
 
   cereal::DeviceState::Reader deviceState;
   cereal::CarState::Reader car_state;

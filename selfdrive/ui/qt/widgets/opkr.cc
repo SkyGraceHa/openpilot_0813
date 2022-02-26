@@ -286,6 +286,59 @@ void CarSelectCombo::refresh() {
   }
 }
 
+BranchSelectCombo::BranchSelectCombo() : AbstractControl("", "", "") 
+{
+  combobox.setStyleSheet(R"(
+    subcontrol-origin: padding;
+    subcontrol-position: top left;
+    selection-background-color: #111;
+    selection-color: yellow;
+    color: white;
+    background-color: #393939;
+    border-style: solid;
+    border: 0px solid #1e1e1e;
+    border-radius: 0;
+    width: 100px;
+    height: 110px;
+  )");
+
+  combobox.addItem("Select Branch you want to change");
+  QFile branchlistfile("/data/openpilot/selfdrive/assets/addon/script/branches");
+  if (branchlistfile.open(QIODevice::ReadOnly)) {
+    QTextStream carname(&branchlistfile);
+    while (!carname.atEnd()) {
+      QString line = carname.readLine();
+      combobox.addItem(line);
+    }
+    branchlistfile.close();
+  }
+
+  combobox.setFixedWidth(1205);
+
+  hlayout->addWidget(&combobox);
+
+  QObject::connect(&combobox, static_cast<void(QComboBox::*)(int)>(&QComboBox::activated), [=](int index)
+  {
+    combobox.itemData(combobox.currentIndex());
+    QString str = combobox.currentText();
+    QString current_branch = QString::fromStdString(params.get("GitBranch"));
+    if (combobox.currentIndex() != 0 && str != current_branch) {
+      if (ConfirmationDialog::confirm("Now will checkout the branch, <" + str + ">. The device will be rebooted if completed.", this)) {
+        QString cmd1 = "git -C /data/openpilot checkout -f -t origin/" + str;
+        QString cmd2 = "git -C /data/openpilot checkout " + str;
+        QProcess::execute(cmd1);
+        QProcess::execute(cmd2);
+        QProcess::execute("git -C /data/openpilot pull");
+        QProcess::execute("pkill -f thermald");
+        QProcess::execute("rm -f /data/openpilot/prebuilt");
+        QProcess::execute("reboot");
+      }
+    } else if (combobox.currentIndex() != 0 && str == current_branch) {
+      if (ConfirmationDialog::alert("Your branch is already <" + current_branch + ">.", this)) {combobox.setCurrentIndex(0);}
+    }
+  });
+}
+
 TimeZoneSelectCombo::TimeZoneSelectCombo() : AbstractControl("", "", "") 
 {
   combobox.setStyleSheet(R"(

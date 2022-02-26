@@ -170,6 +170,7 @@ static void update_state(UIState *s) {
     scene.steer_warning = cs_data.getSteerWarning();
     scene.stand_still = cs_data.getStandstill();
     scene.a_req_value = cs_data.getAReqValue();
+    scene.engine_rpm = cs_data.getEngineRpm();
   }
 
   if (sm.updated("liveParameters")) {
@@ -293,9 +294,15 @@ static void update_state(UIState *s) {
     float max_gain = Hardware::EON() ? 1.0: 10.0;
     float max_ev = max_lines * max_gain;
 
-    if (Hardware::TICI()) {
-      max_ev /= 6;
-    }
+    float ev = camera_state.getGain() * float(camera_state.getIntegLines());
+
+    scene.light_sensor = std::clamp<float>(1.0 - (ev / max_ev), 0.0, 1.0);
+  } else if (Hardware::TICI() && sm.updated("wideRoadCameraState")) {
+    auto camera_state = sm["wideRoadCameraState"].getWideRoadCameraState();
+
+    float max_lines = 1904;
+    float max_gain = 10.0;
+    float max_ev = max_lines * max_gain / 6;
 
     float ev = camera_state.getGain() * float(camera_state.getIntegLines());
 

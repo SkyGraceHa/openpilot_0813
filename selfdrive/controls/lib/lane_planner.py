@@ -13,7 +13,7 @@ TRAJECTORY_SIZE = 33
 # model path is in the frame of the camera. Empirically 
 # the model knows the difference between TICI and EON
 # so a path offset is not needed
-PATH_OFFSET = 0.00
+PATH_OFFSET = -(float(Decimal(Params().get("PathOffsetAdj", encoding="utf8")) * Decimal('0.001')))  # default 0.0
 if EON:
   CAMERA_OFFSET = -(float(Decimal(Params().get("CameraOffsetAdj", encoding="utf8")) * Decimal('0.001')))  # m from center car to camera
   CAMERA_OFFSET_A = CAMERA_OFFSET - 0.2
@@ -152,5 +152,4 @@ class LanePlanner:
       path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
     else:
       cloudlog.warning("Lateral mpc - NaNs in laneline times, ignoring")
-      
     return path_xyz

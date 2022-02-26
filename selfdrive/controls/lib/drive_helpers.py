@@ -24,7 +24,7 @@ CONTROL_N = 17
 CAR_ROTATION_RADIUS = 0.0
 
 # this corresponds to 80deg/s and 20deg/s steering angle in a toyota corolla
-MAX_CURVATURE_RATES = [0.03762194918267951, 0.003441203371932992]
+MAX_CURVATURE_RATES = [0.04, 0.003] #[0.03762194918267951, 0.003441203371932992]
 MAX_CURVATURE_RATE_SPEEDS = [0, 35]
 
 CRUISE_LONG_PRESS = 50
@@ -39,16 +39,9 @@ CRUISE_INTERVAL_SIGN = {
 
 
 class MPC_COST_LAT:
-  PATH = 1.0
-  HEADING = 1.0
+  PATH = 1.5 #1.0
+  HEADING = 1.5 #1.0
   STEER_RATE = 1.0
-
-
-class MPC_COST_LONG:
-  TTC = 5.0
-  DISTANCE = 0.1
-  ACCELERATION = 10.0
-  JERK = 20.0
 
 
 def rate_limit(new_value, last_value, dw_step, up_step):
@@ -110,9 +103,9 @@ def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
     curvature_rates = [0.0 for i in range(CONTROL_N)]
 
   # TODO this needs more thought, use .2s extra for now to estimate other delays
-  # delay = max(0.01, CP.steerActuatorDelay)
+  delay = max(0.01, CP.steerActuatorDelay)
   current_curvature = curvatures[0]
-  delay = max(0.01, interp(round(abs(current_curvature), 4), [0.003, 0.01, 0.03], [0.1, 0.20, CP.steerActuatorDelay])) # curvature에 따른 가변 적용 테스트
+  # delay = max(0.01, interp(round(abs(current_curvature), 4), [0.003, 0.01, 0.03], [0.1, 0.20, CP.steerActuatorDelay])) # curvature에 따른 가변 적용 테스트
   psi = interp(delay, T_IDXS[:CONTROL_N], psis)
   desired_curvature_rate = curvature_rates[0]
 
