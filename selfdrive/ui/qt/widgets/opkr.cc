@@ -299,7 +299,7 @@ BranchSelectCombo::BranchSelectCombo() : AbstractControl("", "", "")
     border: 0px solid #1e1e1e;
     border-radius: 0;
     width: 100px;
-    height: 110px;
+    height: 120px;
   )");
 
   combobox.addItem("Select Branch you want to change");
@@ -324,10 +324,13 @@ BranchSelectCombo::BranchSelectCombo() : AbstractControl("", "", "")
     QString current_branch = QString::fromStdString(params.get("GitBranch"));
     if (combobox.currentIndex() != 0 && str != current_branch) {
       if (ConfirmationDialog::confirm("Now will checkout the branch, <" + str + ">. The device will be rebooted if completed.", this)) {
-        QString cmd1 = "git -C /data/openpilot checkout -f -t origin/" + str;
-        QString cmd2 = "git -C /data/openpilot checkout " + str;
+        QString cmd1 = "git -C /data/openpilot remote set-branches --add origin " + str;
+        QString cmd2 = "git -C /data/openpilot checkout --track origin/" + str;
+        QString cmd3 = "git -C /data/openpilot checkout " + str;
         QProcess::execute(cmd1);
+        QProcess::execute("git -C /data/openpilot fetch origin");
         QProcess::execute(cmd2);
+        QProcess::execute(cmd3);
         QProcess::execute("git -C /data/openpilot pull");
         QProcess::execute("pkill -f thermald");
         QProcess::execute("rm -f /data/openpilot/prebuilt");

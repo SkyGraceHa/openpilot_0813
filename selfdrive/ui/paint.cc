@@ -48,18 +48,22 @@ static void draw_chevron(UIState *s, float x, float y, float sz, NVGcolor fillCo
   float g_xo = sz/5;
   float g_yo = sz/10;
   nvgBeginPath(s->vg);
-  nvgMoveTo(s->vg, x+(sz*1.35)+g_xo, y+sz+g_yo);
-  nvgLineTo(s->vg, x, y-g_xo);
-  nvgLineTo(s->vg, x-(sz*1.35)-g_xo, y+sz+g_yo);
+  nvgMoveTo(s->vg, x+(sz*1.35)+g_xo, y+sz+g_yo+10);
+  // nvgLineTo(s->vg, x, y-g_xo);
+  nvgLineTo(s->vg, x+((sz*1.35)+g_xo)/2, y-g_xo+10); //
+  nvgLineTo(s->vg, x-((sz*1.35)+g_xo)/2, y-g_xo+10); //
+  nvgLineTo(s->vg, x-(sz*1.35)-g_xo, y+sz+g_yo+10);
   nvgClosePath(s->vg);
   nvgFillColor(s->vg, glowColor);
   nvgFill(s->vg);
 
   // chevron
   nvgBeginPath(s->vg);
-  nvgMoveTo(s->vg, x+(sz*1.25), y+sz);
-  nvgLineTo(s->vg, x, y);
-  nvgLineTo(s->vg, x-(sz*1.25), y+sz);
+  nvgMoveTo(s->vg, x+(sz*1.25), y+sz+10);
+  // nvgLineTo(s->vg, x, y);
+  nvgLineTo(s->vg, x+((sz*1.25))/2, y+10);  //
+  nvgLineTo(s->vg, x-((sz*1.25))/2, y+10);  //
+  nvgLineTo(s->vg, x-(sz*1.25), y+sz+10);
   nvgClosePath(s->vg);
   nvgFillColor(s->vg, fillColor);
   nvgFill(s->vg);
@@ -115,18 +119,18 @@ static void draw_lead(UIState *s, const cereal::RadarState::LeadData::Reader &le
   float radar_dist = s->scene.radarDistance;
   // const std::string radarDist_str = std::to_string((int)std::nearbyint(radar_dist));
   // ui_draw_text(s, rect.centerX(), bdr_s+165, radarDist_str.c_str(), 48 * 2.5, COLOR_WHITE, "sans-bold");
-  float sz = std::clamp((25 * 30) / (d_rel / 3 + 30), 15.0f, 30.0f) * 2.35;
+  float sz = std::clamp((25 * 100) / (d_rel / 3 + 30), 15.0f, 30.0f) * 2.35;
   x = std::clamp(x, 0.f, s->fb_w - sz / 2);
   y = std::fmin(s->fb_h - sz * .6, y);
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
   snprintf(radarDist, sizeof(radarDist), "%.0fm", radar_dist);
   if (s->scene.radarDistance < 149) {
-    draw_chevron(s, x, y, sz, nvgRGBA(201, 34, 49, fillAlpha), COLOR_YELLOW);
+    draw_chevron(s, x, y, sz, nvgRGBA(201, 34, 49, fillAlpha), nvgRGBA(201, 34, 49, fillAlpha));
     // ui_draw_text(s, x, y + sz/1.5f, "R", 60, COLOR_WHITE, "sans-bold");
-    ui_draw_text(s, x, y + sz/1.5f, radarDist, 60, COLOR_WHITE, "sans-bold");
+    ui_draw_text(s, x, y + sz/1.5f, radarDist, 80, COLOR_WHITE, "sans-bold");
   } else {
-    draw_chevron(s, x, y, sz, nvgRGBA(165, 255, 135, fillAlpha), COLOR_GREEN);
-    ui_draw_text(s, x, y + sz/1.5f, "C", 60, COLOR_BLACK, "sans-bold");
+    draw_chevron(s, x, y, sz, nvgRGBA(165, 255, 135, fillAlpha), nvgRGBA(165, 255, 135, fillAlpha));
+    ui_draw_text(s, x, y + sz/1.5f, "CAM", 80, COLOR_BLACK, "sans-bold");
   }
 }
 

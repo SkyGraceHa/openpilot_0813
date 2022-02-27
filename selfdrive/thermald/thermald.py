@@ -236,7 +236,6 @@ def thermald_thread() -> NoReturn:
   battery_charging_max = int(params.get("OpkrBatteryChargingMax", encoding="utf8"))
 
   c2withCommaPower = params.get_bool("C2WithCommaPower")
-  reboot_trigger = False
 
   is_openpilot_dir = True
 
@@ -260,7 +259,6 @@ def thermald_thread() -> NoReturn:
         no_panda_cnt = 0
         onroad_conditions["ignition"] = pandaState.pandaState.ignitionLine or pandaState.pandaState.ignitionCan
         sound_trigger == 1
-        shutdown_trigger = 1
       #startup_conditions["hardware_supported"] = pandaState.pandaState.pandaType not in [log.PandaState.PandaType.whitePanda,
       #                                                                                   log.PandaState.PandaType.greyPanda]
       #set_offroad_alert_if_changed("Offroad_HardwareUnsupported", not startup_conditions["hardware_supported"])
@@ -452,9 +450,6 @@ def thermald_thread() -> NoReturn:
       if started_ts is None:
         started_ts = sec_since_boot()
         started_seen = True
-      if reboot_trigger:
-        reboot_trigger = False
-        HARDWARE.reboot()
     else:
       if onroad_conditions["ignition"] and (startup_conditions != startup_conditions_prev):
         cloudlog.event("Startup blocked", startup_conditions=startup_conditions, onroad_conditions=onroad_conditions)
@@ -472,10 +467,10 @@ def thermald_thread() -> NoReturn:
       # shutdown if the battery gets lower than 3%, it's discharging, we aren't running for
       # more than a minute but we were running
       if shutdown_trigger == 1 and msg.deviceState.batteryStatus == "Discharging" and \
-         started_seen and opkrAutoShutdown and (sec_since_boot() - off_ts) > opkrAutoShutdown and not os.path.isfile(pandaflash_ongoing) and not c2withCommaPower:
+         started_seen and opkrAutoShutdown and (sec_since_boot() - off_ts) > opkrAutoShutdown and not os.path.isfile(pandaflash_ongoing):
         HARDWARE.shutdown()
 
-      if (count % int(1. / DT_TRML)) == 0 and not c2withCommaPower:
+      if (count % int(1. / DT_TRML)) == 0:
         if int(params.get("OpkrForceShutdown", encoding="utf8")) != 0 and not started_seen and msg.deviceState.batteryStatus == "Discharging":
           opkrForceShutdown = interp(int(params.get("OpkrForceShutdown", encoding="utf8")), [0,1,2,3,4,5], [0,60,180,300,600,1800])
           if (sec_since_boot() - off_ts) > opkrForceShutdown and opkrForceShutdown and params.get_bool("OpkrForceShutdownTrigger"):
@@ -484,9 +479,7 @@ def thermald_thread() -> NoReturn:
             off_ts = sec_since_boot()
         elif msg.deviceState.batteryPercent < 10 and not started_seen and msg.deviceState.batteryStatus == "Discharging":
           HARDWARE.shutdown()
-      
-      if c2withCommaPower and shutdown_trigger == 1 and started_seen and (sec_since_boot() - off_ts) > 1 and reboot_trigger == False:
-        reboot_trigger = True
+
 
     # opkr
     prebuiltlet = params.get_bool("PutPrebuiltOn")
@@ -521,11 +514,12 @@ def thermald_thread() -> NoReturn:
 #
 #    # Check if we need to shut down
 
-    # if power_monitor.should_shutdown(pandaState, off_ts, started_seen):
-    #   cloudlog.info(f"shutting device down, offroad since {off_ts}")
-    #   # TODO: add function for blocking cloudlog instead of sleep
-    #   time.sleep(10)
-    #   HARDWARE.shutdown()
+    if c2withCommaPower:
+      if power_monitor.should_shutdown(pandaState, off_ts, started_seen):
+        cloudlog.info(f"shutting device down, offroad since {off_ts}")
+        # TODO: add function for blocking cloudlog instead of sleep
+        time.sleep(10)
+        HARDWARE.shutdown()
 
     msg.deviceState.chargingError = current_filter.x > 0. and msg.deviceState.batteryPercent < 90  # if current is positive, then battery is being discharged
     msg.deviceState.started = started_ts is not None

@@ -116,7 +116,7 @@ void Sidebar::updateState(const UIState &s) {
     pandaStatus = {"NO\nPANDA", danger_color};
   } else if (!s.scene.ignition) {
     pandaStatus = {"VEHICLE\nOFFROAD", warning_color};
-  } else if (s.scene.started && !sm["liveLocationKalman"].getLiveLocationKalman().getGpsOK() && s.scene.gpsAccuracyUblox != 0.00) {
+  } else if (s.scene.started && s.scene.gpsAccuracyUblox != 0.00 && (s.scene.gpsAccuracyUblox > 99 || s.scene.gpsAccuracyUblox == 0)) {
     pandaStatus = {"ONLINE\nGPS Search", warning_color};
   } else if (s.scene.satelliteCount > 0) {
   	pandaStatus = {QString("ONLINE\nSAT : %1").arg(s.scene.satelliteCount), good_color};

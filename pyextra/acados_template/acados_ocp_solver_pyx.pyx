@@ -370,7 +370,6 @@ cdef class AcadosOcpSolverFast:
 
         # treat parameters separately
         if field_ == 'p':
-            value = np.ascontiguousarray(value_, dtype=np.double)
             assert acados_solver.acados_update_params(self.capsule, stage, <double *> value.data, value.shape[0]) == 0
         else:
             if field_ not in constraints_fields + cost_fields + out_fields:

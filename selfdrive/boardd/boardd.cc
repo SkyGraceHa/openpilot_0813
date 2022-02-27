@@ -373,7 +373,6 @@ void panda_state_thread() {
     ps.setIgnitionCan(pandaState.ignition_can);
     ps.setControlsAllowed(pandaState.controls_allowed);
     ps.setGasInterceptorDetected(pandaState.gas_interceptor_detected);
-    ps.setHasGps(panda->is_pigeon);
     ps.setCanRxErrs(pandaState.can_rx_errs);
     ps.setCanSendErrs(pandaState.can_send_errs);
     ps.setCanFwdErrs(pandaState.can_fwd_errs);
@@ -489,46 +488,19 @@ static void pigeon_publish_raw(PubMaster &pm, const std::string &dat) {
 }
 
 void pigeon_thread() {
-  if (!panda->is_pigeon) { return; };
+  if (white_panda_support) { return; };
 
   PubMaster pm({"ubloxRaw"});
   bool ignition_last = false;
 
   Pigeon *pigeon = Hardware::TICI() ? Pigeon::connect("/dev/ttyHS0") : Pigeon::connect(panda);
 
-  std::unordered_map<char, uint64_t> last_recv_time;
-  std::unordered_map<char, int64_t> cls_max_dt = {
-    {(char)ublox::CLASS_NAV, int64_t(900000000ULL)}, // 0.9s
-    {(char)ublox::CLASS_RXM, int64_t(900000000ULL)}, // 0.9s
-  };
-
-  pigeon->init();
-
   while (!do_exit && panda->connected) {
     bool need_reset = false;
-    bool ignition_local = ignition;
+    // bool ignition_local = ignition;
+    health_t pandaState = panda->get_state();
+    bool ignition_local = ((pandaState.ignition_line != 0) || (pandaState.ignition_can != 0));
     std::string recv = pigeon->receive();
-
-    // Parse message header
-    if (ignition_local && recv.length() >= 3) {
-      if (recv[0] == (char)ublox::PREAMBLE1 && recv[1] == (char)ublox::PREAMBLE2) {
-        const char msg_cls = recv[2];
-        uint64_t t = nanos_since_boot();
-        if (t > last_recv_time[msg_cls]) {
-          last_recv_time[msg_cls] = t;
-        }
-      }
-    }
-
-    // Check based on message frequency
-    for (const auto& [msg_cls, max_dt] : cls_max_dt) {
-      int64_t dt = (int64_t)nanos_since_boot() - (int64_t)last_recv_time[msg_cls];
-      if (ignition_last && ignition_local && dt > max_dt) {
-        LOG("ublox receive timeout, msg class: 0x%02x, dt %llu", msg_cls, dt);
-        // TODO: turn on reset after verification of logs
-        // need_reset = true;
-      }
-    }
 
     // Check based on null bytes
     if (ignition_local && recv.length() > 0 && recv[0] == (char)0x00) {
@@ -545,13 +517,7 @@ void pigeon_thread() {
     if((ignition_local && !ignition_last) || need_reset) {
       pigeon_active = true;
       pigeon->init();
-
-      // Set receive times to current time
-      uint64_t t = nanos_since_boot() + 10000000000ULL; // Give ublox 10 seconds to start
-      for (const auto& [msg_cls, dt] : cls_max_dt) {
-        last_recv_time[msg_cls] = t;
-      }
-    } else if (!ignition_local && ignition_last && c2withCommaPowert) {
+    } else if (!ignition_local && ignition_last) {
       // power off on falling edge of ignition
       LOGD("powering off pigeon\n");
       pigeon->stop();
