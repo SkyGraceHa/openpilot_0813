@@ -125,12 +125,12 @@ static void draw_lead(UIState *s, const cereal::RadarState::LeadData::Reader &le
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
   snprintf(radarDist, sizeof(radarDist), "%.0fm", radar_dist);
   if (s->scene.radarDistance < 149) {
-    draw_chevron(s, x, y, sz, nvgRGBA(201, 34, 49, fillAlpha), nvgRGBA(201, 34, 49, fillAlpha));
+    draw_chevron(s, x, y, sz, nvgRGBA(201, 34, 49, fillAlpha), COLOR_YELLOW);
     // ui_draw_text(s, x, y + sz/1.5f, "R", 60, COLOR_WHITE, "sans-bold");
     ui_draw_text(s, x, y + sz/1.5f, radarDist, 80, COLOR_WHITE, "sans-bold");
   } else {
-    draw_chevron(s, x, y, sz, nvgRGBA(165, 255, 135, fillAlpha), nvgRGBA(165, 255, 135, fillAlpha));
-    ui_draw_text(s, x, y + sz/1.5f, "CAM", 80, COLOR_BLACK, "sans-bold");
+    draw_chevron(s, x, y, sz, nvgRGBA(120, 120, 255, fillAlpha), COLOR_BLUE);
+    ui_draw_text(s, x, y + sz/1.5f, "CAM", 80, COLOR_WHITE, "sans-bold");
   }
 }
 
