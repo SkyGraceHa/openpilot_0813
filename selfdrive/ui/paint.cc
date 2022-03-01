@@ -174,10 +174,10 @@ static void ui_draw_vision_lane_lines(UIState *s) {
         red_lvl_line = 1.0;
         green_lvl_line = 1.0 - ((0.4 - scene.lane_line_probs[i]) * 2.5);
       }
-      NVGcolor color = nvgRGBAf(1.0, 1.0, 1.0, scene.lane_line_probs[i]);
-      if (!scene.comma_stock_ui) {
-        color = nvgRGBAf(red_lvl_line, green_lvl_line, 0, 1);
-      }
+      NVGcolor color = nvgRGBAf(red_lvl_line, green_lvl_line, 0, 1); // nvgRGBAf(1.0, 1.0, 1.0, scene.lane_line_probs[i]);
+      // if (!scene.comma_stock_ui) {
+      //   color = nvgRGBAf(red_lvl_line, green_lvl_line, 0, 1);
+      // }
       ui_draw_line(s, scene.lane_line_vertices[i], &color, nullptr);
     }
 
@@ -187,7 +187,7 @@ static void ui_draw_vision_lane_lines(UIState *s) {
       ui_draw_line(s, scene.road_edge_vertices[i], &color, nullptr);
     }
   }
-  if (scene.controls_state.getEnabled() && !scene.comma_stock_ui) {
+  if (scene.controls_state.getEnabled()) { // && !scene.comma_stock_ui) {
     if (steerOverride) {
       track_bg = nvgLinearGradient(s->vg, s->fb_w, s->fb_h, s->fb_w, s->fb_h*.4,
         COLOR_BLACK_ALPHA(80), COLOR_BLACK_ALPHA(20));
@@ -1403,10 +1403,9 @@ static void ui_draw_vision_header(UIState *s) {
   }
   ui_draw_vision_speed(s);
   ui_draw_vision_event(s);
+  bb_ui_draw_UI(s);
   if (!s->scene.comma_stock_ui && !s->scene.mapbox_running) {
     ui_draw_turn_signal(s);    
-    bb_ui_draw_UI(s);
-
     ui_draw_vision_scc_gap(s);
     ui_draw_gear(s);
     ui_draw_compass(s);

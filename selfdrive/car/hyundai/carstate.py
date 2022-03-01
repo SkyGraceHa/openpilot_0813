@@ -551,6 +551,8 @@ class CarState(CarStateBase):
       ("OPKR_S_Dist", "NAVI"),
       ("OPKR_S_Sign", "NAVI"),
       ("OPKR_SBR_Dist", "NAVI"),
+
+      ("N", "EMS_366"),
     ]
 
     checks = [
