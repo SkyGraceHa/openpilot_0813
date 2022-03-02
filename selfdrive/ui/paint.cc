@@ -125,12 +125,13 @@ static void draw_lead(UIState *s, const cereal::RadarState::LeadData::Reader &le
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
   snprintf(radarDist, sizeof(radarDist), "%.0fm", radar_dist);
   if (s->scene.radarDistance < 149) {
-    draw_chevron(s, x, y, sz, nvgRGBA(201, 34, 49, fillAlpha), COLOR_YELLOW);
+    draw_chevron(s, x, y, sz, nvgRGBA(201, 34, 49, fillAlpha), COLOR_GREY);
     // ui_draw_text(s, x, y + sz/1.5f, "R", 60, COLOR_WHITE, "sans-bold");
     ui_draw_text(s, x, y + sz/1.5f, radarDist, 80, COLOR_WHITE, "sans-bold");
   } else {
-    draw_chevron(s, x, y, sz, nvgRGBA(120, 120, 255, fillAlpha), COLOR_BLUE);
-    ui_draw_text(s, x, y + sz/1.5f, "CAM", 80, COLOR_WHITE, "sans-bold");
+    // draw_chevron(s, x, y, sz, nvgRGBA(120, 120, 255, fillAlpha), COLOR_BLUE);
+    // ui_draw_text(s, x, y + sz/1.5f, "CAM", 80, COLOR_WHITE, "sans-bold");
+    ui_draw_circle_image(s, x, y, sz, "custom_lead_vision", true);
   }
 }
 
@@ -490,9 +491,15 @@ static void ui_draw_compass(UIState *s) {
 
 static void ui_draw_vision_face(UIState *s) {
   const int radius = 85;
-  const int center_x = radius + bdr_s + (radius*2 + 10) * 3 + 10;
+  const int center_x = radius + bdr_s;
   const int center_y = 1080 - 85 - 30;
-  ui_draw_circle_image(s, center_x, center_y, radius, "driver_face", s->scene.dm_active);
+  if (!s->scene.comma_stock_ui) {
+    // ui_draw_circle_image(s, center_x + (radius*2 + 10) * 3 + 10, center_y, radius, s->scene.dm_active ? "driver_face" : "driver_face_not", true);
+    ui_draw_circle_image_rotation(s, center_x + (radius*2 + 10) * 3 + 10, center_y, radius + 15, s->scene.dm_active ? "driver_face" : "driver_face_not", nvgRGBA(0, 0, 0, 0), 1.0f);
+  } else {
+    // ui_draw_circle_image(s, center_x, center_y, radius, s->scene.dm_active ? "driver_face" : "driver_face_not", true);
+    ui_draw_circle_image_rotation(s, center_x, center_y, radius + 15, s->scene.dm_active ? "driver_face" : "driver_face_not", nvgRGBA(0, 0, 0, 0), 1.0f);
+  }
 }
 
 static void ui_draw_vision_autohold(UIState *s) {
@@ -509,22 +516,6 @@ static void ui_draw_vision_autohold(UIState *s) {
   ui_draw_circle_image_rotation(s, center_x, center_y, radius,
         autohold > 1 ? "autohold_warning" : "autohold_active", autohold_bg, autohold_img_alpha);
 }
-
-// static void ui_draw_vision_brake(UIState *s) {
-//   const int radius = 85;
-//   const int center_x = radius + bdr_s + (radius*2 + 10) * 3 + 20;
-//   const int center_y = 1080 - 85 - 30;
-//   bool brake_valid = s->scene.brakePress;
-//   bool cruise_valid = s->scene.cruiseAccStatus;
-//   float brake_img_alpha = brake_valid ? 0.9f : 0.15f;
-//   float brake_bg_alpha = brake_valid ? 0.3f : 0.1f;
-//   NVGcolor brake_bg = nvgRGBA(0, 0, 0, (255 * brake_bg_alpha));
-//   if (cruise_valid && !brake_valid) {
-//     ui_draw_circle_image_rotation(s, center_x, center_y, radius, "scc", nvgRGBA(0, 0, 0, 80), 1.0f);
-//   } else {
-//     ui_draw_circle_image_rotation(s, center_x, center_y, radius, "brake", brake_bg, brake_img_alpha);
-//   }
-// }
 
 static void ui_draw_center_wheel(UIState *s) {
   const int wheel_size = 200;
@@ -1752,6 +1743,7 @@ void ui_nvg_init(UIState *s) {
     {"wheel", "../assets/img_chffr_wheel.png"},
     {"center_wheel", "../assets/img_center_wheel.png"},
     {"driver_face", "../assets/img_driver_face.png"},
+    {"driver_face_not", "../assets/img_driver_face_not.png"},
     {"speed_S30", "../assets/addon/img/img_S30_speedahead.png"},
     {"speed_bump", "../assets/addon/img/img_speed_bump.png"},   
     {"bus_only", "../assets/addon/img/img_bus_only.png"},
@@ -1780,9 +1772,9 @@ void ui_nvg_init(UIState *s) {
     {"gear_D", "../assets/addon/img/gearD.png"},
     {"gear_X", "../assets/addon/img/gearX.png"},
     {"gear_BG", "../assets/addon/img/gearBG.png"},    
-    {"turn_signal_l", "../assets/images/turn_signal_l.png"},
-    {"turn_signal_r", "../assets/images/turn_signal_r.png"},    
-    {"tire_pressure", "../assets/images/img_tire_pressure.png"},
+    {"turn_signal_l", "../assets/addon/img/turn_signal_l.png"},
+    {"turn_signal_r", "../assets/addon/img/turn_signal_r.png"},    
+    {"tire_pressure", "../assets/addon/img/img_tire_pressure.png"},
     
   };
   for (auto [name, file] : images) {
