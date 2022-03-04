@@ -151,6 +151,7 @@ class CarController():
 
     self.variable_steer_max = self.params.get_bool("OpkrVariableSteerMax")
     self.variable_steer_delta = self.params.get_bool("OpkrVariableSteerDelta")
+    self.osm_spdlimit_enabled = self.params.get_bool("OSMSpeedLimitEnable")
 
     self.cc_timer = 0
     self.on_speed_control = False
@@ -487,7 +488,7 @@ class CarController():
         can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.RES_ACCEL)) if not self.longcontrol \
          else can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.RES_ACCEL, clu11_speed, CS.CP.sccBus))  # auto res
         self.auto_res_starting = True
-        self.res_speed = int(CS.clu_Vanz*1.1)
+        self.res_speed = int(CS.VSetDis) if CS.is_set_speed_in_mph or self.osm_spdlimit_enabled else int(CS.clu_Vanz*1.1)
         self.res_speed_timer = 300
         self.resume_cnt += 1
         if self.resume_cnt >= randint(6, 8):
@@ -630,7 +631,7 @@ class CarController():
         lead_objspd = CS.lead_objspd  # vRel (km/h)
         aReqValue = CS.scc12["aReqValue"]
         faccel = actuators.accel if c.active else 0
-        accel = actuators.oaccel if c.active else 0
+        accel = actuators.oaccel if c.active and not CS.out.gasPressed else 0
         stopping = (actuators.longControlState == LongCtrlState.stopping)
         radar_recog = (0 < CS.lead_distance <= 149)
         if 0 < CS.lead_distance <= 149 and self.radar_helper_option == 1:

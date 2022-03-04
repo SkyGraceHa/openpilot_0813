@@ -46,24 +46,24 @@ static void ui_draw_text(const UIState *s, float x, float y, const char *string,
 static void draw_chevron(UIState *s, float x, float y, float sz, NVGcolor fillColor, NVGcolor glowColor) {
   // glow
   float g_xo = sz/5;
-  float g_yo = sz/10;
+  // float g_yo = sz/10;
   nvgBeginPath(s->vg);
-  nvgMoveTo(s->vg, x+(sz*1.35)+g_xo, y+sz+g_yo+10);
+  nvgMoveTo(s->vg, x+(sz*1.35)+g_xo, y+15);
   // nvgLineTo(s->vg, x, y-g_xo);
-  nvgLineTo(s->vg, x+((sz*1.35)+g_xo)/2, y-g_xo+10); //
-  nvgLineTo(s->vg, x-((sz*1.35)+g_xo)/2, y-g_xo+10); //
-  nvgLineTo(s->vg, x-(sz*1.35)-g_xo, y+sz+g_yo+10);
+  nvgLineTo(s->vg, x+((sz*1.35)+g_xo)/2, y); //
+  nvgLineTo(s->vg, x-((sz*1.35)+g_xo)/2, y); //
+  nvgLineTo(s->vg, x-(sz*1.35)-g_xo, y+15);
   nvgClosePath(s->vg);
   nvgFillColor(s->vg, glowColor);
   nvgFill(s->vg);
 
   // chevron
   nvgBeginPath(s->vg);
-  nvgMoveTo(s->vg, x+(sz*1.25), y+sz+10);
+  nvgMoveTo(s->vg, x+(sz*1.25), y+15);
   // nvgLineTo(s->vg, x, y);
-  nvgLineTo(s->vg, x+((sz*1.25))/2, y+10);  //
-  nvgLineTo(s->vg, x-((sz*1.25))/2, y+10);  //
-  nvgLineTo(s->vg, x-(sz*1.25), y+sz+10);
+  nvgLineTo(s->vg, x+((sz*1.25))/2, y+5);  //
+  nvgLineTo(s->vg, x-((sz*1.25))/2, y+5);  //
+  nvgLineTo(s->vg, x-(sz*1.25), y+15);
   nvgClosePath(s->vg);
   nvgFillColor(s->vg, fillColor);
   nvgFill(s->vg);
@@ -101,8 +101,8 @@ static void ui_draw_circle_image(const UIState *s, int center_x, int center_y, i
 
 static void draw_lead(UIState *s, const cereal::RadarState::LeadData::Reader &lead_data, const vertex_data &vd) {
   // Draw lead car indicator
+  const float speed = std::max(0.0, (*s->sm)["carState"].getCarState().getVEgo()*(s->scene.is_metric ? 3.6 : 2.2369363));
   auto [x, y] = vd;
-
   float fillAlpha = 0;
   float speedBuff = 10.;
   float leadBuff = 40.;
@@ -119,19 +119,25 @@ static void draw_lead(UIState *s, const cereal::RadarState::LeadData::Reader &le
   float radar_dist = s->scene.radarDistance;
   // const std::string radarDist_str = std::to_string((int)std::nearbyint(radar_dist));
   // ui_draw_text(s, rect.centerX(), bdr_s+165, radarDist_str.c_str(), 48 * 2.5, COLOR_WHITE, "sans-bold");
-  float sz = std::clamp((25 * 100) / (d_rel / 3 + 30), 15.0f, 30.0f) * 2.35;
+  float sz = std::clamp((25 * 54) / (d_rel / 2 + 15), 20.0f, 90.0f) * 2.35;
   x = std::clamp(x, 0.f, s->fb_w - sz / 2);
   y = std::fmin(s->fb_h - sz * .6, y);
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
   snprintf(radarDist, sizeof(radarDist), "%.0fm", radar_dist);
   if (s->scene.radarDistance < 149) {
-    draw_chevron(s, x, y, sz, nvgRGBA(201, 34, 49, fillAlpha), COLOR_GREY);
+    if (d_rel / speed < 0.5) {
+      draw_chevron(s, x, y, sz, nvgRGBA(201, 34, 49, fillAlpha), nvgRGBA(201, 34, 49, fillAlpha));
+    } else if (d_rel / speed < 0.8) {
+      draw_chevron(s, x, y, sz, nvgRGBA(240, 160, 0, 200), nvgRGBA(240, 160, 0, 200));
+    } else {
+      draw_chevron(s, x, y, sz, nvgRGBA(0, 160, 0, 200), nvgRGBA(0, 160, 0, 200));
+    }
     // ui_draw_text(s, x, y + sz/1.5f, "R", 60, COLOR_WHITE, "sans-bold");
     ui_draw_text(s, x, y + sz/1.5f, radarDist, 80, COLOR_WHITE, "sans-bold");
   } else {
     // draw_chevron(s, x, y, sz, nvgRGBA(120, 120, 255, fillAlpha), COLOR_BLUE);
     // ui_draw_text(s, x, y + sz/1.5f, "CAM", 80, COLOR_WHITE, "sans-bold");
-    ui_draw_circle_image(s, x, y, sz, "custom_lead_vision", true);
+    ui_draw_circle_image_rotation(s, x, y, sz, "custom_lead_vision", nvgRGBA(0, 0, 0, 0), 0.7f, s->scene.bearingUblox);
   }
 }
 
@@ -364,6 +370,7 @@ static void ui_draw_debug(UIState *s) {
       nvgFontSize(s->vg, 50);
     }
     //ui_print(s, ui_viz_rx, ui_viz_ry, "Live Parameters");
+    ui_print(s, ui_viz_rx, ui_viz_ry+200, "CV:%.5f / %.5f", scene.lateralPlan.vCurvature, scene.lateralPlan.curvatures[0]);
     ui_print(s, ui_viz_rx, ui_viz_ry+240, "SR:%.2f", scene.liveParams.steerRatio);
     //ui_print(s, ui_viz_rx, ui_viz_ry+100, "AOfs:%.2f", scene.liveParams.angleOffset);
     ui_print(s, ui_viz_rx, ui_viz_ry+280, "AA:%.2f", scene.liveParams.angleOffsetAverage);
@@ -372,8 +379,8 @@ static void ui_draw_debug(UIState *s) {
     ui_print(s, ui_viz_rx, ui_viz_ry+360, "AD:%.2f", scene.steer_actuator_delay);
     ui_print(s, ui_viz_rx, ui_viz_ry+400, "SC:%.2f", scene.lateralPlan.steerRateCost);
     ui_print(s, ui_viz_rx, ui_viz_ry+440, "OS:%.2f", abs(scene.output_scale));
-    ui_print(s, ui_viz_rx, ui_viz_ry+480, "%.2f|%.2f", scene.lateralPlan.lProb, scene.lateralPlan.rProb);
-    ui_print(s, ui_viz_rx, ui_viz_ry+520, "%.1f/%.1fm", scene.lateralPlan.dProb, scene.lateralPlan.laneWidth); // High dProb is more related to LaneLine, Low is Laneless
+    ui_print(s, ui_viz_rx, ui_viz_ry+480, "%.1f | %.1f", scene.lateralPlan.lProb, scene.lateralPlan.rProb);
+    ui_print(s, ui_viz_rx, ui_viz_ry+520, "%.1f / %.1fm", scene.lateralPlan.dProb, scene.lateralPlan.laneWidth); // High dProb is more related to LaneLine, Low is Laneless
     // const std::string stateStrings[] = {"disabled", "preEnabled", "enabled", "softDisabling"};
     // ui_print(s, ui_viz_rx, ui_viz_ry+520, "%s", stateStrings[(int)(*s->sm)["controlsState"].getControlsState().getState()].c_str());
     //ui_print(s, ui_viz_rx, ui_viz_ry+800, "A:%.5f", scene.accel_sensor2);
@@ -497,8 +504,8 @@ static void ui_draw_vision_face(UIState *s) {
     // ui_draw_circle_image(s, center_x + (radius*2 + 10) * 3 + 10, center_y, radius, s->scene.dm_active ? "driver_face" : "driver_face_not", true);
     ui_draw_circle_image_rotation(s, center_x + (radius*2 + 10) * 3 + 10, center_y, radius + 15, s->scene.dm_active ? "driver_face" : "driver_face_not", nvgRGBA(0, 0, 0, 0), 1.0f);
   } else {
-    // ui_draw_circle_image(s, center_x, center_y, radius, s->scene.dm_active ? "driver_face" : "driver_face_not", true);
-    ui_draw_circle_image_rotation(s, center_x, center_y, radius + 15, s->scene.dm_active ? "driver_face" : "driver_face_not", nvgRGBA(0, 0, 0, 0), 1.0f);
+    ui_draw_circle_image(s, center_x, center_y, radius, s->scene.dm_active ? "driver_face" : "driver_face_not", true);
+    // ui_draw_circle_image_rotation(s, center_x, center_y, radius + 15, s->scene.dm_active ? "driver_face" : "driver_face_not", nvgRGBA(0, 0, 0, 0), 1.0f);
   }
 }
 
@@ -985,7 +992,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize );
-    bb_ry = bb_y + bb_h - (bb_y_offset*6);
+    bb_ry = bb_y + bb_h - (bb_y_offset*7);
   }
 
   //finally draw the frame

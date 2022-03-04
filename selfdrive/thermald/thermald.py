@@ -8,22 +8,21 @@ from typing import Dict, NoReturn, Optional, Tuple
 from collections import namedtuple, OrderedDict
 
 import psutil
-from smbus2 import SMBus
 
 import cereal.messaging as messaging
 from cereal import log
 from common.filter_simple import FirstOrderFilter
-from common.numpy_fast import clip, interp
-from common.params import Params, ParamKeyType
+from common.numpy_fast import interp
+from common.params import Params
 from common.realtime import DT_TRML, sec_since_boot
 from common.dict_helpers import strip_deprecated_keys
 from selfdrive.controls.lib.alertmanager import set_offroad_alert
-from selfdrive.controls.lib.pid import PIController
 from selfdrive.hardware import EON, TICI, PC, HARDWARE
 from selfdrive.loggerd.config import get_available_percent
 from selfdrive.pandad import get_expected_signature
 from selfdrive.swaglog import cloudlog
 from selfdrive.thermald.power_monitoring import PowerMonitoring
+from selfdrive.thermald.fan_controller import EonFanController, UnoFanController, TiciFanController
 from selfdrive.version import terms_version, training_version
 from selfdrive.statsd import statlog
 
@@ -81,83 +80,6 @@ def read_thermal(thermal_config):
   return dat
 
 
-def setup_eon_fan():
-  os.system("echo 2 > /sys/module/dwc3_msm/parameters/otg_switch")
-
-
-last_eon_fan_val = None
-def set_eon_fan(val):
-  global last_eon_fan_val
-
-  if last_eon_fan_val is None or last_eon_fan_val != val:
-    bus = SMBus(7, force=True)
-    try:
-      i = [0x1, 0x3 | 0, 0x3 | 0x08, 0x3 | 0x10][val]
-      bus.write_i2c_block_data(0x3d, 0, [i])
-    except OSError:
-      # tusb320
-      if val == 0:
-        bus.write_i2c_block_data(0x67, 0xa, [0])
-      else:
-        bus.write_i2c_block_data(0x67, 0xa, [0x20])
-        bus.write_i2c_block_data(0x67, 0x8, [(val - 1) << 6])
-    bus.close()
-    last_eon_fan_val = val
-
-
-# temp thresholds to control fan speed - high hysteresis
-_TEMP_THRS_H = [50., 65., 80., 10000]
-# temp thresholds to control fan speed - low hysteresis
-_TEMP_THRS_L = [42.5, 57.5, 72.5, 10000]
-# fan speed options
-_FAN_SPEEDS = [0, 16384, 32768, 65535]
-
-
-def handle_fan_eon(controller, max_cpu_temp, fan_speed, ignition):
-  new_speed_h = next(speed for speed, temp_h in zip(_FAN_SPEEDS, _TEMP_THRS_H) if temp_h > max_cpu_temp)
-  new_speed_l = next(speed for speed, temp_l in zip(_FAN_SPEEDS, _TEMP_THRS_L) if temp_l > max_cpu_temp)
-
-  if new_speed_h > fan_speed:
-    # update speed if using the high thresholds results in fan speed increment
-    fan_speed = new_speed_h
-  elif new_speed_l < fan_speed:
-    # update speed if using the low thresholds results in fan speed decrement
-    fan_speed = new_speed_l
-
-  set_eon_fan(fan_speed // 16384)
-
-  return fan_speed
-
-
-def handle_fan_uno(controller, max_cpu_temp, fan_speed, ignition):
-  new_speed = int(interp(max_cpu_temp, [40.0, 80.0], [0, 80]))
-
-  if not ignition:
-    new_speed = min(30, new_speed)
-
-  return new_speed
-
-
-last_ignition = False
-def handle_fan_tici(controller, max_cpu_temp, fan_speed, ignition):
-  global last_ignition
-
-  controller.neg_limit = -(80 if ignition else 30)
-  controller.pos_limit = -(30 if ignition else 0)
-
-  if ignition != last_ignition:
-    controller.reset()
-
-  fan_pwr_out = -int(controller.update(
-                     setpoint=(75 if ignition else (OFFROAD_DANGER_TEMP - 2)),
-                     measurement=max_cpu_temp,
-                     feedforward=interp(max_cpu_temp, [60.0, 100.0], [0, -80])
-                  ))
-
-  last_ignition = ignition
-  return fan_pwr_out
-
-
 def set_offroad_alert_if_changed(offroad_alert: str, show_alert: bool, extra_text: Optional[str]=None):
   if prev_offroad_states.get(offroad_alert, None) == (show_alert, extra_text):
     return
@@ -173,7 +95,6 @@ def thermald_thread() -> NoReturn:
   pandaState_sock = messaging.sub_sock('pandaState', timeout=pandaState_timeout)
   sm = messaging.SubMaster(["gpsLocationExternal", "managerState"])
 
-  fan_speed = 0
   count = 0
 
   onroad_conditions: Dict[str, bool] = {
@@ -202,7 +123,6 @@ def thermald_thread() -> NoReturn:
   current_filter = FirstOrderFilter(0., CURRENT_TAU, DT_TRML)
   temp_filter = FirstOrderFilter(0., TEMP_TAU, DT_TRML)
   should_start_prev = False
-  handle_fan = None
   is_uno = False
 
   params = Params()
@@ -212,8 +132,7 @@ def thermald_thread() -> NoReturn:
   HARDWARE.initialize_hardware()
   thermal_config = HARDWARE.get_thermal_config()
 
-  # TODO: use PI controller for UNO
-  controller = PIController(k_p=0, k_i=2e-3, k_f=1, neg_limit=-80, pos_limit=0, rate=(1 / DT_TRML))
+  fan_controller = None
 
   # sound trigger
   sound_trigger = 1
@@ -264,19 +183,15 @@ def thermald_thread() -> NoReturn:
       #set_offroad_alert_if_changed("Offroad_HardwareUnsupported", not startup_conditions["hardware_supported"])
 
       # Setup fan handler on first connect to panda
-      if handle_fan is None and pandaState.pandaState.pandaType != log.PandaState.PandaType.unknown:
+      if fan_controller is None and pandaState.pandaState.pandaType != log.PandaState.PandaType.unknown:
         is_uno = pandaState.pandaState.pandaType == log.PandaState.PandaType.uno
 
         if TICI:
-          cloudlog.info("Setting up TICI fan handler")
-          handle_fan = handle_fan_tici
+          fan_controller = TiciFanController()
         elif is_uno or PC:
-          cloudlog.info("Setting up UNO fan handler")
-          handle_fan = handle_fan_uno
+          fan_controller = UnoFanController()
         else:
-          cloudlog.info("Setting up EON fan handler")
-          setup_eon_fan()
-          handle_fan = handle_fan_eon
+          fan_controller = EonFanController()
     elif params.get_bool("IsOpenpilotViewEnabled") and not params.get_bool("IsDriverViewEnabled") and is_openpilot_view_enabled == 0:
       is_openpilot_view_enabled = 1
       onroad_conditions["ignition"] = True
@@ -355,9 +270,8 @@ def thermald_thread() -> NoReturn:
 
     bat_temp = msg.deviceState.batteryTempC
 
-    if handle_fan is not None:
-      fan_speed = handle_fan(controller, max_comp_temp, fan_speed, onroad_conditions["ignition"])
-      msg.deviceState.fanSpeedPercentDesired = fan_speed
+    if fan_controller is not None:
+      msg.deviceState.fanSpeedPercentDesired = fan_controller.update(max_comp_temp, onroad_conditions["ignition"])
 
     is_offroad_for_5_min = (started_ts is None) and ((not started_seen) or (off_ts is None) or (sec_since_boot() - off_ts > 60 * 5))
     if is_offroad_for_5_min and max_comp_temp > OFFROAD_DANGER_TEMP:

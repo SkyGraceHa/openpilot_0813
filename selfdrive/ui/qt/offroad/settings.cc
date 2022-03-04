@@ -586,8 +586,8 @@ DrivingPanel::DrivingPanel(QWidget *parent) : QFrame(parent) {
   layout->addWidget(new OSMSpeedLimitEnabledToggle());
   layout->addWidget(new StockNaviSpeedToggle());
   layout->addWidget(new SpeedLimitOffset());
-  layout->addWidget(new OSMCustomOffsetUD());
-  layout->addWidget(new OSMCustomOffset());
+  layout->addWidget(new OSMCustomSpeedLimitUD());
+  layout->addWidget(new OSMCustomSpeedLimit());
   layout->addWidget(new SpeedLimitSignType());
   layout->addWidget(new CamDecelDistAdd());
   layout->addWidget(new CurvDecelSelect());

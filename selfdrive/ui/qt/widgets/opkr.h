@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QPushButton>
+#include <QLineEdit>
 #include <QSoundEffect>
 
 #include "selfdrive/hardware/hw.h"
@@ -1780,24 +1781,12 @@ public:
   VCurvSpeed();
 
 private:
-  QPushButton btn1;
-  QPushButton btn2;
-  QPushButton btn3;
-  QPushButton btn4;
-  QLabel label1;
-  QLabel label2;
-  QLabel label3;
-  QLabel label4;
-  QLabel label1a;
-  QLabel label2a;
-  QLabel label3a;
-  QLabel label4a;
+  QPushButton btn;
+  QLineEdit edit1;
+  QLineEdit edit2;
   Params params;
 
-  void refresh1();
-  void refresh2();
-  void refresh3();
-  void refresh4();
+  void refresh();
 };
 
 class VCurvSpeedUD : public AbstractControl {
@@ -1805,12 +1794,6 @@ class VCurvSpeedUD : public AbstractControl {
 
 public:
   VCurvSpeedUD();
-
-private:
-  QPushButton btn;
-  Params params;
-  
-  void refresh();
 };
 
 class OCurvSpeed : public AbstractControl {
@@ -1820,28 +1803,12 @@ public:
   OCurvSpeed();
 
 private:
-  QPushButton btn1;
-  QPushButton btn2;
-  QPushButton btn3;
-  QPushButton btn4;
-  QPushButton btn5;
-  QLabel label1;
-  QLabel label2;
-  QLabel label3;
-  QLabel label4;
-  QLabel label5;
-  QLabel label1a;
-  QLabel label2a;
-  QLabel label3a;
-  QLabel label4a;
-  QLabel label5a;
+  QPushButton btn;
+  QLineEdit edit1;
+  QLineEdit edit2;
   Params params;
 
-  void refresh1();
-  void refresh2();
-  void refresh3();
-  void refresh4();
-  void refresh5();
+  void refresh();
 };
 
 class OCurvSpeedUD : public AbstractControl {
@@ -1849,12 +1816,6 @@ class OCurvSpeedUD : public AbstractControl {
 
 public:
   OCurvSpeedUD();
-
-private:
-  QPushButton btn;
-  Params params;
-  
-  void refresh();
 };
 
 class GetOffAlert : public AbstractControl {
@@ -2006,48 +1967,26 @@ private:
   void refresh();
 };
 
-class OSMCustomOffset : public AbstractControl {
+class OSMCustomSpeedLimit : public AbstractControl {
   Q_OBJECT
 
 public:
-  OSMCustomOffset();
-
-private:
-  QPushButton btn1;
-  QPushButton btn2;
-  QPushButton btn3;
-  QPushButton btn4;
-  QPushButton btn5;
-  QLabel label1;
-  QLabel label2;
-  QLabel label3;
-  QLabel label4;
-  QLabel label5;
-  QLabel label1a;
-  QLabel label2a;
-  QLabel label3a;
-  QLabel label4a;
-  QLabel label5a;
-  Params params;
-
-  void refresh1();
-  void refresh2();
-  void refresh3();
-  void refresh4();
-  void refresh5();
-};
-
-class OSMCustomOffsetUD : public AbstractControl {
-  Q_OBJECT
-
-public:
-  OSMCustomOffsetUD();
+  OSMCustomSpeedLimit();
 
 private:
   QPushButton btn;
+  QLineEdit edit1;
+  QLineEdit edit2;
   Params params;
-  
+
   void refresh();
+};
+
+class OSMCustomSpeedLimitUD : public AbstractControl {
+  Q_OBJECT
+
+public:
+  OSMCustomSpeedLimitUD();
 };
 
 class DesiredCurvatureLimit : public AbstractControl {

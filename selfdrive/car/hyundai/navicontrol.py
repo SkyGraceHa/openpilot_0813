@@ -41,12 +41,14 @@ class NaviControl():
     self.onSpeedControl = False
     self.curvSpeedControl = False
     self.ctrl_speed = 0
-    self.vision_curv_speed = [int(Params().get("VCurvSpeed30", encoding="utf8")), int(Params().get("VCurvSpeed50", encoding="utf8")),
-     int(Params().get("VCurvSpeed70", encoding="utf8")), int(Params().get("VCurvSpeed90", encoding="utf8"))]
-    self.osm_curv_speed = [int(Params().get("OCurvSpeed30", encoding="utf8")), int(Params().get("OCurvSpeed40", encoding="utf8")),
-     int(Params().get("OCurvSpeed50", encoding="utf8")), int(Params().get("OCurvSpeed60", encoding="utf8")), int(Params().get("OCurvSpeed70", encoding="utf8"))]
-    self.osm_spdlimit_offset = [int(Params().get("OSMCustomOffset40", encoding="utf8")), int(Params().get("OSMCustomOffset50", encoding="utf8")),
-     int(Params().get("OSMCustomOffset60", encoding="utf8")), int(Params().get("OSMCustomOffset70", encoding="utf8")), int(Params().get("OSMCustomOffset90", encoding="utf8"))]
+    self.vision_curv_speed_c = list(map(int, Params().get("VCurvSpeedC", encoding="utf8").split(',')))
+    self.vision_curv_speed_t = list(map(int, Params().get("VCurvSpeedT", encoding="utf8").split(',')))
+
+    self.osm_curv_speed_c = list(map(int, Params().get("OCurvSpeedC", encoding="utf8").split(',')))
+    self.osm_curv_speed_t = list(map(int, Params().get("OCurvSpeedT", encoding="utf8").split(',')))
+    self.osm_custom_spdlimit_c = list(map(int, Params().get("OSMCustomSpeedLimitC", encoding="utf8").split(',')))
+    self.osm_custom_spdlimit_t = list(map(int, Params().get("OSMCustomSpeedLimitT", encoding="utf8").split(',')))
+
     self.osm_wait_timer = 0
     self.stock_navi_info_enabled = Params().get_bool("StockNaviSpeedEnabled")
     self.osm_speedlimit_enabled = Params().get_bool("OSMSpeedLimitEnable")
@@ -180,8 +182,7 @@ class NaviControl():
         elif self.map_spdlimit_offset_option == 1:
           cruise_set_speed_kph = spdTarget + self.map_spdlimit_offset
         else:
-          cruise_set_speed_kph = spdTarget + int(self.osm_spdlimit_offset[0] if 0 < spdTarget <= 40 else self.osm_spdlimit_offset[1] if spdTarget <= 50 else \
-           self.osm_spdlimit_offset[2] if spdTarget <= 60 else self.osm_spdlimit_offset[3] if spdTarget <= 70 else self.osm_spdlimit_offset[4] if spdTarget <= 90 else 0)
+          cruise_set_speed_kph = int(interp(spdTarget, self.osm_custom_spdlimit_c, self.osm_custom_spdlimit_t))
         if cruise_set_speed_kph+1.5 < v_ego_mph and CS.is_set_speed_in_mph and not CS.out.gasPressed:
           self.onSpeedControl = True
         elif cruise_set_speed_kph+1.5 < v_ego_kph and not CS.is_set_speed_in_mph and not CS.out.gasPressed:
@@ -215,8 +216,7 @@ class NaviControl():
         elif self.map_spdlimit_offset_option == 1:
           cruise_set_speed_kph = spdTarget + self.map_spdlimit_offset
         else:
-          cruise_set_speed_kph = spdTarget + int(self.osm_spdlimit_offset[0] if 0 < spdTarget <= 40 else self.osm_spdlimit_offset[1] if spdTarget <= 50 else \
-           self.osm_spdlimit_offset[2] if spdTarget <= 60 else self.osm_spdlimit_offset[3] if spdTarget <= 70 else self.osm_spdlimit_offset[4] if spdTarget <= 90 else 0)
+          cruise_set_speed_kph = int(interp(spdTarget, self.osm_custom_spdlimit_c, self.osm_custom_spdlimit_t))
         if cruise_set_speed_kph+1.5 < v_ego_mph and CS.is_set_speed_in_mph and not CS.out.gasPressed:
           self.onSpeedControl = True
         elif cruise_set_speed_kph+1.5 < v_ego_kph and not CS.is_set_speed_in_mph and not CS.out.gasPressed:
@@ -251,8 +251,7 @@ class NaviControl():
         elif self.map_spdlimit_offset_option == 1:
           cruise_set_speed_kph = spdTarget + self.map_spdlimit_offset
         else:
-          cruise_set_speed_kph = spdTarget + int(self.osm_spdlimit_offset[0] if 0 < spdTarget <= 40 else self.osm_spdlimit_offset[1] if spdTarget <= 50 else \
-           self.osm_spdlimit_offset[2] if spdTarget <= 60 else self.osm_spdlimit_offset[3] if spdTarget <= 70 else self.osm_spdlimit_offset[4] if spdTarget <= 90 else 0)
+          cruise_set_speed_kph = int(interp(spdTarget, self.osm_custom_spdlimit_c, self.osm_custom_spdlimit_t))
         if cruise_set_speed_kph+1.5 < v_ego_mph and CS.is_set_speed_in_mph and not CS.out.gasPressed:
           self.onSpeedControl = True
         elif cruise_set_speed_kph+1.5 < v_ego_kph and not CS.is_set_speed_in_mph and not CS.out.gasPressed:
@@ -343,12 +342,12 @@ class NaviControl():
       self.t_interval = 10 if CS.is_set_speed_in_mph else 7
 
     if CS.cruise_set_mode in (1,3,4) and self.curv_decel_option in (1,2):
-      if CS.out.vEgo * CV.MS_TO_KPH > 40 and modelSpeed < 90 and path_plan.laneChangeState == LaneChangeState.off and \
+      if CS.out.vEgo * CV.MS_TO_KPH > 40 and modelSpeed < self.vision_curv_speed_c[-1] and path_plan.laneChangeState == LaneChangeState.off and \
        not (CS.out.leftBlinker or CS.out.rightBlinker) and not abs(CS.out.steeringTorque) > 170:
         if CS.is_set_speed_in_mph:
-          v_curv_speed = int(interp(modelSpeed, [30, 50, 70, 90], self.vision_curv_speed)/3)*3
+          v_curv_speed = int(interp(modelSpeed, self.vision_curv_speed_c, self.vision_curv_speed_t)/3)*3
         else:
-          v_curv_speed = int(interp(modelSpeed, [30, 50, 70, 90], self.vision_curv_speed)/5)*5
+          v_curv_speed = int(interp(modelSpeed, self.vision_curv_speed_c, self.vision_curv_speed_t)/5)*5
         v_curv_speed = min(var_speed, v_curv_speed) # curve speed ratio
       else:
         v_curv_speed = 255
@@ -357,8 +356,8 @@ class NaviControl():
 
     if CS.cruise_set_mode in (1,3,4) and self.curv_decel_option in (1,3):
       if self.sm['liveMapData'].turnSpeedLimitEndDistance > 30:
-        o_curv_speed = int(interp(self.sm['liveMapData'].turnSpeedLimit, [30, 40, 50, 60, 70], self.osm_curv_speed))
-        self.osm_wait_timer += 1 if modelSpeed > 90 else 0
+        o_curv_speed = int(interp(self.sm['liveMapData'].turnSpeedLimit, self.osm_curv_speed_c, self.osm_curv_speed_t))
+        self.osm_wait_timer += 1 if modelSpeed > self.vision_curv_speed_c[-1] else 0
         if self.osm_wait_timer > 100:
           o_curv_speed = 255
       else:
