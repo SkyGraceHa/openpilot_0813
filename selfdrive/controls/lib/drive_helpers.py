@@ -24,8 +24,8 @@ CONTROL_N = 17
 CAR_ROTATION_RADIUS = 0.0
 
 # this corresponds to 80deg/s and 20deg/s steering angle in a toyota corolla
-MAX_CURVATURE_RATES = [0.07, 0.001] # more curvature by hoya // [0.03762194918267951, 0.003441203371932992]
-MAX_CURVATURE_RATE_SPEEDS = [0, 35]
+MAX_CURVATURE_RATES = [0.03, 0.005, 0.0001] # more curvature by hoya // [0.03762194918267951, 0.003441203371932992]
+MAX_CURVATURE_RATE_SPEEDS = [3., 20., 30.] # hoya 11/72/108km/h // [0, 35]
 
 CRUISE_LONG_PRESS = 50
 CRUISE_NEAREST_FUNC = {
@@ -115,8 +115,8 @@ def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
   curvature_diff_from_psi = psi / (max(v_ego, 1e-1) * delay) - current_curvature
   desired_curvature = current_curvature + 2 * curvature_diff_from_psi
 
-  # max_curvature_rate = interp(v_ego, MAX_CURVATURE_RATE_SPEEDS, MAX_CURVATURE_RATES)
-  max_curvature_rate = interp(round(abs(current_curvature), 4), [0.03, 0.001], MAX_CURVATURE_RATES) # 현재 곡률에 따른 최대 변동 곡률 가변 적용
+  max_curvature_rate = interp(v_ego, MAX_CURVATURE_RATE_SPEEDS, MAX_CURVATURE_RATES)
+  # max_curvature_rate = interp(round(abs(current_curvature), 4), [0.03, 0.0001], MAX_CURVATURE_RATES) # 현재 곡률에 따른 최대 변동 곡률 가변 적용
   safe_desired_curvature_rate = clip(desired_curvature_rate,
                                           -max_curvature_rate,
                                           max_curvature_rate)

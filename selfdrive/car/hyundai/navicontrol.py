@@ -389,7 +389,7 @@ class NaviControl():
     if not self.button_status(CS):  # 사용자가 버튼클릭하면 일정시간 기다린다.
       pass
     elif CS.cruise_active:
-      cruiseState_speed = self.sm['controlsState'].vCruise
+      cruiseState_speed = round(self.sm['controlsState'].vCruise)
       kph_set_vEgo = self.get_navi_speed(self.sm, CS, cruiseState_speed) # camspeed
       if self.osm_speedlimit_enabled:
         navi_speed = kph_set_vEgo

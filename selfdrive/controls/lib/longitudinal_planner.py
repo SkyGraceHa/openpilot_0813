@@ -59,8 +59,6 @@ class Planner:
 
   def update(self, sm, CP):
     v_ego = sm['carState'].vEgo
-    a_ego = sm['carState'].aEgo
-    self.vego = v_ego
 
     if CP.sccBus != 0:
       v_cruise_kph = sm['carState'].vSetDis

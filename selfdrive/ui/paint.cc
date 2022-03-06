@@ -370,7 +370,6 @@ static void ui_draw_debug(UIState *s) {
       nvgFontSize(s->vg, 50);
     }
     //ui_print(s, ui_viz_rx, ui_viz_ry, "Live Parameters");
-    ui_print(s, ui_viz_rx, ui_viz_ry+200, "CV:%.5f / %.5f", scene.lateralPlan.vCurvature, scene.lateralPlan.curvatures[0]);
     ui_print(s, ui_viz_rx, ui_viz_ry+240, "SR:%.2f", scene.liveParams.steerRatio);
     //ui_print(s, ui_viz_rx, ui_viz_ry+100, "AOfs:%.2f", scene.liveParams.angleOffset);
     ui_print(s, ui_viz_rx, ui_viz_ry+280, "AA:%.2f", scene.liveParams.angleOffsetAverage);
@@ -379,8 +378,9 @@ static void ui_draw_debug(UIState *s) {
     ui_print(s, ui_viz_rx, ui_viz_ry+360, "AD:%.2f", scene.steer_actuator_delay);
     ui_print(s, ui_viz_rx, ui_viz_ry+400, "SC:%.2f", scene.lateralPlan.steerRateCost);
     ui_print(s, ui_viz_rx, ui_viz_ry+440, "OS:%.2f", abs(scene.output_scale));
-    ui_print(s, ui_viz_rx, ui_viz_ry+480, "%.1f | %.1f", scene.lateralPlan.lProb, scene.lateralPlan.rProb);
-    ui_print(s, ui_viz_rx, ui_viz_ry+520, "%.1f / %.1fm", scene.lateralPlan.dProb, scene.lateralPlan.laneWidth); // High dProb is more related to LaneLine, Low is Laneless
+    // ui_print(s, ui_viz_rx, ui_viz_ry+480, "← %.2f  %.2f →", scene.lateralPlan.lProb, scene.lateralPlan.rProb);
+    ui_print(s, ui_viz_rx, ui_viz_ry+480, "<-%4.1f  %4.1f->", scene.lateralPlan.lProb*100, scene.lateralPlan.rProb*100);
+    ui_print(s, ui_viz_rx, ui_viz_ry+520, "<>%4.1f  %3.1fm", scene.lateralPlan.dProb*100, scene.lateralPlan.laneWidth); // High dProb is more related to LaneLine, Low is Laneless
     // const std::string stateStrings[] = {"disabled", "preEnabled", "enabled", "softDisabling"};
     // ui_print(s, ui_viz_rx, ui_viz_ry+520, "%s", stateStrings[(int)(*s->sm)["controlsState"].getControlsState().getState()].c_str());
     //ui_print(s, ui_viz_rx, ui_viz_ry+800, "A:%.5f", scene.accel_sensor2);
@@ -394,7 +394,6 @@ static void ui_draw_debug(UIState *s) {
       ui_print(s, ui_viz_rx, ui_viz_ry+560, "SL:%.0f", (*s->sm)["carState"].getCarState().getSafetySign());
       ui_print(s, ui_viz_rx, ui_viz_ry+600, "DS:%.0f", (*s->sm)["carState"].getCarState().getSafetyDist());
     }
-    
     if (scene.osm_enabled) {
       ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+240, "SL:%.0f", scene.liveMapData.ospeedLimit);
       ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+280, "SLA:%.0f", scene.liveMapData.ospeedLimitAhead);
@@ -412,6 +411,12 @@ static void ui_draw_debug(UIState *s) {
     } else if (scene.lateralControlMethod == 2) {
       ui_print(s, ui_viz_rx_center, bdr_s+295, "LQR");
     }
+    if (scene.cal_view) {
+      nvgFontSize(s->vg, 120);
+      nvgFillColor(s->vg, COLOR_RED_ALPHA(200));
+      nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+      ui_print(s, ui_viz_rx_center, ui_viz_ry+600, "BF:%.1f   RL:%.1f°", scene.accel_prob[0], scene.accel_prob[1]);
+    }    
   }
 }
 
@@ -569,7 +574,7 @@ static void ui_draw_vision_accel_brake(UIState *s) {
 static void ui_draw_vision_maxspeed_org(UIState *s) {
   const int SET_SPEED_NA = 255;
   float maxspeed = round(s->scene.controls_state.getVCruise());
-  float cruise_speed = s->scene.vSetDis;
+  float cruise_speed = round(s->scene.vSetDis);
   const bool is_cruise_set = maxspeed != 0 && maxspeed != SET_SPEED_NA;
   if (s->scene.limitSCOffsetOption) {
     s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.limitSpeedCamera+s->scene.speed_lim_off)+1.5 < s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363));
@@ -629,11 +634,11 @@ static void ui_draw_vision_maxspeed(UIState *s) {
 
 static void ui_draw_vision_cruise_speed(UIState *s) {
   const int SET_SPEED_NA = 255;
-  float maxspeed = s->scene.controls_state.getVCruise();
+  float maxspeed = round(s->scene.controls_state.getVCruise());
   const bool is_cruise_set = maxspeed != 0 && maxspeed != SET_SPEED_NA;
   int limitspeedcamera = s->scene.limitSpeedCamera;
   //if (is_cruise_set && !s->scene.is_metric) { maxspeed *= 0.6225; }
-  float cruise_speed = s->scene.vSetDis;
+  float cruise_speed = round(s->scene.vSetDis);
 
   if (s->scene.limitSCOffsetOption) {
     s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.limitSpeedCamera+s->scene.speed_lim_off)+1.5 < s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363));
@@ -1660,6 +1665,26 @@ static void ui_draw_auto_hold(UIState *s) {
   ui_draw_text(s, rect.centerX(), rect.centerY(), "AUTO HOLD", 100, COLOR_GREEN_ALPHA(150), "sans-bold");
 }
 
+static void ui_draw_grid(UIState *s) {
+  NVGcolor color = COLOR_WHITE_ALPHA(230);
+  nvgBeginPath(s->vg);
+  nvgStrokeWidth(s->vg, 3);
+  nvgStrokeColor(s->vg, color);
+  for (int i = 0; i < 6; i++) {
+    nvgMoveTo(s->vg, s->fb_w/2 + (i*160), 0);
+    nvgLineTo(s->vg, s->fb_w/2 + (i*160) , s->fb_h);
+    nvgMoveTo(s->vg, s->fb_w/2 - (i*160), 0);
+    nvgLineTo(s->vg, s->fb_w/2 - (i*160) , s->fb_h);
+  }
+  for (int i = 0; i < 4; i++) {
+    nvgMoveTo(s->vg, 0, s->fb_h/2 + (i*240));
+    nvgLineTo(s->vg, s->fb_w, s->fb_h/2 + (i*240));
+    nvgMoveTo(s->vg, 0, s->fb_h/2 - (i*240));
+    nvgLineTo(s->vg, s->fb_w, s->fb_h/2 - (i*240));
+  }
+  nvgStroke(s->vg);
+}
+
 static void ui_draw_vision(UIState *s) {
   const UIScene *scene = &s->scene;
   // Draw augmented elements
@@ -1682,6 +1707,9 @@ static void ui_draw_vision(UIState *s) {
   }
   if (scene->brakeHold && !scene->comma_stock_ui) {
     ui_draw_auto_hold(s);
+  }
+  if (scene->cal_view) {
+    ui_draw_grid(s);
   }
 }
 

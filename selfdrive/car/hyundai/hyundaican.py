@@ -153,6 +153,8 @@ def create_scc12(packer, apply_accel, enabled, scc_live, gaspressed, brakepresse
       values["aReqRaw"] = apply_accel
       values["aReqValue"] = apply_accel
       if not radar_recognition:
+        values["aReqRaw"] = 0
+        values["aReqValue"] = 0
         if stopping:
           values["StopReq"] = 1
         else:

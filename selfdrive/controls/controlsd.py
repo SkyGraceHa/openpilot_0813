@@ -233,8 +233,6 @@ class Controls:
     """Compute carEvents from carState"""
 
     self.events.clear()
-    self.events.add_from_msg(CS.events)
-    self.events.add_from_msg(self.sm['driverMonitoringState'].events)
 
     # Add startup event
     if self.startup_event is not None:
@@ -245,6 +243,9 @@ class Controls:
     if not self.initialized:
       self.events.add(EventName.controlsInitializing)
       return
+
+    self.events.add_from_msg(CS.events)
+    self.events.add_from_msg(self.sm['driverMonitoringState'].events)
 
     # Create events for battery, temperature, disk space, and memory
     if EON and self.sm['deviceState'].batteryPercent < 1 and self.sm['deviceState'].chargingError and not self.batt_less:
@@ -286,22 +287,22 @@ class Controls:
       if (CS.leftBlindspot and direction == LaneChangeDirection.left) or \
          (CS.rightBlindspot and direction == LaneChangeDirection.right):
         self.events.add(EventName.laneChangeBlocked)
-    #   else:
-    #     if direction == LaneChangeDirection.left:
-    #       if self.lane_change_delay == 0:
-    #         self.events.add(EventName.preLaneChangeLeft)
-    #       else:
-    #         self.events.add(EventName.laneChange)
-    #     else:
-    #       if self.lane_change_delay == 0:
-    #         self.events.add(EventName.preLaneChangeRight)
-    #       else:
-    #         self.events.add(EventName.laneChange)
-    # elif self.sm['lateralPlan'].laneChangeState in (LaneChangeState.laneChangeStarting,
-    #                                              LaneChangeState.laneChangeFinishing):
-    #   self.events.add(EventName.laneChange)
+      else:
+        if direction == LaneChangeDirection.left:
+          if self.lane_change_delay == 0:
+            self.events.add(EventName.preLaneChangeLeft)
+          else:
+            self.events.add(EventName.laneChange)
+        else:
+          if self.lane_change_delay == 0:
+            self.events.add(EventName.preLaneChangeRight)
+          else:
+            self.events.add(EventName.laneChange)
+    elif self.sm['lateralPlan'].laneChangeState in (LaneChangeState.laneChangeStarting,
+                                                    LaneChangeState.laneChangeFinishing):
+      self.events.add(EventName.laneChange)
 
-    if not CS.canValid and self.ignore_can_error_on_isg and CS.vEgo > 1:
+    if self.can_rcv_error or not CS.canValid and self.ignore_can_error_on_isg and CS.vEgo > 1:
       self.events.add(EventName.canError)
     elif not CS.canValid and not self.ignore_can_error_on_isg:
       self.events.add(EventName.canError)
@@ -323,8 +324,8 @@ class Controls:
         self.e2e_long_alert_prev = True
       self.second = 0.0
 
-      #if log.PandaState.FaultType.relayMalfunction in pandaState.faults:
-      #  self.events.add(EventName.relayMalfunction)
+    # if log.PandaState.FaultType.relayMalfunction in pandaState.faults:
+    #   self.events.add(EventName.relayMalfunction)
 
     # Check for HW or system issues
     if len(self.sm['radarState'].radarErrors):
@@ -336,7 +337,7 @@ class Controls:
       if not self.logged_comm_issue:
         invalid = [s for s, valid in self.sm.valid.items() if not valid]
         not_alive = [s for s, alive in self.sm.alive.items() if not alive]
-        cloudlog.event("commIssue", invalid=invalid, not_alive=not_alive)
+        cloudlog.event("commIssue", invalid=invalid, not_alive=not_alive, can_error=self.can_rcv_error, error=True)
         self.logged_comm_issue = True
     else:
       self.logged_comm_issue = False
@@ -473,31 +474,31 @@ class Controls:
         self.v_cruise_kph_last = self.v_cruise_kph
       elif CS.cruiseButtons == Buttons.RES_ACCEL and self.variable_cruise and CS.cruiseState.modeSel != 0 and CS.vSetDis < (self.v_cruise_kph_last - 1):
         self.v_cruise_kph = self.v_cruise_kph_last
-        if int(CS.vSetDis)-1 > self.v_cruise_kph:
-          self.v_cruise_kph = int(CS.vSetDis)
+        if round(CS.vSetDis)-1 > self.v_cruise_kph:
+          self.v_cruise_kph = round(CS.vSetDis)
         self.v_cruise_kph_last = self.v_cruise_kph
         if self.osm_speedlimit_enabled:
           self.osm_off_spdlimit_init = True
-          self.osm_speedlimit = int(self.sm['liveMapData'].speedLimit)
+          self.osm_speedlimit = round(self.sm['liveMapData'].speedLimit)
       elif CS.cruiseButtons == Buttons.RES_ACCEL and self.variable_cruise and CS.cruiseState.modeSel != 0 and t_speed <= self.v_cruise_kph_last <= round(CS.vEgo*m_unit):
         self.v_cruise_kph = round(CS.vEgo*m_unit)
-        if int(CS.vSetDis)-1 > self.v_cruise_kph:
-          self.v_cruise_kph = int(CS.vSetDis)
+        if round(CS.vSetDis)-1 > self.v_cruise_kph:
+          self.v_cruise_kph = round(CS.vSetDis)
         self.v_cruise_kph_last = self.v_cruise_kph
         if self.osm_speedlimit_enabled:
           self.osm_off_spdlimit_init = True
-          self.osm_speedlimit = int(self.sm['liveMapData'].speedLimit)
+          self.osm_speedlimit = round(self.sm['liveMapData'].speedLimit)
       elif CS.cruiseButtons == Buttons.RES_ACCEL or CS.cruiseButtons == Buttons.SET_DECEL:
         self.v_cruise_kph = round(CS.cruiseState.speed * m_unit)
         self.v_cruise_kph_last = self.v_cruise_kph
         if self.osm_speedlimit_enabled:
           self.osm_off_spdlimit_init = True
-          self.osm_speedlimit = int(self.sm['liveMapData'].speedLimit)
-      elif CS.driverAcc and self.variable_cruise and self.cruise_over_maxspeed and t_speed <= self.v_cruise_kph < int(round(CS.vEgo*m_unit)):
-        self.v_cruise_kph = int(round(CS.vEgo*m_unit))
+          self.osm_speedlimit = round(self.sm['liveMapData'].speedLimit)
+      elif CS.driverAcc and self.variable_cruise and self.cruise_over_maxspeed and t_speed <= self.v_cruise_kph < round(CS.vEgo*m_unit):
+        self.v_cruise_kph = round(CS.vEgo*m_unit)
         self.v_cruise_kph_last = self.v_cruise_kph
       elif self.variable_cruise and CS.cruiseState.modeSel != 0 and self.osm_speedlimit_enabled and self.osm_off_spdlimit_init:
-        osm_speedlimit_ = int(self.sm['liveMapData'].speedLimit)
+        osm_speedlimit_ = round(self.sm['liveMapData'].speedLimit)
         osm_speedlimit = osm_speedlimit_ + round(osm_speedlimit_*0.01*self.osm_spdlimit_offset) if self.osm_spdlimit_offset_option == 0 else \
          osm_speedlimit_ + self.osm_spdlimit_offset
         if CS.cruiseButtons == Buttons.GAP_DIST:
@@ -505,7 +506,7 @@ class Controls:
           self.osm_off_spdlimit = False    
         elif self.osm_speedlimit == osm_speedlimit_:
           self.osm_off_spdlimit = True
-        elif int(self.sm['liveMapData'].speedLimit) > 19 and osm_speedlimit != self.v_cruise_kph:
+        elif round(self.sm['liveMapData'].speedLimit) > 19 and osm_speedlimit != self.v_cruise_kph:
           self.osm_speedlimit = 255
           self.osm_off_spdlimit = False
           self.v_cruise_kph = osm_speedlimit
@@ -634,7 +635,7 @@ class Controls:
       actuators.accel, actuators.oaccel = self.LoC.update(self.active and CS.cruiseState.speed > 1., CS, self.CP, long_plan, pid_accel_limits, t_since_plan, self.sm['radarState'])
 
       # Steering PID loop and lateral MPC
-      lat_active = self.active and not CS.steerWarning and not CS.steerError and CS.vEgo > self.CP.minSteerSpeed
+      lat_active = self.active and not CS.steerFaultTemporary and not CS.steerFaultPermanent and CS.vEgo > self.CP.minSteerSpeed
       desired_curvature, desired_curvature_rate = get_lag_adjusted_curvature(self.CP, CS.vEgo,
                                                                              lat_plan.psis,
                                                                              lat_plan.curvatures,

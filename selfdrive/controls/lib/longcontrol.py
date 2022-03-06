@@ -165,6 +165,8 @@ class LongControl():
       # Keep applying brakes until the car is stopped
       if not CS.standstill or output_accel > CP.stopAccel:
         output_accel -= CP.stoppingDecelRate * DT_CTRL
+      elif CS.standstill and CS.cruiseState.standstill and output_accel <= -0.5:
+        output_accel = -0.5
       elif CS.standstill and output_accel < -0.5: # loosen brake at standstill, to mitigate load of brake
         output_accel += CP.stoppingDecelRate * DT_CTRL
       output_accel = clip(output_accel, accel_limits[0], accel_limits[1])

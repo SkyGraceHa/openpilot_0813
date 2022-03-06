@@ -508,6 +508,7 @@ int Localizer::locationd_thread() {
         }
       }
     }
+    
 
 
     if (sm.updated("cameraOdometry")) {

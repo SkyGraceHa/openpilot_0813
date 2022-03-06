@@ -167,7 +167,7 @@ static void update_state(UIState *s) {
     scene.angleSteers = cs_data.getSteeringAngleDeg();
     scene.cruise_gap = cs_data.getCruiseGapSet();
     scene.brakeHold = cs_data.getBrakeHold();
-    scene.steer_warning = cs_data.getSteerWarning();
+    scene.steer_warning = cs_data.getSteerFaultTemporary();
     scene.stand_still = cs_data.getStandstill();
     scene.a_req_value = cs_data.getAReqValue();
     scene.engine_rpm = cs_data.getEngineRpm();
@@ -272,12 +272,14 @@ static void update_state(UIState *s) {
     scene.liveMapData.oturnSpeedLimitEndDistance = lmap_data.getTurnSpeedLimitEndDistance();
     scene.liveMapData.oturnSpeedLimitSign = lmap_data.getTurnSpeedLimitSign();
   }
-  if (!scene.started && sm.updated("sensorEvents")) {
+  if ((!scene.started || s->is_OpenpilotViewEnabled) && sm.updated("sensorEvents")) {
     for (auto sensor : sm["sensorEvents"].getSensorEvents()) {
       if (sensor.which() == cereal::SensorEventData::ACCELERATION) {
         auto accel = sensor.getAcceleration().getV();
         if (accel.totalSize().wordCount) { // TODO: sometimes empty lists are received. Figure out why
           scene.accel_sensor = accel[2];
+          scene.accel_prob[0] = atan(accel[2]/accel[0]) * (180 / M_PI); // back and forth
+          scene.accel_prob[1] = atan(accel[1]/accel[0]) * (180 / M_PI); // right and left
         }
       } else if (sensor.which() == cereal::SensorEventData::GYRO_UNCALIBRATED) {
         auto gyro = sensor.getGyroUncalibrated().getV();

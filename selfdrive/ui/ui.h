@@ -251,6 +251,7 @@ typedef struct UIScene {
   bool osm_enabled;
   int radar_long_helper;
   float engine_rpm;
+  bool cal_view = false;
 
   cereal::DeviceState::Reader deviceState;
   cereal::CarState::Reader car_state;
@@ -280,6 +281,7 @@ typedef struct UIScene {
   bool started, ignition, is_metric, longitudinal_control, end_to_end;
   uint64_t started_frame;
 
+  float accel_prob[2];
 
   // atom
   struct _LiveParams
@@ -302,9 +304,6 @@ typedef struct UIScene {
 
     float angleOffset;
     bool lanelessModeStatus;
-
-    float vCurvature;
-    float curvatures[0];
   } lateralPlan;
 
   struct _LiveNaviData
