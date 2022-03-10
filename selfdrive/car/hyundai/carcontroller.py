@@ -669,7 +669,7 @@ class CarController():
               accel = (aReqValue + accel) / 3
               self.keep_decel_on = False
               self.change_accel_fast = False
-            elif self.dRel <= 10.0 and CS.lead_distance - self.dRel >= 5.0 and aReqValue >= 0:
+            elif 0.1 < self.dRel <= 10.0 and CS.lead_distance - self.dRel >= 5.0 and aReqValue >= 0:
               self.keep_decel_on = False
               self.change_accel_fast = False
               pass
@@ -677,30 +677,30 @@ class CarController():
               stock_weight = interp(CS.lead_distance, [3.5, 8.0, 15.0], [0.2, 0.8, 1.0])
               accel = accel * (1.0 - stock_weight) + aReqValue * stock_weight
             elif aReqValue < 0.0 and CS.lead_distance <= 4.3 and accel >= aReqValue and self.stopping_dist_adj_enabled:
-              accel = self.accel - (DT_CTRL * interp(CS.out.vEgo, [0.9, 3.0], [1.0, 6.0]))
+              accel = self.accel - (DT_CTRL * interp(CS.out.vEgo, [0.9, 3.0], [1.0, 5.0]))
             elif aReqValue < 0.0 and lead_objspd < -15:
               accel = (aReqValue + accel) / 2
             elif aReqValue < 0.0 and self.stopping_dist_adj_enabled:
-              stock_weight = interp(CS.lead_distance, [5.5, 10.0, 18.0, 25.0, 35.0], [0.1, 0.85, 1.0, 0.5, 1.0])
+              stock_weight = interp(CS.lead_distance, [6.0, 10.0, 18.0, 25.0, 35.0], [0.1, 0.85, 1.0, 0.5, 1.0])
               accel = accel * (1.0 - stock_weight) + aReqValue * stock_weight
             elif aReqValue < 0.0:
-              stock_weight = interp(CS.lead_distance, [5.5, 10.0, 18.0, 25.0, 35.0], [1.0, 0.85, 1.0, 0.5, 1.0])
+              stock_weight = interp(CS.lead_distance, [6.0, 10.0, 18.0, 25.0, 35.0], [1.0, 0.85, 1.0, 0.5, 1.0])
               accel = accel * (1.0 - stock_weight) + aReqValue * stock_weight
             else:
               stock_weight = 0.0
               self.keep_decel_on = False
               self.change_accel_fast = False
               accel = accel * (1.0 - stock_weight) + aReqValue * stock_weight
-          elif 0.5 < self.dRel < 5.5 and self.vRel < 0:
-            accel = self.accel - (DT_CTRL * interp(CS.out.vEgo, [1.0, 3.0], [1.5, 6.0]))
+          elif 0.1 < self.dRel < 6.0 and self.vRel < 0:
+            accel = self.accel - (DT_CTRL * interp(CS.out.vEgo, [1.0, 3.0], [1.5, 5.0]))
             self.stopped = False
-          elif 0.5 < self.dRel < 5.5:
+          elif 0.1 < self.dRel < 6.0:
             accel = min(-0.5, faccel*0.3)
             if stopping:
               self.stopped = True
             else:
               self.stopped = False
-          elif 0.5 < self.dRel:
+          elif 0.1 < self.dRel:
             self.stopped = False
             pass
           else:
@@ -709,16 +709,16 @@ class CarController():
         elif 0 < CS.lead_distance <= 4.0: # use radar by force to stop anyway below 4.0m if lead car is detected.
           stock_weight = interp(CS.lead_distance, [2.5, 4.0], [1., 0.])
           accel = accel * (1. - stock_weight) + aReqValue * stock_weight
-        elif 0.5 < self.dRel < 5.5 and self.vRel < 0:
-          accel = self.accel - (DT_CTRL * interp(CS.out.vEgo, [1.0, 3.0], [1.5, 6.0]))
+        elif 0.1 < self.dRel < 6.0 and self.vRel < 0:
+          accel = self.accel - (DT_CTRL * interp(CS.out.vEgo, [1.0, 3.0], [1.5, 5.0]))
           self.stopped = False
-        elif 0.5 < self.dRel < 5.5:
+        elif 0.1 < self.dRel < 6.0:
           accel = min(-0.5, faccel*0.3)
           if stopping:
             self.stopped = True
           else:
             self.stopped = False
-        elif 0.5 < self.dRel:
+        elif 0.1 < self.dRel:
           self.stopped = False
           pass
         else:
