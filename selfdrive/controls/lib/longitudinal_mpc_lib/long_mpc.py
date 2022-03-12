@@ -11,17 +11,17 @@ from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
 if __name__ == '__main__':  # generating code
   from pyextra.acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
 else:
-  # from pyextra.acados_template import AcadosOcpSolver as AcadosOcpSolverFast
-  from selfdrive.controls.lib.longitudinal_mpc_lib.c_generated_code.acados_ocp_solver_pyx import AcadosOcpSolverFast  # pylint: disable=no-name-in-module, import-error
+  from selfdrive.controls.lib.longitudinal_mpc_lib.c_generated_code.acados_ocp_solver_pyx import AcadosOcpSolverCython  # pylint: disable=no-name-in-module, import-error
 
 from casadi import SX, vertcat
 
 from common.params import Params
 from decimal import Decimal
 
+MODEL_NAME = 'long'
 LONG_MPC_DIR = os.path.dirname(os.path.abspath(__file__))
 EXPORT_DIR = os.path.join(LONG_MPC_DIR, "c_generated_code")
-JSON_FILE = "acados_ocp_long.json"
+JSON_FILE = os.path.join(LONG_MPC_DIR, "acados_ocp_long.json")
 
 SOURCES = ['lead0', 'lead1', 'cruise']
 
@@ -41,6 +41,7 @@ A_CHANGE_COST = 200.
 DANGER_ZONE_COST = 100.
 CRASH_DISTANCE = .5
 LIMIT_COST = 1e6
+ACADOS_SOLVER_TYPE = 'SQP_RTI'
 
 
 # Fewer timestamps don't hurt performance and lead to
@@ -68,7 +69,7 @@ def desired_follow_distance(v_ego, v_lead, t_react=T_FOLLOW):
 
 def gen_long_model():
   model = AcadosModel()
-  model.name = 'long'
+  model.name = MODEL_NAME
 
   # set up states & controls
   x_ego = SX.sym('x_ego')
@@ -101,7 +102,7 @@ def gen_long_model():
   return model
 
 
-def gen_long_mpc_solver():
+def gen_long_ocp():
   ocp = AcadosOcp()
   ocp.model = gen_long_model()
 
@@ -177,7 +178,7 @@ def gen_long_mpc_solver():
   ocp.solver_options.qp_solver = 'PARTIAL_CONDENSING_HPIPM'
   ocp.solver_options.hessian_approx = 'GAUSS_NEWTON'
   ocp.solver_options.integrator_type = 'ERK'
-  ocp.solver_options.nlp_solver_type = 'SQP_RTI'
+  ocp.solver_options.nlp_solver_type = ACADOS_SOLVER_TYPE
   ocp.solver_options.qp_solver_cond_N = 1
 
   # More iterations take too much time and less lead to inaccurate convergence in
@@ -215,7 +216,7 @@ class LongitudinalMpc:
     self.lo_timer = 0 
 
   def reset(self):
-    self.solver = AcadosOcpSolverFast('long', N)
+    self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
     self.v_solution = np.zeros(N+1)
     self.a_solution = np.zeros(N+1)
     self.prev_a = np.array(self.a_solution)
@@ -442,5 +443,6 @@ class LongitudinalMpc:
 
 
 if __name__ == "__main__":
-  ocp = gen_long_mpc_solver()
-  AcadosOcpSolver.generate(ocp, json_file=JSON_FILE, build=False)
+  ocp = gen_long_ocp()
+  AcadosOcpSolver.generate(ocp, json_file=JSON_FILE)
+  # AcadosOcpSolver.build(ocp.code_export_directory, with_cython=True)

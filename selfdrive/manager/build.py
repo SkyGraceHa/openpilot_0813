@@ -3,7 +3,6 @@ import os
 import subprocess
 import sys
 import time
-import datetime
 import textwrap
 from pathlib import Path
 
@@ -18,7 +17,7 @@ from selfdrive.version import is_dirty
 MAX_CACHE_SIZE = 4e9 if "CI" in os.environ else 2e9
 CACHE_DIR = Path("/data/scons_cache" if TICI else "/tmp/scons_cache")
 
-TOTAL_SCONS_NODES = 2160
+TOTAL_SCONS_NODES = 2405
 MAX_BUILD_PROGRESS = 100
 PREBUILT = os.path.exists(os.path.join(BASEDIR, 'prebuilt'))
 
@@ -35,7 +34,6 @@ def build(spinner: Spinner, dirty: bool = False) -> None:
 
   compile_output = []
 
-  start = time.time()
   # Read progress from stderr and update spinner
   while scons.poll() is None:
     try:
@@ -43,19 +41,14 @@ def build(spinner: Spinner, dirty: bool = False) -> None:
       if line is None:
         continue
       line = line.rstrip()
+
       prefix = b'progress: '
-      elapsed = time.time() - start
-      elapsed_time = str(datetime.timedelta(seconds=elapsed))
-      elapsed_out = elapsed_time[2:7]
-      i = 0
       if line.startswith(prefix):
         i = int(line[len(prefix):])
+        spinner.update_progress(MAX_BUILD_PROGRESS * min(1., i / TOTAL_SCONS_NODES), 100.)
       elif len(line):
         compile_output.append(line)
         print(line.decode('utf8', 'replace'))
-      scons_node = str(i) + " / " + str(TOTAL_SCONS_NODES)
-      str_out = "Elapsed: " + str(elapsed_out) + "            Nodes: " + str(scons_node)
-      spinner.update(str_out)
     except Exception:
       pass
 
@@ -106,5 +99,5 @@ def build(spinner: Spinner, dirty: bool = False) -> None:
 
 if __name__ == "__main__" and not PREBUILT:
   spinner = Spinner()
-  spinner.update("Openpilot starting...")
+  spinner.update_progress(0, 100)
   build(spinner, is_dirty())

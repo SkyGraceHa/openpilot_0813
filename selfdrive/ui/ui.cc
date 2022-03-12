@@ -272,12 +272,13 @@ static void update_state(UIState *s) {
     scene.liveMapData.oturnSpeedLimitEndDistance = lmap_data.getTurnSpeedLimitEndDistance();
     scene.liveMapData.oturnSpeedLimitSign = lmap_data.getTurnSpeedLimitSign();
   }
-  if ((!scene.started || s->is_OpenpilotViewEnabled) && sm.updated("sensorEvents")) {
+  if ((!scene.started || s->is_OpenpilotViewEnabled || scene.cal_view) && sm.updated("sensorEvents")) {
     for (auto sensor : sm["sensorEvents"].getSensorEvents()) {
       if (sensor.which() == cereal::SensorEventData::ACCELERATION) {
         auto accel = sensor.getAcceleration().getV();
         if (accel.totalSize().wordCount) { // TODO: sometimes empty lists are received. Figure out why
           scene.accel_sensor = accel[2];
+          // opkr
           scene.accel_prob[0] = atan(accel[2]/accel[0]) * (180 / M_PI); // back and forth
           scene.accel_prob[1] = atan(accel[1]/accel[0]) * (180 / M_PI); // right and left
         }

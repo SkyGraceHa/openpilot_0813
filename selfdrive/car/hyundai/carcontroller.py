@@ -226,11 +226,13 @@ class CarController():
     self.steer_rate_limited = new_steer != apply_steer
 
     # disable when temp fault is active, or below LKA minimum speed
-    if self.opkr_maxanglelimit >= 90 and not self.steer_wind_down_enabled:
+    if self.opkr_maxanglelimit == 90 and not self.steer_wind_down_enabled:
       lkas_active = c.active and abs(CS.out.steeringAngleDeg) < self.opkr_maxanglelimit and CS.out.gearShifter == GearShifter.drive
+    elif self.opkr_maxanglelimit > 90 and not self.steer_wind_down_enabled:
+      str_angle_limit = interp(CS.out.vEgo * CV.MS_TO_KPH, [0, 20], [self.opkr_maxanglelimit+60, self.opkr_maxanglelimit])
+      lkas_active = c.active and abs(CS.out.steeringAngleDeg) < str_angle_limit and CS.out.gearShifter == GearShifter.drive
     else:
       lkas_active = c.active and not CS.out.steerFaultTemporary and CS.out.gearShifter == GearShifter.drive
-
 
     if (( CS.out.leftBlinker and not CS.out.rightBlinker) or ( CS.out.rightBlinker and not CS.out.leftBlinker)) and CS.out.vEgo < LANE_CHANGE_SPEED_MIN and self.opkr_turnsteeringdisable:
       self.lanechange_manual_timer = 50
