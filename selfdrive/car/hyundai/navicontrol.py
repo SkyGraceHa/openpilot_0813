@@ -2,7 +2,7 @@
 import math
 import numpy as np
 
-from selfdrive.config import Conversions as CV
+from common.conversions import Conversions as CV
 from selfdrive.car.hyundai.values import Buttons
 from common.numpy_fast import clip, interp
 from cereal import log
