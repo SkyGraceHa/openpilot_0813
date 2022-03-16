@@ -618,6 +618,13 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
       AlertStatus.normal, AlertSize.full,
       Priority.LOW, VisualAlert.none, AudibleAlert.promptRepeat, .1),
   },
+  EventName.routineDriveOn: {
+    ET.WARNING: Alert(
+      "Driving as Routine",
+      "",
+      AlertStatus.normal, AlertSize.small,
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, 1.),
+  },
 
   # ********** events that affect controls state transitions **********
 

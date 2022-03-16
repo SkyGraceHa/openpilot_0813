@@ -49,12 +49,16 @@ class LanePlanner:
     self.left_curv_offset = int(Params().get("LeftCurvOffsetAdj", encoding="utf8"))
     self.right_curv_offset = int(Params().get("RightCurvOffsetAdj", encoding="utf8"))
 
+    self.drive_routine_on = Params().get_bool("RoutineDriveOn")
+
     self.lp_timer = 0
     self.lp_timer2 = 0
 
   def parse_model(self, md, sm, v_ego):
     curvature = sm['controlsState'].curvature
     mode_select = sm['carState'].cruiseState.modeSel
+    if self.drive_routine_on:
+      current_road_name = sm['liveMapData'].currentRoadName
     Curv = round(curvature, 4)
     # right lane is minus
     lane_differ = round(abs(self.lll_y[0] + self.rll_y[0]), 2)
@@ -87,6 +91,7 @@ class LanePlanner:
     self.lp_timer += DT_MDL
     if self.lp_timer > 1.0:
       self.lp_timer = 0.0
+      self.drive_routine_on = Params().get_bool("RoutineDriveOn")
       if Params().get_bool("OpkrLiveTunePanelEnable"):
         self.camera_offset = -(float(Decimal(Params().get("CameraOffsetAdj", encoding="utf8")) * Decimal('0.001')))
 

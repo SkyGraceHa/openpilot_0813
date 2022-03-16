@@ -271,6 +271,7 @@ static void update_state(UIState *s) {
     scene.liveMapData.oturnSpeedLimit = lmap_data.getTurnSpeedLimit();
     scene.liveMapData.oturnSpeedLimitEndDistance = lmap_data.getTurnSpeedLimitEndDistance();
     scene.liveMapData.oturnSpeedLimitSign = lmap_data.getTurnSpeedLimitSign();
+    scene.liveMapData.ocurrentRoadName = lmap_data.getCurrentRoadName();
   }
   if ((!scene.started || s->is_OpenpilotViewEnabled || scene.cal_view) && sm.updated("sensorEvents")) {
     for (auto sensor : sm["sensorEvents"].getSensorEvents()) {

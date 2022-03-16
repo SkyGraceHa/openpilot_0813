@@ -324,6 +324,7 @@ typedef struct UIScene {
     float oturnSpeedLimit;
     float oturnSpeedLimitEndDistance;
     int oturnSpeedLimitSign;
+    std::string ocurrentRoadName;
     //float turnSpeedLimitsAhead[16]; // List
     //float turnSpeedLimitsAheadDistances[16]; // List
     //int turnSpeedLimitsAheadSigns[16]; // List

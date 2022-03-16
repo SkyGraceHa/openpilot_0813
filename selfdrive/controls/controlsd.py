@@ -596,7 +596,7 @@ class Controls:
       if abs(output_scale) >= self.CP.steerMaxV[0] and CS.vEgo > 8 and not CS.steeringPressed:
         self.mpc_frame_sr += 1
         if self.mpc_frame_sr > 20:
-          self.new_steerRatio_prev = interp(CS.steeringAngleDeg, self.steer_angle_range, self.steerRatio_range)
+          self.new_steerRatio_prev = interp(abs(CS.steeringAngleDeg), self.steer_angle_range, self.steerRatio_range)
           if self.new_steerRatio_prev > self.new_steerRatio:
             self.new_steerRatio = self.new_steerRatio_prev
       else:
