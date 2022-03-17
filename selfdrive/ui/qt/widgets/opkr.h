@@ -556,6 +556,18 @@ public:
   }
 };
 
+class OSMEnabledToggle : public ToggleControl {
+  Q_OBJECT
+
+public:
+  OSMEnabledToggle() : ToggleControl("Enable OSM", "This enables OSM.", "../assets/offroad/icon_shell.png", Params().getBool("OSMEnable")) {
+    QObject::connect(this, &OSMEnabledToggle::toggleFlipped, [=](int state) {
+      bool status = state ? true : false;
+      Params().putBool("OSMEnable", status);
+    });
+  }
+};
+
 class OSMSpeedLimitEnabledToggle : public ToggleControl {
   Q_OBJECT
 

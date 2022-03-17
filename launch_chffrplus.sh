@@ -212,14 +212,17 @@ function launch {
 
   # start manager  
   cd selfdrive/manager
+  if [ -f "/data/params/d/OSMEnable" ]; then
+    OSM_ENABLE=$(cat /data/params/d/OSMEnable)
+  fi
   if [ -f "/data/params/d/OSMSpeedLimitEnable" ]; then
-    OSM_ENABLE=$(cat /data/params/d/OSMSpeedLimitEnable)
+    OSM_SL_ENABLE=$(cat /data/params/d/OSMSpeedLimitEnable)
   fi
   if [ -f "/data/params/d/CurvDecelOption" ]; then
     OSM_CURV_ENABLE=$(cat /data/params/d/CurvDecelOption)
   fi
   if [ -f /EON ]; then
-    if [ "$OSM_ENABLE" == "1" ] || [ "$OSM_CURV_ENABLE" == "1" ] || [ "$OSM_CURV_ENABLE" == "3" ]; then
+    if [ "$OSM_ENABLE" == "1" ] || [ "$OSM_SL_ENABLE" == "1" ] || [ "$OSM_CURV_ENABLE" == "1" ] || [ "$OSM_CURV_ENABLE" == "3" ]; then
       if [ ! -f "/system/comma/usr/lib/libgfortran.so.5.0.0" ]; then
         sleep 3
         mount -o remount,rw /system

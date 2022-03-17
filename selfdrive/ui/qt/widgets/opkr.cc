@@ -5987,8 +5987,8 @@ DesiredCurvatureLimit::DesiredCurvatureLimit() : AbstractControl("DesiredCurvatu
     auto str = QString::fromStdString(params.get("DesiredCurvatureLimit"));
     int value = str.toInt();
     value = value + (digit*100);
-    if (value >= 1000) {
-      value = 1000;
+    if (value >= 2000) {
+      value = 2000;
     }
     QString values = QString::number(value);
     params.put("DesiredCurvatureLimit", values.toStdString());

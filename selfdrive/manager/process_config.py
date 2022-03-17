@@ -8,7 +8,7 @@ WEBCAM = os.getenv("USE_WEBCAM") is not None
 
 EnableLogger = Params().get_bool('OpkrEnableLogger')
 EnableUploader = Params().get_bool('OpkrEnableUploader')
-EnableOSM = Params().get_bool('OSMSpeedLimitEnable') or Params().get("CurvDecelOption", encoding="utf8") == "1" or Params().get("CurvDecelOption", encoding="utf8") == "3"
+EnableOSM = Params().get_bool('OSMEnable') or Params().get_bool('OSMSpeedLimitEnable') or Params().get("CurvDecelOption", encoding="utf8") == "1" or Params().get("CurvDecelOption", encoding="utf8") == "3"
 EnableMapbox = Params().get_bool('MapboxEnabled')
 EnableShutdownD = Params().get_bool('C2WithCommaPower')
 

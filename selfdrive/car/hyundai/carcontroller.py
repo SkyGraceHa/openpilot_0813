@@ -255,7 +255,7 @@ class CarController():
       if self.driver_steering_torque_above_timer <= 0:
         self.driver_steering_torque_above_timer = 0
     elif self.driver_steering_torque_above == False:
-      self.driver_steering_torque_above_timer += 5
+      self.driver_steering_torque_above_timer += 1 #5 좀 더 천천히 올라가게
       if self.driver_steering_torque_above_timer >= 100:
         self.driver_steering_torque_above_timer = 100
 
