@@ -676,6 +676,18 @@ public:
   }
 };
 
+class CustomTRToggle : public ToggleControl {
+  Q_OBJECT
+
+public:
+  CustomTRToggle() : ToggleControl("Custom TR Enable", "to use Custom TR not 1.45(comma default).", "../assets/offroad/icon_shell.png", Params().getBool("CustomTREnabled")) {
+    QObject::connect(this, &CustomTRToggle::toggleFlipped, [=](int state) {
+      bool status = state ? true : false;
+      Params().putBool("CustomTREnabled", status);
+    });
+  }
+};
+
 // openpilot preview
 class OpenpilotView : public AbstractControl {
   Q_OBJECT
@@ -1655,11 +1667,11 @@ private:
   void refresh4();
 };
 
-class DynamicTR : public AbstractControl {
+class DynamicTRGap : public AbstractControl {
   Q_OBJECT
 
 public:
-  DynamicTR();
+  DynamicTRGap();
 
 private:
   QPushButton btnplus;
@@ -2016,5 +2028,20 @@ private:
   Params params;
   float digit = 0.01;
   
+  void refresh();
+};
+
+class DynamicTRBySpeed : public AbstractControl {
+  Q_OBJECT
+
+public:
+  DynamicTRBySpeed();
+
+private:
+  QPushButton btn;
+  QLineEdit edit1;
+  QLineEdit edit2;
+  Params params;
+
   void refresh();
 };

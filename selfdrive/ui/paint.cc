@@ -449,7 +449,7 @@ static void ui_draw_debug(UIState *s) {
   }
 
   
-  nvgFillColor(s->vg, COLOR_WHITE_ALPHA(125));
+  nvgFillColor(s->vg, COLOR_WHITE_ALPHA(150));
   if (scene.nDebugUi2) {
     //if (scene.gpsAccuracyUblox != 0.00) {
     //  nvgFontSize(s->vg, 34);
@@ -470,8 +470,8 @@ static void ui_draw_debug(UIState *s) {
     ui_print(s, ui_viz_rx, ui_viz_ry+400, "SC:%.2f", scene.lateralPlan.steerRateCost);
     ui_print(s, ui_viz_rx, ui_viz_ry+440, "OS:%.2f", abs(scene.output_scale));
     // ui_print(s, ui_viz_rx, ui_viz_ry+480, "← %.2f  %.2f →", scene.lateralPlan.lProb, scene.lateralPlan.rProb);
-    ui_print(s, ui_viz_rx, ui_viz_ry+480, "<-%4.1f  %4.1f->", scene.lateralPlan.lProb*100, scene.lateralPlan.rProb*100);
-    ui_print(s, ui_viz_rx, ui_viz_ry+520, "<>%4.1f  %3.1fm", scene.lateralPlan.dProb*100, scene.lateralPlan.laneWidth); // High dProb is more related to LaneLine, Low is Laneless
+    ui_print(s, ui_viz_rx, ui_viz_ry+480, "%4.1f | %4.1f", scene.lateralPlan.lProb*100, scene.lateralPlan.rProb*100);
+    ui_print(s, ui_viz_rx, ui_viz_ry+520, "%4.1f / %3.1fm", scene.lateralPlan.dProb*100, scene.lateralPlan.laneWidth); // High dProb is more related to LaneLine, Low is Laneless
     // const std::string stateStrings[] = {"disabled", "preEnabled", "enabled", "softDisabling"};
     // ui_print(s, ui_viz_rx, ui_viz_ry+520, "%s", stateStrings[(int)(*s->sm)["controlsState"].getControlsState().getState()].c_str());
     //ui_print(s, ui_viz_rx, ui_viz_ry+800, "A:%.5f", scene.accel_sensor2);
@@ -492,16 +492,18 @@ static void ui_draw_debug(UIState *s) {
       ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+360, "TSL:%.0f", scene.liveMapData.oturnSpeedLimit);
       ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+400, "TSLED:%.0f", scene.liveMapData.oturnSpeedLimitEndDistance);
       ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+440, "TSLS:%d", scene.liveMapData.oturnSpeedLimitSign);
-      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+480, "%s", scene.liveMapData.ocurrentRoadName.c_str());
+      // ui_draw_text(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+480, scene.liveMapData.ocurrentRoadName.c_str(), 34, COLOR_WHITE_ALPHA(200), "KaiGenGothicKR-Medium");
     }
-    nvgFontSize(s->vg, 50);
     nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
     if (scene.lateralControlMethod == 0) {
-      ui_print(s, ui_viz_rx_center, bdr_s+295, "PID");
+      ui_draw_text(s, ui_viz_rx_center, bdr_s+310, "PID", 60, COLOR_YELLOW_ALPHA(200), "sans-bold");
     } else if (scene.lateralControlMethod == 1) {
-      ui_print(s, ui_viz_rx_center, bdr_s+295, "INDI");
+      ui_draw_text(s, ui_viz_rx_center, bdr_s+310, "INDI", 60, COLOR_YELLOW_ALPHA(200), "sans-bold");
     } else if (scene.lateralControlMethod == 2) {
-      ui_print(s, ui_viz_rx_center, bdr_s+295, "LQR");
+      ui_draw_text(s, ui_viz_rx_center, bdr_s+310, "LQR", 60, COLOR_YELLOW_ALPHA(200), "sans-bold");
+    }
+    if (scene.osm_enabled && !scene.mapbox_running) {  
+      ui_draw_text(s, ui_viz_rx_center, ui_viz_ry+700, scene.liveMapData.ocurrentRoadName.c_str(), 50, COLOR_ORANGE_ALPHA(250), "KaiGenGothicKR-Medium");
     }
   }
   if (scene.cal_view) {
@@ -630,12 +632,12 @@ static void ui_draw_center_wheel(UIState *s) {
   if (s->scene.controls_state.getEnabled() || s->scene.comma_stock_ui) {
     float angleSteers = s->scene.car_state.getSteeringAngleDeg();
     if (s->scene.controlAllowed) {
-      ui_draw_circle_image_rotation(s, wheel_x, wheel_y, wheel_size, "center_wheel", nvg_color, 0.9f, angleSteers);
+      ui_draw_circle_image_rotation(s, wheel_x, wheel_y, wheel_size, "center_wheel", nvg_color, 0.7f, angleSteers);
     } else {
-      ui_draw_circle_image_rotation(s, wheel_x, wheel_y, wheel_size, "center_wheel", nvgRGBA(0x17, 0x33, 0x49, 0xc8), 0.9f, angleSteers);
+      ui_draw_circle_image_rotation(s, wheel_x, wheel_y, wheel_size, "center_wheel", nvgRGBA(0x17, 0x33, 0x49, 0xc8), 0.7f, angleSteers);
     }
   } else {
-    ui_draw_circle_image_rotation(s, wheel_x, wheel_y, wheel_size, "center_wheel", nvg_color, 0.9f);
+    ui_draw_circle_image_rotation(s, wheel_x, wheel_y, wheel_size, "center_wheel", nvg_color, 0.7f);
   }
 }
 
@@ -1562,10 +1564,10 @@ static void ui_draw_blindspot_mon(UIState *s) {
       if (scene.blindspot_blinkingrate < 0) scene.blindspot_blinkingrate = 120;
       if (scene.blindspot_blinkingrate >= 60) {
         car_valid_alpha1 = 230;
-        car_valid_alpha2 = 0;
+        car_valid_alpha2 = 30;
       } else {
-        car_valid_alpha1 = 50;
-        car_valid_alpha2 = 0;
+        car_valid_alpha1 = 80;
+        car_valid_alpha2 = 10;
       }
     } else {
       scene.blindspot_blinkingrate = 120;
@@ -1859,6 +1861,9 @@ void ui_nvg_init(UIState *s) {
       {"sans-regular", "../assets/fonts/opensans_regular.ttf"},
       {"sans-semibold", "../assets/fonts/opensans_semibold.ttf"},
       {"sans-bold", "../assets/fonts/opensans_bold.ttf"},
+      {"KaiGenGothicKR-Normal", "../assets/addon/font/KaiGenGothicKR-Normal.ttf"},
+      {"KaiGenGothicKR-Medium", "../assets/addon/font/KaiGenGothicKR-Medium.ttf"},
+      {"KaiGenGothicKR-Bold", "../assets/addon/font/KaiGenGothicKR-Bold.ttf"},
   };
   for (auto [name, file] : fonts) {
     int font_id = nvgCreateFont(s->vg, name, file);

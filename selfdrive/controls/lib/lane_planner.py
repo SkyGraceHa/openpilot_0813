@@ -16,7 +16,7 @@ TRAJECTORY_SIZE = 33
 PATH_OFFSET = -(float(Decimal(Params().get("PathOffsetAdj", encoding="utf8")) * Decimal('0.001')))  # default 0.0
 if EON:
   CAMERA_OFFSET = -(float(Decimal(Params().get("CameraOffsetAdj", encoding="utf8")) * Decimal('0.001')))  # m from center car to camera
-  CAMERA_OFFSET_A = CAMERA_OFFSET + 0.2
+  CAMERA_OFFSET_A = CAMERA_OFFSET + 0.15
 elif TICI:
   CAMERA_OFFSET = 0.04
 else:
@@ -64,7 +64,7 @@ class LanePlanner:
     lane_differ = round(abs(self.lll_y[0] + self.rll_y[0]), 2)
     lean_offset = 0
     if int(mode_select) == 4:
-      lean_offset = 0.2
+      lean_offset = 0.15
     else:
       lean_offset = 0
 

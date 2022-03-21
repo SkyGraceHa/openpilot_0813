@@ -7,6 +7,7 @@ from common.numpy_fast import clip, interp
 from selfdrive.swaglog import cloudlog
 from selfdrive.modeld.constants import index_function
 from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
+from selfdrive.config import Conversions as CV
 
 if __name__ == '__main__':  # generating code
   from pyextra.acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
@@ -209,9 +210,14 @@ class LongitudinalMpc:
     self.cruise_gap3 = float(Decimal(Params().get("CruiseGap3", encoding="utf8")) * Decimal('0.1'))
     self.cruise_gap4 = float(Decimal(Params().get("CruiseGap4", encoding="utf8")) * Decimal('0.1'))
 
-    self.dynamic_TR_mode = int(Params().get("DynamicTR", encoding="utf8"))
+    self.dynamic_tr_spd = list(map(float, Params().get("DynamicTRSpd", encoding="utf8").split(',')))
+    self.dynamic_tr_set = list(map(float, Params().get("DynamicTRSet", encoding="utf8").split(',')))
 
-    self.radar_helper = int(Params().get("RadarLongHelper", encoding="utf8"))
+    self.dynamic_TR_mode = int(Params().get("DynamicTRGap", encoding="utf8"))
+
+    self.custom_tr_enabled = Params().get_bool("CustomTREnabled")
+
+    self.ms_to_spd = CV.MS_TO_KPH if Params().get_bool("IsMetric") else CV.MS_TO_MPH
 
     self.lo_timer = 0 
 
@@ -336,18 +342,17 @@ class LongitudinalMpc:
     if self.lo_timer > 200:
       self.lo_timer = 0
       self.e2e = Params().get_bool("E2ELong")
-      self.dynamic_TR_mode = int(Params().get("DynamicTR", encoding="utf8"))
-      self.radar_helper = int(Params().get("RadarLongHelper", encoding="utf8"))
+      self.dynamic_TR_mode = int(Params().get("DynamicTRGap", encoding="utf8"))
+      self.custom_tr_enabled = Params().get_bool("CustomTREnabled")
 
     self.status = radarstate.leadOne.status or radarstate.leadTwo.status
 
     lead_xv_0 = self.process_lead(radarstate.leadOne)
     lead_xv_1 = self.process_lead(radarstate.leadTwo)
 
-    if self.radar_helper not in (2, 3):
+    if self.custom_tr_enabled:
       cruise_gap = int(clip(carstate.cruiseGapSet, 1., 4.))
-      self.dynamic_TR = interp(self.v_ego*3.6, [0, 20, 40, 60, 110], [1.1, 1.25, 1.4, 1.5, 1.6] )
-      self.TR = interp(float(cruise_gap), [1., 2., 3., 4.], [self.cruise_gap1, self.cruise_gap2, self.cruise_gap3, self.cruise_gap4])
+      self.dynamic_TR = interp(self.v_ego*self.ms_to_spd, self.dynamic_tr_spd, self.dynamic_tr_set)
       if self.dynamic_TR_mode == 1:
         self.TR = interp(float(cruise_gap), [1., 2., 3., 4.], [self.dynamic_TR, self.cruise_gap2, self.cruise_gap3, self.cruise_gap4])
       elif self.dynamic_TR_mode == 2:
@@ -357,7 +362,7 @@ class LongitudinalMpc:
       elif self.dynamic_TR_mode == 4:
         self.TR = interp(float(cruise_gap), [1., 2., 3., 4.], [self.cruise_gap1, self.cruise_gap2, self.cruise_gap3, self.dynamic_TR])
       else:
-        self.TR = 1.45
+        self.TR = interp(float(cruise_gap), [1., 2., 3., 4.], [self.cruise_gap1, self.cruise_gap2, self.cruise_gap3, self.cruise_gap4])
     else:
       self.TR = 1.45
 
