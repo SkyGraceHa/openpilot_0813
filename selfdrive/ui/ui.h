@@ -220,8 +220,7 @@ typedef struct UIScene {
   int indiInnerLoopGain, indiOuterLoopGain, indiTimeConstant, indiActuatorEffectiveness;
   int lqrScale, lqrKi, lqrDcGain;
   bool live_tune_panel_enable;
-  bool kr_date_show;
-  bool kr_time_show;
+  int top_text_view;
   int live_tune_panel_list = 0;
   int list_count = 3;
   int nTime, autoScreenOff, brightness, awake;

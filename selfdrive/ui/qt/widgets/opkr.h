@@ -445,40 +445,6 @@ public:
   }
 };
 
-class KRDateToggle : public ToggleControl {
-  Q_OBJECT
-
-public:
-  KRDateToggle() : ToggleControl("Display Date on Screen", "Display the current date on the driving screen.", "../assets/offroad/icon_shell.png", Params().getBool("KRDateShow")) {
-    QObject::connect(this, &KRDateToggle::toggleFlipped, [=](int state) {
-      bool status = state ? true : false;
-      Params().putBool("KRDateShow", status);
-      if (state) {
-        QUIState::ui_state.scene.kr_date_show = true;
-      } else {
-        QUIState::ui_state.scene.kr_date_show = false;
-      }
-    });
-  }
-};
-
-class KRTimeToggle : public ToggleControl {
-  Q_OBJECT
-
-public:
-  KRTimeToggle() : ToggleControl("Display Time on Screen", "Display the current time on the driving screen.", "../assets/offroad/icon_shell.png", Params().getBool("KRTimeShow")) {
-    QObject::connect(this, &KRTimeToggle::toggleFlipped, [=](int state) {
-      bool status = state ? true : false;
-      Params().putBool("KRTimeShow", status);
-      if (state) {
-        QUIState::ui_state.scene.kr_time_show = true;
-      } else {
-        QUIState::ui_state.scene.kr_time_show = false;
-      }
-    });
-  }
-};
-
 class GitPullOnBootToggle : public ToggleControl {
   Q_OBJECT
 
@@ -684,6 +650,18 @@ public:
     QObject::connect(this, &CustomTRToggle::toggleFlipped, [=](int state) {
       bool status = state ? true : false;
       Params().putBool("CustomTREnabled", status);
+    });
+  }
+};
+
+class RoutineDriveOnToggle : public ToggleControl {
+  Q_OBJECT
+
+public:
+  RoutineDriveOnToggle() : ToggleControl("Routine Drive by RoadName", "This will adjust the camera offset(for now) by roadname. If you want to use, edit the file, /data/params/d/RoadList. modify like this RoadName1,offset1(ex:+0.05),RoadName2,offset2(ex:-0.05),...", "../assets/offroad/icon_shell.png", Params().getBool("RoutineDriveOn")) {
+    QObject::connect(this, &RoutineDriveOnToggle::toggleFlipped, [=](int state) {
+      bool status = state ? true : false;
+      Params().putBool("RoutineDriveOn", status);
     });
   }
 };
@@ -1682,6 +1660,13 @@ private:
   void refresh();
 };
 
+class DynamicTRUD : public AbstractControl {
+  Q_OBJECT
+
+public:
+  DynamicTRUD();
+};
+
 class LCTimingFactor : public AbstractControl {
   Q_OBJECT
 
@@ -1799,6 +1784,13 @@ private:
   void refresh();
 };
 
+class VCurvSpeedUD : public AbstractControl {
+  Q_OBJECT
+
+public:
+  VCurvSpeedUD();
+};
+
 class VCurvSpeed : public AbstractControl {
   Q_OBJECT
 
@@ -1814,11 +1806,11 @@ private:
   void refresh();
 };
 
-class VCurvSpeedUD : public AbstractControl {
+class OCurvSpeedUD : public AbstractControl {
   Q_OBJECT
 
 public:
-  VCurvSpeedUD();
+  OCurvSpeedUD();
 };
 
 class OCurvSpeed : public AbstractControl {
@@ -1834,13 +1826,6 @@ private:
   Params params;
 
   void refresh();
-};
-
-class OCurvSpeedUD : public AbstractControl {
-  Q_OBJECT
-
-public:
-  OCurvSpeedUD();
 };
 
 class GetOffAlert : public AbstractControl {
@@ -1992,6 +1977,13 @@ private:
   void refresh();
 };
 
+class OSMCustomSpeedLimitUD : public AbstractControl {
+  Q_OBJECT
+
+public:
+  OSMCustomSpeedLimitUD();
+};
+
 class OSMCustomSpeedLimit : public AbstractControl {
   Q_OBJECT
 
@@ -2005,13 +1997,6 @@ private:
   Params params;
 
   void refresh();
-};
-
-class OSMCustomSpeedLimitUD : public AbstractControl {
-  Q_OBJECT
-
-public:
-  OSMCustomSpeedLimitUD();
 };
 
 class DesiredCurvatureLimit : public AbstractControl {
@@ -2043,5 +2028,57 @@ private:
   QLineEdit edit2;
   Params params;
 
+  void refresh();
+};
+
+class LaneWidth : public AbstractControl {
+  Q_OBJECT
+
+public:
+  LaneWidth();
+
+private:
+  QPushButton btnplus;
+  QPushButton btnminus;
+  QLabel label;
+  Params params;
+  
+  void refresh();
+};
+
+class SpeedLaneWidthUD : public AbstractControl {
+  Q_OBJECT
+
+public:
+  SpeedLaneWidthUD();
+};
+
+class SpeedLaneWidth : public AbstractControl {
+  Q_OBJECT
+
+public:
+  SpeedLaneWidth();
+
+private:
+  QPushButton btn;
+  QLineEdit edit1;
+  QLineEdit edit2;
+  Params params;
+
+  void refresh();
+};
+
+class OPKRTopTextView : public AbstractControl {
+  Q_OBJECT
+
+public:
+  OPKRTopTextView();
+
+private:
+  QPushButton btnplus;
+  QPushButton btnminus;
+  QLabel label;
+  Params params;
+  
   void refresh();
 };

@@ -433,8 +433,7 @@ static void update_status(UIState *s) {
     s->scene.navi_select = std::stoi(params.get("OPKRNaviSelect"));
     s->scene.radar_long_helper = std::stoi(params.get("RadarLongHelper"));
     s->scene.live_tune_panel_enable = params.getBool("OpkrLiveTunePanelEnable");
-    s->scene.kr_date_show = params.getBool("KRDateShow");
-    s->scene.kr_time_show = params.getBool("KRTimeShow");
+    s->scene.top_text_view = std::stoi(params.get("TopTextView"));
     s->scene.steer_wind_down = params.getBool("SteerWindDown");
     s->scene.show_error = params.getBool("ShowError");
     s->scene.limitSCOffsetOption = params.getBool("OpkrSpeedLimitOffsetOption");

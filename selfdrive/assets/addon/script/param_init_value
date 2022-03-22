@@ -118,4 +118,6 @@ AutoRESDelay:0
 UseRadarTrack:0
 RadarDisable:0
 DesiredCurvatureLimit:5
-C2WithCommaPower:0
+LaneWidth:3.7
+SpdLaneWidthSpd:0,31
+SpdLaneWidthSet:2.8,3.5

@@ -4926,6 +4926,9 @@ void LiveSRPercent::refresh() {
   btnplus.setText("+");
 }
 
+VCurvSpeedUD::VCurvSpeedUD() : AbstractControl("VisionCurvDecel([CV] [TargetSpeed])", "Adjust the curve deceleration speed according to the model speed(curvature). (interpolation and list value)", "../assets/offroad/icon_shell.png") {
+}
+
 VCurvSpeed::VCurvSpeed() : AbstractControl("", "", "") {
   btn.setStyleSheet(R"(
     padding: -10;
@@ -4993,7 +4996,7 @@ void VCurvSpeed::refresh() {
   btn.setText("EDIT");
 }
 
-VCurvSpeedUD::VCurvSpeedUD() : AbstractControl("VisionCurvDecel([CVs] [TargetSpeeds])", "Adjust the curve deceleration speed according to the model speed(curvature). (interpolation and list value)", "../assets/offroad/icon_shell.png") {
+OCurvSpeedUD::OCurvSpeedUD() : AbstractControl("OSMCurvDecel([TSL] [TargetSpeed])", "Adjust the curve deceleration speed according to turn speed limit of OSM. (interpolation value)", "../assets/offroad/icon_shell.png") {
 }
 
 OCurvSpeed::OCurvSpeed() : AbstractControl("", "", "") {
@@ -5061,9 +5064,6 @@ void OCurvSpeed::refresh() {
   edit1.setText(QString::fromStdString(strs1.toStdString()));
   edit2.setText(QString::fromStdString(strs2.toStdString()));
   btn.setText("EDIT");
-}
-
-OCurvSpeedUD::OCurvSpeedUD() : AbstractControl("OSMCurvDecel([TSL] [TargetSpeed])", "Adjust the curve deceleration speed according to turn speed limit of OSM. (interpolation value)", "../assets/offroad/icon_shell.png") {
 }
 
 GetOffAlert::GetOffAlert() : AbstractControl("EON Detach Alert Sound", "Device alert you a alarm to detach the EON when ignition off.(NO Alert/KOR/ENG)", "../assets/offroad/icon_shell.png") {
@@ -5837,6 +5837,9 @@ void AutoRESDelay::refresh() {
   btnplus.setText("+");
 }
 
+OSMCustomSpeedLimitUD::OSMCustomSpeedLimitUD() : AbstractControl("OSMCustomSpeedLimit([SL] [TargetSpeed])", "Set the offset speed according to speed limit of OSM. (interpolation value)", "../assets/offroad/icon_shell.png") {
+}
+
 OSMCustomSpeedLimit::OSMCustomSpeedLimit() : AbstractControl("", "", "") {
   btn.setStyleSheet(R"(
     padding: -10;
@@ -5904,10 +5907,7 @@ void OSMCustomSpeedLimit::refresh() {
   btn.setText("EDIT");
 }
 
-OSMCustomSpeedLimitUD::OSMCustomSpeedLimitUD() : AbstractControl("OSMCustomSpeedLimit([SL] [TargetSpeed])", "Set the offset speed according to speed limit of OSM. (interpolation value)", "../assets/offroad/icon_shell.png") {
-}
-
-DesiredCurvatureLimit::DesiredCurvatureLimit() : AbstractControl("DesiredCurvatureLimit", "Adjust DisiredCurvatureLimit, Default is 0.05(DT_MDL), For HKG, maybe 1.0~2.0 is preferred from user's experience. If the steering digs into inside on intersection, upper the value. And then it will limit your scope of steering angle. In case of opposite situation, lower the value. this is multiplier of desired curvature rate not real limit value.", "../assets/offroad/icon_shell.png") {
+DesiredCurvatureLimit::DesiredCurvatureLimit() : AbstractControl("DesiredCurvatureLimit", "Adjust DisiredCurvatureLimit, Default is 0.05(DT_MDL), For HKG, maybe 1.0~ is preferred from user's experience. If the steering digs into inside on intersection, upper the value. And then it will limit your scope of steering angle. In case of opposite situation, lower the value. this is multiplier of desired curvature rate not real limit value.", "../assets/offroad/icon_shell.png") {
 
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
   label.setStyleSheet("color: #e0e879");
@@ -6005,6 +6005,9 @@ void DesiredCurvatureLimit::refresh() {
   label.setText("＊ " + QString::fromStdString(valuefs.toStdString()));
 }
 
+DynamicTRUD::DynamicTRUD() : AbstractControl("DynamicTR: [Speed] [TRs]", "Set TR of each speeds. (Mid range is interpolation values)", "../assets/offroad/icon_shell.png") {
+}
+
 DynamicTRBySpeed::DynamicTRBySpeed() : AbstractControl("", "", "") {
   btn.setStyleSheet(R"(
     padding: -10;
@@ -6070,4 +6073,221 @@ void DynamicTRBySpeed::refresh() {
   edit1.setText(QString::fromStdString(strs1.toStdString()));
   edit2.setText(QString::fromStdString(strs2.toStdString()));
   btn.setText("EDIT");
+}
+
+LaneWidth::LaneWidth() : AbstractControl("Set LaneWidth", "Set LaneWidth (default:3.7)", "../assets/offroad/icon_shell.png") {
+
+  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+  label.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&label);
+
+  btnminus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminus.setFixedSize(150, 100);
+  btnplus.setFixedSize(150, 100);
+  hlayout->addWidget(&btnminus);
+  hlayout->addWidget(&btnplus);
+
+  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("LaneWidth"));
+    int value = str.toInt();
+    value = value - 1;
+    if (value <= 23 ) {
+      value = 23;
+    }
+    QString values = QString::number(value);
+    params.put("LaneWidth", values.toStdString());
+    refresh();
+  });
+  
+  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("LaneWidth"));
+    int value = str.toInt();
+    value = value + 1;
+    if (value >= 40 ) {
+      value = 40;
+    }
+    QString values = QString::number(value);
+    params.put("LaneWidth", values.toStdString());
+    refresh();
+  });
+  refresh();
+}
+
+void LaneWidth::refresh() {
+  auto strs = QString::fromStdString(params.get("LaneWidth"));
+  int valuei = strs.toInt();
+  float valuef = valuei * 0.1;
+  QString valuefs = QString::number(valuef);
+  label.setText(QString::fromStdString(valuefs.toStdString()));
+  btnminus.setText("－");
+  btnplus.setText("＋");
+}
+
+SpeedLaneWidthUD::SpeedLaneWidthUD() : AbstractControl("Speed LaneWidth: [Spd(m/s)] [LaneWidth]", "Set LaneWidths by speed. Speed is m/s values not kph or mph. (Mid range is interpolation values)", "../assets/offroad/icon_shell.png") {
+}
+
+SpeedLaneWidth::SpeedLaneWidth() : AbstractControl("", "", "") {
+  btn.setStyleSheet(R"(
+    padding: -10;
+    border-radius: 35px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  edit1.setStyleSheet(R"(
+    background-color: grey;
+    font-size: 55px;
+    font-weight: 500;
+    height: 120px;
+  )");
+  edit2.setStyleSheet(R"(
+    background-color: grey;
+    font-size: 55px;
+    font-weight: 500;
+    height: 120px;
+  )");
+  btn.setFixedSize(150, 100);
+  edit1.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  edit2.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+
+  hlayout->addWidget(&edit1);
+  hlayout->addWidget(&edit2);
+  hlayout->addWidget(&btn);
+
+  QObject::connect(&btn, &QPushButton::clicked, [=]() {
+    int list_count1 = 0;
+    int list_count2 = 0;
+    QString targetvalue1 = InputDialog::getText("Set Speed(m/s) values with comma", this, "ex) 0,31", false, 1, QString::fromStdString(params.get("SpdLaneWidthSpd")));
+    if (targetvalue1.length() > 0 && targetvalue1 != QString::fromStdString(params.get("SpdLaneWidthSpd"))) {
+      QStringList list1 = targetvalue1.split(",");
+      list_count1 = list1.size();
+      params.put("SpdLaneWidthSpd", targetvalue1.toStdString());
+      refresh();
+    } else {
+      QStringList list1 = QString::fromStdString(params.get("SpdLaneWidthSpd")).split(",");
+      list_count1 = list1.size();
+    }
+    QString targetvalue2 = InputDialog::getText("Set LW(m) values with comma", this, "ex) 2.8,3.5", false, 1, QString::fromStdString(params.get("SpdLaneWidthSet")));
+    if (targetvalue2.length() > 0 && targetvalue2 != QString::fromStdString(params.get("SpdLaneWidthSet"))) {
+      QStringList list2 = targetvalue2.split(",");
+      list_count2 = list2.size();
+      params.put("SpdLaneWidthSet", targetvalue2.toStdString());
+      refresh();
+    } else {
+      QStringList list2 = QString::fromStdString(params.get("SpdLaneWidthSet")).split(",");
+      list_count2 = list2.size();
+    }
+    if (list_count1 != list_count2) {
+      ConfirmationDialog::alert("Index count does not match. Check your input again.", this);
+    }
+  });
+  refresh();
+}
+
+void SpeedLaneWidth::refresh() {
+  auto strs1 = QString::fromStdString(params.get("SpdLaneWidthSpd"));
+  auto strs2 = QString::fromStdString(params.get("SpdLaneWidthSet"));
+  edit1.setText(QString::fromStdString(strs1.toStdString()));
+  edit2.setText(QString::fromStdString(strs2.toStdString()));
+  btn.setText("EDIT");
+}
+
+OPKRTopTextView::OPKRTopTextView() : AbstractControl("Top Text View", "Date/Time/OSM Street Name", "../assets/offroad/icon_shell.png") {
+
+  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+  label.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&label);
+
+  btnminus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminus.setFixedSize(150, 100);
+  btnplus.setFixedSize(150, 100);
+  hlayout->addWidget(&btnminus);
+  hlayout->addWidget(&btnplus);
+
+  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("TopTextView"));
+    int value = str.toInt();
+    value = value - 1;
+    if (value <= -1 ) {
+      value = 7;
+    }
+    QString values = QString::number(value);
+    params.put("TopTextView", values.toStdString());
+    refresh();
+  });
+  
+  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("TopTextView"));
+    int value = str.toInt();
+    value = value + 1;
+    if (value >= 8 ) {
+      value = 0;
+    }
+    QString values = QString::number(value);
+    params.put("TopTextView", values.toStdString());
+    refresh();
+  });
+  refresh();
+}
+
+void OPKRTopTextView::refresh() {
+  QString option = QString::fromStdString(params.get("TopTextView"));
+  if (option == "0") {
+    label.setText(QString::fromStdString("None"));
+    QUIState::ui_state.scene.top_text_view = 0;
+  } else if (option == "1") {
+    label.setText(QString::fromStdString("Date+Time"));
+    QUIState::ui_state.scene.top_text_view = 1;
+  } else if (option == "2") {
+    label.setText(QString::fromStdString("Date"));
+    QUIState::ui_state.scene.top_text_view = 2;
+  } else if (option == "3") {
+    label.setText(QString::fromStdString("Time"));
+    QUIState::ui_state.scene.top_text_view = 3;
+  } else if (option == "4") {
+    label.setText(QString::fromStdString("Date+Time+OSM"));
+    QUIState::ui_state.scene.top_text_view = 4;
+  } else if (option == "5") {
+    label.setText(QString::fromStdString("Date+OSM"));
+    QUIState::ui_state.scene.top_text_view = 5;
+  } else if (option == "6") {
+    label.setText(QString::fromStdString("Time+OSM"));
+    QUIState::ui_state.scene.top_text_view = 6;
+  } else {
+    label.setText(QString::fromStdString("OSM"));
+    QUIState::ui_state.scene.top_text_view = 7;
+  }
+  btnminus.setText("◀");
+  btnplus.setText("▶");
 }

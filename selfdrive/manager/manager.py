@@ -121,7 +121,6 @@ def manager_init() -> None:
     ("RecordingCount", "100"),
     ("RecordingQuality", "1"),
     ("CruiseGapAdjust", "0"),
-    ("DrivingCruiseGapAdjust", "1"),     
     ("AutoEnable", "1"),
     ("CruiseAutoRes", "0"),
     ("AutoResOption", "0"),
@@ -188,6 +187,11 @@ def manager_init() -> None:
     ("DesiredCurvatureLimit", "5"),
     ("C2WithCommaPower", "0"),
     ("CustomTREnabled", "0"),
+    ("RoadList", "RoadName1,+0.0,RoadName2,-0.0"),
+    ("LaneWidth", "37"),
+    ("SpdLaneWidthSpd", "0,31"),
+    ("SpdLaneWidthSet", "2.8,3.5"),
+    ("TopTextView", "0"),
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

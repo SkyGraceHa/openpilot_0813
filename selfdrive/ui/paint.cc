@@ -502,9 +502,6 @@ static void ui_draw_debug(UIState *s) {
     } else if (scene.lateralControlMethod == 2) {
       ui_draw_text(s, ui_viz_rx_center, bdr_s+310, "LQR", 60, COLOR_YELLOW_ALPHA(200), "sans-bold");
     }
-    if (scene.osm_enabled && !scene.mapbox_running) {  
-      ui_draw_text(s, ui_viz_rx_center, ui_viz_ry+700, scene.liveMapData.ocurrentRoadName.c_str(), 50, COLOR_ORANGE_ALPHA(250), "KaiGenGothicKR-Medium");
-    }
   }
   if (scene.cal_view) {
     nvgFontSize(s->vg, 120);
@@ -837,10 +834,7 @@ static void ui_draw_vision_event(UIState *s) {
     } else {
       ui_draw_circle_image_rotation(s, bg_wheel_x, bg_wheel_y+20, bg_wheel_size, "wheel", nvgRGBA(0x17, 0x33, 0x49, 0xc8), 1.0f, angleSteers);
     }
-  } else {
-    if (!s->scene.comma_stock_ui) ui_draw_gear(s);
-  }
-  if (!s->scene.comma_stock_ui) ui_draw_debug(s);
+  } 
 }
 
 static void ui_draw_turn_signal(UIState *s) { // Hoya modified with Neokii code
@@ -1507,14 +1501,13 @@ static void ui_draw_vision_header(UIState *s) {
     ui_draw_gear(s);
     ui_draw_compass(s);
     ui_draw_vision_autohold(s);
-    // ui_draw_vision_brake(s);
     ui_draw_center_wheel(s);
     ui_draw_vision_accel_brake(s);
     ui_draw_tpms(s);
+    draw_safetysign(s);
 
     if (s->scene.controls_state.getEnabled()) {
       ui_draw_standstill(s);
-      draw_safetysign(s);
     }
     if (s->scene.navi_select == 0 || s->scene.navi_select == 1 || s->scene.mapbox_running) {
       draw_navi_button(s);
@@ -1522,6 +1515,7 @@ static void ui_draw_vision_header(UIState *s) {
     if (s->scene.end_to_end) {
       draw_laneless_button(s);
     }
+    ui_draw_debug(s);
   }
 }
 
@@ -1584,12 +1578,12 @@ static void ui_draw_blindspot_mon(UIState *s) {
   }
 }
 
-// draw date/time
-void draw_kr_date_time(UIState *s) {
+// draw date/time/streetname
+void draw_top_text(UIState *s) {
   int rect_w = 600;
-  const int rect_h = 50;
   int rect_x = s->fb_w/2 - rect_w/2;
   const int rect_y = 0;
+  const int rect_h = 65;
   char dayofweek[50];
 
   // Get local time to display
@@ -1612,30 +1606,57 @@ void draw_kr_date_time(UIState *s) {
     strcpy(dayofweek, "SAT");
   }
 
-  if (s->scene.kr_date_show && s->scene.kr_time_show) {
-    snprintf(now,sizeof(now),"%04d-%02d-%02d %s %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, dayofweek, tm.tm_hour, tm.tm_min, tm.tm_sec);
-  } else if (s->scene.kr_date_show) {
-    snprintf(now,sizeof(now),"%04d-%02d-%02d %s", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, dayofweek);
-  } else if (s->scene.kr_time_show) {
+  const std::string road_name = s->scene.liveMapData.ocurrentRoadName;
+  std::string text_out = "";
+  if (s->scene.top_text_view == 1) {
+    snprintf(now,sizeof(now),"%02d-%02d %s %02d:%02d:%02d", tm.tm_mon + 1, tm.tm_mday, dayofweek, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    std::string str(now);
+    text_out = str;
+    rect_w = 650;
+    rect_x = s->fb_w/2 - rect_w/2;
+  } else if (s->scene.top_text_view == 2) {
+    snprintf(now,sizeof(now),"%02d-%02d %s", tm.tm_mon + 1, tm.tm_mday, dayofweek);
+    std::string str(now);
+    text_out = str;
+    rect_w = 400;
+    rect_x = s->fb_w/2 - rect_w/2;
+  } else if (s->scene.top_text_view == 3) {
     snprintf(now,sizeof(now),"%02d:%02d:%02d", tm.tm_hour, tm.tm_min, tm.tm_sec);
+    std::string str(now);
+    text_out = str;
+    rect_w = 300;
+    rect_x = s->fb_w/2 - rect_w/2;
+  } else if (s->scene.top_text_view == 4 && s->scene.osm_enabled) {
+    snprintf(now,sizeof(now),"%02d-%02d %s %02d:%02d:%02d ", tm.tm_mon + 1, tm.tm_mday, dayofweek, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    std::string str(now);
+    text_out = road_name + "  " + str;
+    rect_w = 1450; //1050
+    rect_x = s->fb_w/2 - rect_w/2;
+  } else if (s->scene.top_text_view == 5 && s->scene.osm_enabled) {
+    snprintf(now,sizeof(now),"%02d-%02d %s ", tm.tm_mon + 1, tm.tm_mday, dayofweek);
+    std::string str(now);
+    text_out = road_name + "  " + str;
+    rect_w = 1100; //850;
+    rect_x = s->fb_w/2 - rect_w/2;
+  } else if (s->scene.top_text_view == 6 && s->scene.osm_enabled) {
+    snprintf(now,sizeof(now),"%02d:%02d:%02d ", tm.tm_hour, tm.tm_min, tm.tm_sec);
+    std::string str(now);
+    text_out = road_name + "  " + str;
+    rect_w = 1100; //750;
+    rect_x = s->fb_w/2 - rect_w/2;
+  } else if (s->scene.top_text_view == 7 && s->scene.osm_enabled) {
+    text_out = road_name;
+    rect_w = 900; //500
+    rect_x = s->fb_w/2 - rect_w/2;
   }
-
-  nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
   nvgBeginPath(s->vg);
-  nvgRoundedRect(s->vg, rect_x, rect_y, rect_w, rect_h, 0);
-  nvgFillColor(s->vg, nvgRGBA(0, 0, 0, 0));
-  nvgFill(s->vg);
-  nvgStrokeColor(s->vg, nvgRGBA(255,255,255,0));
+  nvgRoundedRect(s->vg, rect_x, rect_y, rect_w, rect_h, 15);
   nvgStrokeWidth(s->vg, 0);
   nvgStroke(s->vg);
-
-  if (s->scene.mapbox_running) {
-    nvgFontSize(s->vg, 55);
-  } else {
-    nvgFontSize(s->vg, 80);
-  }
-  nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 200));
-  nvgText(s->vg, s->fb_w/2, rect_y, now, NULL);
+  nvgFillColor(s->vg, COLOR_BLACK_ALPHA(60));
+  nvgFill(s->vg);
+  nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
+  ui_draw_text(s, s->fb_w/2, rect_y, text_out.c_str(), s->scene.mapbox_running?37:62, COLOR_WHITE_ALPHA(200), "KaiGenGothicKR-Bold");
 }
 
 // live camera offset adjust by OPKR
@@ -1748,7 +1769,7 @@ static void ui_draw_auto_hold(UIState *s) {
   if (s->scene.steer_warning && (s->scene.car_state.getVEgo() < 0.1 || s->scene.stand_still) && !s->scene.steer_wind_down && s->scene.car_state.getSteeringAngleDeg() < 90) {
     y_pos = 500;
   } else {
-    y_pos = 740;
+    y_pos = 740-140;
   }
   const int width = 500;
   const Rect rect = {s->fb_w/2 - width/2, y_pos, width, 145};
@@ -1796,8 +1817,8 @@ static void ui_draw_vision(UIState *s) {
   if (scene->live_tune_panel_enable) {
     ui_draw_live_tune_panel(s);
   }
-  if ((scene->kr_date_show || scene->kr_time_show) && !scene->comma_stock_ui) {
-    draw_kr_date_time(s);
+  if (scene->top_text_view > 0 && !scene->comma_stock_ui) {
+    draw_top_text(s);
   }
   if (scene->brakeHold && !scene->comma_stock_ui) {
     ui_draw_auto_hold(s);

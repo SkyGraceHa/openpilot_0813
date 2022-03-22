@@ -294,8 +294,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"LCTimingFactorEnable", PERSISTENT},
     {"SafetyCamDecelDistGain", PERSISTENT},
     {"OpkrLiveTunePanelEnable", PERSISTENT},
-    {"KRDateShow", PERSISTENT},
-    {"KRTimeShow", PERSISTENT},
+    {"TopTextView", PERSISTENT},
     {"RadarLongHelper", PERSISTENT},
     {"GitPullOnBoot", PERSISTENT},
     {"LiveSteerRatioPercent", PERSISTENT},
@@ -340,6 +339,10 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"DesiredCurvatureLimit", PERSISTENT},
     {"C2WithCommaPower", PERSISTENT},
     {"RoutineDriveOn", PERSISTENT},
+    {"RoadList", PERSISTENT},
+    {"LaneWidth", PERSISTENT},
+    {"SpdLaneWidthSpd", PERSISTENT},
+    {"SpdLaneWidthSet", PERSISTENT},
 };
 
 } // namespace
