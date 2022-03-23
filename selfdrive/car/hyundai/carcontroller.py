@@ -366,7 +366,7 @@ class CarController():
           self.switch_timer -= 1
           self.standstill_fault_reduce_timer += 1
         # at least 0.1 sec delay after entering the standstill
-        elif 10 < self.standstill_fault_reduce_timer and CS.lead_distance != self.last_lead_distance:
+        elif 10 < self.standstill_fault_reduce_timer and CS.lead_distance != self.last_lead_distance and abs(CS.lead_distance - self.last_lead_distance) > 0.05:
           self.acc_standstill_timer = 0
           self.acc_standstill = False
           if self.standstill_resume_alt: # for D.Fyffe, code from neokii

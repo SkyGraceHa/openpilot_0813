@@ -666,6 +666,18 @@ public:
   }
 };
 
+class CloseToRoadEdgeToggle : public ToggleControl {
+  Q_OBJECT
+
+public:
+  CloseToRoadEdgeToggle() : ToggleControl("Driving Close to RoadEdge", "This will adjust the camera offset to get close to road edge if the car is on the first or last lane.", "../assets/offroad/icon_shell.png", Params().getBool("CloseToRoadEdge")) {
+    QObject::connect(this, &CloseToRoadEdgeToggle::toggleFlipped, [=](int state) {
+      bool status = state ? true : false;
+      Params().putBool("CloseToRoadEdge", status);
+    });
+  }
+};
+
 // openpilot preview
 class OpenpilotView : public AbstractControl {
   Q_OBJECT
