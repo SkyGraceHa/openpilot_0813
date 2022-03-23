@@ -250,6 +250,7 @@ static void update_state(UIState *s) {
     scene.lateralPlan.steerRateCost = lp_data.getSteerRateCost();
     scene.lateralPlan.standstillElapsedTime = lp_data.getStandstillElapsedTime();
     scene.lateralPlan.lanelessModeStatus = lp_data.getLanelessMode();
+    scene.lateralPlan.totalCameraOffset = lp_data.getTotalCameraOffset();
   }
   // opkr
   if (sm.updated("liveNaviData")) {

@@ -212,6 +212,7 @@ class LateralPlanner:
     lateralPlan.vCruiseSet = float(self.v_cruise_kph)
     lateralPlan.vCurvature = float(sm['controlsState'].curvature)
     lateralPlan.lanelessMode = bool(self.laneless_mode_status)
+    lateralPlan.totalCameraOffset = float(self.LP.total_camera_offset)
 
     if self.stand_still:
       self.standstill_elapsed_time += DT_MDL

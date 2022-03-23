@@ -58,12 +58,14 @@ class LanePlanner:
     
     self.sm = messaging.SubMaster(['liveMapData'])
 
+    self.total_camera_offset = self.camera_offset
+
   def parse_model(self, md, sm, v_ego):
     curvature = sm['controlsState'].curvature
     mode_select = sm['carState'].cruiseState.modeSel
     if self.drive_routine_on:
       self.sm.update(0)
-      current_road_offset = self.sm['liveMapData'].roadCameraOffset
+      current_road_offset = -self.sm['liveMapData'].roadCameraOffset
     else:
       current_road_offset = 0.0
 
@@ -80,19 +82,19 @@ class LanePlanner:
       if curvature > 0.0008 and self.left_curv_offset < 0 and lane_differ >= 0: # left curve
         if lane_differ > 0.6:
           lane_differ = 0.6          
-        lean_offset = +round(abs(self.left_curv_offset) * lane_differ * 0.05, 3) # move to left
+        lean_offset = -round(abs(self.left_curv_offset) * lane_differ * 0.05, 3) # move to left
       elif curvature > 0.0008 and self.left_curv_offset > 0 and lane_differ <= 0:
         if lane_differ > 0.6:
           lane_differ = 0.6
-        lean_offset = -round(abs(self.left_curv_offset) * lane_differ * 0.05, 3) # move to right
+        lean_offset = +round(abs(self.left_curv_offset) * lane_differ * 0.05, 3) # move to right
       elif curvature < -0.0008 and self.right_curv_offset < 0 and lane_differ >= 0: # right curve
         if lane_differ > 0.6:
           lane_differ = 0.6    
-        lean_offset = +round(abs(self.right_curv_offset) * lane_differ * 0.05, 3) # move to left
+        lean_offset = -round(abs(self.right_curv_offset) * lane_differ * 0.05, 3) # move to left
       elif curvature < -0.0008 and self.right_curv_offset > 0 and lane_differ <= 0:
         if lane_differ > 0.6:
           lane_differ = 0.6    
-        lean_offset = -round(abs(self.right_curv_offset) * lane_differ * 0.05, 3) # move to right
+        lean_offset = +round(abs(self.right_curv_offset) * lane_differ * 0.05, 3) # move to right
       else:
         lean_offset = 0
 
@@ -103,13 +105,15 @@ class LanePlanner:
       if Params().get_bool("OpkrLiveTunePanelEnable"):
         self.camera_offset = -(float(Decimal(Params().get("CameraOffsetAdj", encoding="utf8")) * Decimal('0.001')))
 
+    self.total_camera_offset = self.camera_offset + lean_offset + current_road_offset
+
     lane_lines = md.laneLines
     if len(lane_lines) == 4 and len(lane_lines[0].t) == TRAJECTORY_SIZE:
       self.ll_t = (np.array(lane_lines[1].t) + np.array(lane_lines[2].t))/2
       # left and right ll x is the same
       self.ll_x = lane_lines[1].x
-      self.lll_y = np.array(lane_lines[1].y) + self.camera_offset + lean_offset + current_road_offset
-      self.rll_y = np.array(lane_lines[2].y) + self.camera_offset + lean_offset + current_road_offset
+      self.lll_y = np.array(lane_lines[1].y) + self.total_camera_offset
+      self.rll_y = np.array(lane_lines[2].y) + self.total_camera_offset
       self.lll_prob = md.laneLineProbs[1]
       self.rll_prob = md.laneLineProbs[2]
       self.lll_std = md.laneLineStds[1]
