@@ -122,3 +122,5 @@ LaneWidth:3.7
 SpdLaneWidthSpd:0,31
 SpdLaneWidthSet:2.8,3.5
 CloseToRoadEdge:0
+LeftEdgeOffset:0
+RightEdgeOffset:0

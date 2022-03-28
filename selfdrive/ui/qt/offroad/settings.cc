@@ -608,6 +608,7 @@ DrivingPanel::DrivingPanel(QWidget *parent) : QFrame(parent) {
   layout->addWidget(new SpeedLaneWidth());
   layout->addWidget(new RoutineDriveOnToggle());
   layout->addWidget(new CloseToRoadEdgeToggle());
+  layout->addWidget(new OPKREdgeOffset());
 }
 
 DeveloperPanel::DeveloperPanel(QWidget *parent) : QFrame(parent) {

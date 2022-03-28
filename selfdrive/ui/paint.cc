@@ -668,10 +668,10 @@ static void ui_draw_vision_maxspeed_org(UIState *s) {
   float maxspeed = round(s->scene.controls_state.getVCruise());
   float cruise_speed = round(s->scene.vSetDis);
   const bool is_cruise_set = maxspeed != 0 && maxspeed != SET_SPEED_NA;
-  if (s->scene.limitSCOffsetOption) {
-    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.limitSpeedCamera+s->scene.speed_lim_off)+1.5 < s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363));
+  if (s->scene.cruiseAccStatus) {
+    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363))+1.5 > s->scene.ctrl_speed);
   } else {
-    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.limitSpeedCamera+round(s->scene.limitSpeedCamera*0.01*s->scene.speed_lim_off))+1.5 < s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363));
+    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363))+1.5 > s->scene.limitSpeedCamera);
   }
   //if (is_cruise_set && !s->scene.is_metric) { maxspeed *= 0.6225; }
 
@@ -731,12 +731,12 @@ static void ui_draw_vision_cruise_speed(UIState *s) {
   int limitspeedcamera = s->scene.limitSpeedCamera;
   //if (is_cruise_set && !s->scene.is_metric) { maxspeed *= 0.6225; }
   float cruise_speed = round(s->scene.vSetDis);
-
-  if (s->scene.limitSCOffsetOption) {
-    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.limitSpeedCamera+s->scene.speed_lim_off)+1.5 < s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363));
+  if (s->scene.cruiseAccStatus) {
+    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363))+1.5 > s->scene.ctrl_speed);
   } else {
-    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.limitSpeedCamera+round(s->scene.limitSpeedCamera*0.01*s->scene.speed_lim_off))+1.5 < s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363));
+    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363))+1.5 > s->scene.limitSpeedCamera);
   }
+
   const Rect rect = {bdr_s, bdr_s, 184, 202};
 
   NVGcolor color = COLOR_GREY;
@@ -779,7 +779,7 @@ static void ui_draw_vision_speed(UIState *s) {
   UIScene &scene = s->scene;  
   NVGcolor val_color = COLOR_WHITE;
 
-  float act_accel = (!scene.longitudinal_control || scene.radar_long_helper == 2)?scene.a_req_value:0;
+  float act_accel = (!scene.longitudinal_control)?scene.a_req_value:scene.accel;
   float gas_opacity = act_accel*255>255?255:act_accel*255;
   float brake_opacity = abs(act_accel*175)>255?255:abs(act_accel*175);
 
@@ -905,44 +905,84 @@ static void ui_draw_turn_signal(UIState *s) { // Hoya modified with Neokii code
 static int bb_ui_draw_measure(UIState *s, const char* bb_value, const char* bb_uom, const char* bb_label,
     int bb_x, int bb_y, int bb_uom_dx,
     NVGcolor bb_valueColor, NVGcolor bb_labelColor, NVGcolor bb_uomColor,
-    int bb_valueFontSize, int bb_labelFontSize, int bb_uomFontSize )  {
+    int bb_valueFontSize, int bb_labelFontSize, int bb_uomFontSize, bool other)  {
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
-  int dx = 0;
-  if (strlen(bb_uom) > 0) {
-    dx = (int)(bb_uomFontSize*2.5/2);
-   }
-  //print value
-  nvgFontFace(s->vg, "sans-semibold");
-  nvgFontSize(s->vg, bb_valueFontSize*2.5);
-  nvgFillColor(s->vg, bb_valueColor);
-  nvgText(s->vg, bb_x-dx/2, bb_y+ (int)(bb_valueFontSize*2.5)+5, bb_value, NULL);
-  //print label
-  nvgFontFace(s->vg, "sans-regular");
-  nvgFontSize(s->vg, bb_labelFontSize*2.5);
-  nvgFillColor(s->vg, bb_labelColor);
-  nvgText(s->vg, bb_x, bb_y + (int)(bb_valueFontSize*2.5)+5 + (int)(bb_labelFontSize*2.5)+5, bb_label, NULL);
-  //print uom
-  if (strlen(bb_uom) > 0) {
-      nvgSave(s->vg);
-    int rx =bb_x + bb_uom_dx + bb_valueFontSize -3;
-    int ry = bb_y + (int)(bb_valueFontSize*2.5/2)+25;
-    nvgTranslate(s->vg,rx,ry);
-    nvgRotate(s->vg, -1.5708); //-90deg in radians
+  if (other) {
+    int num_value = atoi(bb_value);
+    nvgBeginPath(s->vg);
+    nvgMoveTo(s->vg, bb_x-80, bb_y+90);
+    nvgLineTo(s->vg, bb_x+80, bb_y+32);
+    nvgLineTo(s->vg, bb_x+80, bb_y+90);
+    nvgLineTo(s->vg, bb_x-80, bb_y+90);
+    nvgClosePath(s->vg);
+    nvgStrokeWidth(s->vg, 1);
+    nvgStrokeColor(s->vg, COLOR_WHITE_ALPHA(200));
+    nvgStroke(s->vg);
+
+    nvgBeginPath(s->vg);
+    nvgMoveTo(s->vg, bb_x-80, bb_y+90);
+    nvgLineTo(s->vg, bb_x-80+(fmin(num_value, 3200)*0.05), bb_y+90-(fmin(num_value, 3200)*0.018125));
+    nvgLineTo(s->vg, bb_x-80+(fmin(num_value, 3200)*0.05), bb_y+90);
+    nvgLineTo(s->vg, bb_x-80, bb_y+90);
+    nvgClosePath(s->vg);
+    NVGpaint rpm_gradient = nvgLinearGradient(s->vg, bb_x-80, bb_y+90, bb_x+80, bb_y+32, COLOR_GREEN_ALPHA(80), COLOR_RED_ALPHA(255));
+    nvgFillPaint(s->vg, rpm_gradient);
+    nvgFill(s->vg);
+
+    //print label
     nvgFontFace(s->vg, "sans-regular");
-    nvgFontSize(s->vg, (int)(bb_uomFontSize*2.5));
-    nvgFillColor(s->vg, bb_uomColor);
-    nvgText(s->vg, 0, 0, bb_uom, NULL);
-    nvgRestore(s->vg);
+    nvgFontSize(s->vg, bb_labelFontSize*2.5);
+    nvgFillColor(s->vg, bb_valueColor);
+    nvgText(s->vg, bb_x, bb_y + (int)(bb_valueFontSize*2.5)+5 + (int)(bb_labelFontSize*2.5)+5, bb_label, NULL);
+    //print uom
+    if (strlen(bb_uom) > 0) {
+        nvgSave(s->vg);
+      int rx =bb_x + bb_uom_dx + bb_valueFontSize -3;
+      int ry = bb_y + (int)(bb_valueFontSize*2.5/2)+25;
+      nvgTranslate(s->vg,rx,ry);
+      nvgRotate(s->vg, -1.5708); //-90deg in radians
+      nvgFontFace(s->vg, "sans-regular");
+      nvgFontSize(s->vg, (int)(bb_uomFontSize*2.5));
+      nvgFillColor(s->vg, bb_uomColor);
+      nvgText(s->vg, 0, 0, bb_uom, NULL);
+      nvgRestore(s->vg);
+    }
+  } else {
+    int dx = 0;
+    if (strlen(bb_uom) > 0) {
+      dx = (int)(bb_uomFontSize*2.5/2);
+    }
+    //print value
+    nvgFontFace(s->vg, "sans-semibold");
+    nvgFontSize(s->vg, bb_valueFontSize*2.5);
+    nvgFillColor(s->vg, bb_valueColor);
+    nvgText(s->vg, bb_x-dx/2, bb_y+ (int)(bb_valueFontSize*2.5)+5, bb_value, NULL);
+    //print label
+    nvgFontFace(s->vg, "sans-regular");
+    nvgFontSize(s->vg, bb_labelFontSize*2.5);
+    nvgFillColor(s->vg, bb_labelColor);
+    nvgText(s->vg, bb_x, bb_y + (int)(bb_valueFontSize*2.5)+5 + (int)(bb_labelFontSize*2.5)+5, bb_label, NULL);
+    //print uom
+    if (strlen(bb_uom) > 0) {
+        nvgSave(s->vg);
+      int rx =bb_x + bb_uom_dx + bb_valueFontSize -3;
+      int ry = bb_y + (int)(bb_valueFontSize*2.5/2)+25;
+      nvgTranslate(s->vg,rx,ry);
+      nvgRotate(s->vg, -1.5708); //-90deg in radians
+      nvgFontFace(s->vg, "sans-regular");
+      nvgFontSize(s->vg, (int)(bb_uomFontSize*2.5));
+      nvgFillColor(s->vg, bb_uomColor);
+      nvgText(s->vg, 0, 0, bb_uom, NULL);
+      nvgRestore(s->vg);
+    }
   }
-  return (int)((bb_valueFontSize + bb_labelFontSize)*2.5) + 5;
+  return (int)((bb_valueFontSize + bb_labelFontSize)*2) + 5;
 }
 
 static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) {
   const UIScene &scene = s->scene;
-  int bb_y_offset = 20;
   int bb_rx = bb_x + (int)(bb_w/2);
-  int bb_ry = bb_y - bb_y_offset;
-  int bb_h = 5;
+  int bb_ry = bb_y - 20;
   NVGcolor lab_color = COLOR_WHITE_ALPHA(200);
   NVGcolor uom_color = COLOR_WHITE_ALPHA(200);
   int value_fontSize=30;
@@ -967,11 +1007,10 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     } else {
       snprintf(uom_str, sizeof(uom_str), "%.0f°C", (scene.ambientTemp));
     }
-    bb_h +=bb_ui_draw_measure(s, cpu_temp_val.c_str(), uom_str, "CPU TEMP",
+    bb_ry +=bb_ui_draw_measure(s, cpu_temp_val.c_str(), uom_str, "CPU TEMP",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize );
-    bb_ry = bb_y + bb_h - (bb_y_offset*2);
+        value_fontSize, label_fontSize, uom_fontSize, false);
   }
   //CPU LOAD
   if (scene.batt_less) {
@@ -988,11 +1027,10 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     // temp is alway in C * 1000
     //snprintf(val_str, sizeof(val_str), "%.0fC", batteryTemp);
     snprintf(uom_str, sizeof(uom_str), "%d", (scene.fanSpeed)/1000);
-    bb_h +=bb_ui_draw_measure(s, cpu_usage_val.c_str(), uom_str, "CPU LOAD",
+    bb_ry +=bb_ui_draw_measure(s, cpu_usage_val.c_str(), uom_str, "CPU LOAD",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize );
-    bb_ry = bb_y + bb_h - (bb_y_offset*3);
+        value_fontSize, label_fontSize, uom_fontSize, false);
   }
   //BAT TEMP
   if (!scene.batt_less) {
@@ -1009,11 +1047,10 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     // temp is alway in C * 1000
     //snprintf(val_str, sizeof(val_str), "%.0fC", batteryTemp);
     snprintf(uom_str, sizeof(uom_str), "%d", (scene.fanSpeed)/1000);
-    bb_h +=bb_ui_draw_measure(s, bat_temp_val.c_str(), uom_str, "BAT TEMP",
+    bb_ry +=bb_ui_draw_measure(s, bat_temp_val.c_str(), uom_str, "BAT TEMP",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize );
-    bb_ry = bb_y + bb_h - (bb_y_offset*3);
+        value_fontSize, label_fontSize, uom_fontSize, false);
   }
   //BAT LEVEL
   if(!scene.batt_less) {
@@ -1022,11 +1059,10 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     std::string bat_level_val = std::to_string(int(scene.batPercent)) + "%";
     NVGcolor val_color = COLOR_WHITE_ALPHA(200);
     snprintf(uom_str, sizeof(uom_str), "%s", scene.deviceState.getBatteryStatus() == "Charging" ? "++" : "--");
-    bb_h +=bb_ui_draw_measure(s, bat_level_val.c_str(), uom_str, "BAT LVL",
+    bb_ry +=bb_ui_draw_measure(s, bat_level_val.c_str(), uom_str, "BAT LVL",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize );
-    bb_ry = bb_y + bb_h - (bb_y_offset*4);
+        value_fontSize, label_fontSize, uom_fontSize, false);
   }
   //add Ublox GPS accuracy
   if (scene.gpsAccuracyUblox != 0.00) {
@@ -1050,11 +1086,10 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
       snprintf(val_str, sizeof(val_str), "%.2f", (scene.gpsAccuracyUblox));
     }
     snprintf(uom_str, sizeof(uom_str), "%d", (scene.satelliteCount));
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "GPS PREC",
+    bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "GPS PREC",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize );
-    if (!scene.batt_less) {bb_ry = bb_y + bb_h - (bb_y_offset*5);} else {bb_ry = bb_y + bb_h - (bb_y_offset*4);}
+        value_fontSize, label_fontSize, uom_fontSize, false);
   }
   //add altitude
   if (scene.gpsAccuracyUblox != 0.00) {
@@ -1063,11 +1098,10 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     NVGcolor val_color = COLOR_WHITE_ALPHA(200);
     snprintf(val_str, sizeof(val_str), "%.0f", (scene.altitudeUblox));
     snprintf(uom_str, sizeof(uom_str), "m");
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "ALTITUDE",
+    bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "ALTITUDE",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize );
-    if (!scene.batt_less) {bb_ry = bb_y + bb_h - (bb_y_offset*6);} else {bb_ry = bb_y + bb_h - (bb_y_offset*5);}
+        value_fontSize, label_fontSize, uom_fontSize, false);
   }
   //engine rpm
   if (scene.batt_less && scene.engine_rpm > 1) {
@@ -1075,26 +1109,22 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     char uom_str[6];
     std::string engine_rpm_val = std::to_string(int(scene.engine_rpm));
     NVGcolor val_color = COLOR_WHITE_ALPHA(200);
-    if(scene.engine_rpm > 3000) {
+    if(scene.engine_rpm > 2500) {
       val_color = nvgRGBA(255, 188, 3, 200);
     }
-    if(scene.engine_rpm > 5000) {
+    if(scene.engine_rpm > 3500) {
       val_color = nvgRGBA(255, 0, 0, 200);
     }
     snprintf(uom_str, sizeof(uom_str), "rpm");
-    bb_h +=bb_ui_draw_measure(s, engine_rpm_val.c_str(), uom_str, "ENG RPM",
+    bb_ry +=bb_ui_draw_measure(s, engine_rpm_val.c_str(), uom_str, engine_rpm_val.c_str(),
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize );
-    bb_ry = bb_y + bb_h - (bb_y_offset*7);
+        value_fontSize, label_fontSize, uom_fontSize, true);
   }
 
   //finally draw the frame
-  if (!scene.batt_less) {bb_h += -(bb_y_offset*1);} else {bb_h += -(bb_y_offset*2);}
-  if (scene.gpsAccuracyUblox != 0.00) {bb_h += -(bb_y_offset*3);} else {bb_h += -(bb_y_offset*1);}
-  if (scene.batt_less && scene.gpsAccuracyUblox != 0.00) {bb_h += (bb_y_offset*2);}
   nvgBeginPath(s->vg);
-  nvgRoundedRect(s->vg, bb_x, bb_y, bb_w, bb_h, 20);
+  nvgRoundedRect(s->vg, bb_x, bb_y, bb_w, bb_ry - bb_y + 45, 20);
   nvgStrokeColor(s->vg, COLOR_WHITE_ALPHA(80));
   nvgStrokeWidth(s->vg, 6);
   nvgStroke(s->vg);
@@ -1102,10 +1132,8 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
 
 static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w ) {
   const UIScene &scene = s->scene;
-  int bb_y_offset = 20;
   int bb_rx = bb_x + (int)(bb_w/2);
-  int bb_ry = bb_y - bb_y_offset;
-  int bb_h = 5;
+  int bb_ry = bb_y - 20;
   NVGcolor lab_color = COLOR_WHITE_ALPHA(200);
   NVGcolor uom_color = COLOR_WHITE_ALPHA(200);
   int value_fontSize=30;
@@ -1139,11 +1167,10 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
        snprintf(val_str, sizeof(val_str), "-");
     }
     snprintf(uom_str, sizeof(uom_str), "m");
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "REL DIST",
+    bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "REL DIST",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize );
-    bb_ry = bb_y + bb_h - (bb_y_offset*2);
+        value_fontSize, label_fontSize, uom_fontSize, false);
   }
   //add visual radar relative speed
   if (true) {
@@ -1169,11 +1196,10 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     } else {
       snprintf(uom_str, sizeof(uom_str), "mi/h");
     }
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "REL SPD",
+    bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "REL SPD",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize );
-    bb_ry = bb_y + bb_h - (bb_y_offset*3);
+        value_fontSize, label_fontSize, uom_fontSize, false);
   }
   //add steering angle
   if (true) {
@@ -1193,11 +1219,10 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     snprintf(val_str, sizeof(val_str), "%.1f°",(scene.angleSteers));
     snprintf(uom_str, sizeof(uom_str), "   °");
 
-    bb_h +=bb_ui_draw_measure(s, val_str, uom_str, "STR ANG",
+    bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "STR ANG",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize );
-    bb_ry = bb_y + bb_h - (bb_y_offset*4);
+        value_fontSize, label_fontSize, uom_fontSize, false);
   }
 
   //add steerratio from lateralplan
@@ -1211,11 +1236,10 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
        snprintf(val_str, sizeof(val_str), "-");
     }
     snprintf(uom_str, sizeof(uom_str), "");
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "SteerRatio",
+    bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "SteerRatio",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize );
-    bb_ry = bb_y + bb_h - (bb_y_offset*5);
+        value_fontSize, label_fontSize, uom_fontSize, false);
   }
 
   //cruise gap
@@ -1235,18 +1259,15 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
       snprintf(val_str, sizeof(val_str), "-");
       snprintf(uom_str, sizeof(uom_str), "");
     }
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "Cruise Gap",
+    bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "Cruise Gap",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize );
-    bb_ry = bb_y + bb_h - (bb_y_offset*6);
+        value_fontSize, label_fontSize, uom_fontSize, false);
   }
 
   //finally draw the frame
-  if (scene.longitudinal_control) {bb_h += -(bb_y_offset*4);} else {bb_h += -(bb_y_offset*3);}
-  if (scene.longitudinal_control && scene.radar_long_helper > 1) {bb_h += bb_y_offset;}
   nvgBeginPath(s->vg);
-  nvgRoundedRect(s->vg, bb_x, bb_y, bb_w, bb_h, 20);
+  nvgRoundedRect(s->vg, bb_x, bb_y, bb_w, bb_ry - bb_y + 45, 20);
   nvgStrokeColor(s->vg, COLOR_WHITE_ALPHA(80));
   nvgStrokeWidth(s->vg, 6);
   nvgStroke(s->vg);

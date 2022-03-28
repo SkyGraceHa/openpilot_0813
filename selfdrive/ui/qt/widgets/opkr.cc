@@ -6291,3 +6291,130 @@ void OPKRTopTextView::refresh() {
   btnminus.setText("◀");
   btnplus.setText("▶");
 }
+
+OPKREdgeOffset::OPKREdgeOffset() : AbstractControl("", "+ value to move car to left, - value to move car to right on each lane.", "") {
+
+  labell1.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  labell1.setText("LeftEdge: ");
+  hlayout->addWidget(&labell1);
+  labell.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  labell.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&labell);
+  btnminusl.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplusl.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminusl.setFixedSize(80, 100);
+  btnplusl.setFixedSize(80, 100);
+  hlayout->addWidget(&btnminusl);
+  hlayout->addWidget(&btnplusl);
+
+  labelr1.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+  labelr1.setText("RightEdge: ");
+  hlayout->addWidget(&labelr1);
+  labelr.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  labelr.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&labelr);
+  btnminusr.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplusr.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminusr.setFixedSize(80, 100);
+  btnplusr.setFixedSize(80, 100);
+  hlayout->addWidget(&btnminusr);
+  hlayout->addWidget(&btnplusr);
+
+  btnminusl.setText("－");
+  btnplusl.setText("＋");
+  btnminusr.setText("－");
+  btnplusr.setText("＋");
+
+  QObject::connect(&btnminusl, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("LeftEdgeOffset"));
+    int value = str.toInt();
+    value = value - 1;
+    if (value <= -50 ) {
+      value = -50;
+    }
+    QString values = QString::number(value);
+    params.put("LeftEdgeOffset", values.toStdString());
+    refreshl();
+  });
+  
+  QObject::connect(&btnplusl, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("LeftEdgeOffset"));
+    int value = str.toInt();
+    value = value + 1;
+    if (value >= 50 ) {
+      value = 50;
+    }
+    QString values = QString::number(value);
+    params.put("LeftEdgeOffset", values.toStdString());
+    refreshl();
+  });
+  QObject::connect(&btnminusr, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("RightEdgeOffset"));
+    int value = str.toInt();
+    value = value - 1;
+    if (value <= -50 ) {
+      value = -50;
+    }
+    QString values = QString::number(value);
+    params.put("RightEdgeOffset", values.toStdString());
+    refreshr();
+  });
+  
+  QObject::connect(&btnplusr, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("RightEdgeOffset"));
+    int value = str.toInt();
+    value = value + 1;
+    if (value >= 50 ) {
+      value = 50;
+    }
+    QString values = QString::number(value);
+    params.put("RightEdgeOffset", values.toStdString());
+    refreshr();
+  });
+  refreshl();
+  refreshr();
+}
+
+void OPKREdgeOffset::refreshl() {
+  auto strs = QString::fromStdString(params.get("LeftEdgeOffset"));
+  int valuei = strs.toInt();
+  float valuef = valuei * 0.01;
+  QString valuefs = QString::number(valuef);
+  labell.setText(QString::fromStdString(valuefs.toStdString()));
+}
+
+void OPKREdgeOffset::refreshr() {
+  auto strs = QString::fromStdString(params.get("RightEdgeOffset"));
+  int valuei = strs.toInt();
+  float valuef = valuei * 0.01;
+  QString valuefs = QString::number(valuef);
+  labelr.setText(QString::fromStdString(valuefs.toStdString()));
+}

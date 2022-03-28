@@ -111,7 +111,7 @@ class CarController():
 
     self.timer1 = tm.CTime1000("time")
 
-    self.NC = NaviControl(self.p)
+    self.NC = NaviControl()
 
     self.dRel = 0
     self.vRel = 0
@@ -802,5 +802,6 @@ class CarController():
     new_actuators = actuators.copy()
     new_actuators.steer = apply_steer / self.p.STEER_MAX
     new_actuators.accel = self.accel
+    safetycam_speed = self.NC.safetycam_speed
 
-    return new_actuators, can_sends
+    return new_actuators, can_sends, safetycam_speed

@@ -235,6 +235,7 @@ struct CarState {
   aReqValue @53 :Float32;
   engineRpm @54 :Float32;
 
+  # Hoya
   currentGear @55 :Float32;  
 
   struct TPMS {

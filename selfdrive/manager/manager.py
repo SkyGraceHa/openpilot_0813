@@ -193,6 +193,8 @@ def manager_init() -> None:
     ("SpdLaneWidthSet", "2.8,3.5"),
     ("TopTextView", "0"),
     ("CloseToRoadEdge", "0"),
+    ("LeftEdgeOffset", "0"),
+    ("RightEdgeOffset", "0"),
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

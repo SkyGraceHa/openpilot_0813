@@ -15,9 +15,8 @@ import common.MoveAvg as mvAvg
 LaneChangeState = log.LateralPlan.LaneChangeState
 
 class NaviControl():
-  def __init__(self, p=None):
-    self.p = p
-    
+  def __init__(self):
+
     self.sm = messaging.SubMaster(['liveNaviData', 'lateralPlan', 'radarState', 'controlsState', 'liveMapData'])
 
     self.btn_cnt = 0
@@ -60,6 +59,7 @@ class NaviControl():
     self.na_timer = 0
     self.t_interval = 7
     self.faststart = False
+    self.safetycam_speed = 0
 
   def update_lateralPlan(self):
     self.sm.update(0)
@@ -401,6 +401,7 @@ class NaviControl():
         navi_speed = kph_set_vEgo
       else:
         navi_speed = min(cruiseState_speed, kph_set_vEgo)
+      self.safetycam_speed = navi_speed
       if CS.cruise_set_mode != 5:
         self.ctrl_speed = self.auto_speed_control(CS, navi_speed, path_plan) # lead, curve speed
       else:

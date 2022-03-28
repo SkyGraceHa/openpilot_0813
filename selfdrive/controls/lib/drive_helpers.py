@@ -26,6 +26,12 @@ CAR_ROTATION_RADIUS = 0.0
 # EU guidelines
 MAX_LATERAL_JERK = 5.0
 
+# atom
+# MAX_LATERAL_JERKS = [0, 0.0000001, MAX_LATERAL_JERK]
+# MAX_LATERAL_JERK_SPEEDS = [0, 10*CV.KPH_TO_MS, 50*CV.KPH_TO_MS]
+STEER_ACTUATOR_DELAYS =[0.5, 0.3, 0.1]
+STEER_ACTUATOR_DELAY_SPEEDS = [10*CV.KPH_TO_MS, 50*CV.KPH_TO_MS, 100*CV.KPH_TO_MS]
+
 CRUISE_LONG_PRESS = 50
 CRUISE_NEAREST_FUNC = {
   car.CarState.ButtonEvent.Type.accelCruise: math.ceil,
@@ -102,9 +108,13 @@ def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
     curvature_rates = [0.0]*CONTROL_N
 
   # TODO this needs more thought, use .2s extra for now to estimate other delays
-  delay = max(0.01, CP.steerActuatorDelay)
+  # delay = max(0.01, CP.steerActuatorDelay)
+
+  #atom
+  delay = max(0.01, interp(v_ego, STEER_ACTUATOR_DELAY_SPEEDS, STEER_ACTUATOR_DELAYS))
+  # LATERAL_JERK = interp(v_ego, MAX_LATERAL_JERK_SPEEDS, MAX_LATERAL_JERKS)
+
   current_curvature = curvatures[0]
-  # delay = max(0.01, interp(round(abs(current_curvature), 4), [0.003, 0.01, 0.03], [0.1, 0.20, CP.steerActuatorDelay])) # curvature에 따른 가변 적용 테스트
   psi = interp(delay, T_IDXS[:CONTROL_N], psis)
   desired_curvature_rate = curvature_rates[0]
 

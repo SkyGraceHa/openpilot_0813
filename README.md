@@ -31,7 +31,7 @@
    - Cancel Git Pull: Move back to previous version of fork if last update is not desired.
    - Panda Flashing: Run Panda flashing command manually. Basically this is not necessary on normal operation.
    - Change Repo/Branch: You can install others fork/branch thru typing Git ID, Git Repository, Git Branch.
- - UserMenu(Function Name: Explanation)
+ UserMenu (Function Name: Description)
    - EON AutoShutdown: When car ignition is turned off, the device will be shutdown after the set time.
    - EON ForceShutdown: The device will be shutdown by force at offroad status after set time.
    - EON Volume Control(%): set device volume manually.
@@ -56,7 +56,12 @@
    - API Server: Choose driver log server, Retropilot, Comma, User's
    - User's API: Set User driver log server url.
    - Mapbox Style: Choose three styles of the Mapbox, Comma, OPKR(locallized in Korea), User's, if you want to your own, Edit the file with yours(/data/params/d/MapboxStyleCustom). Make your mapbox style at https://studio.mapbox.com/. If you publish the style you can use it.
+   - Top Text View : Show Date/Time/Roadname at top of drive screen.
+Driving Menu (Function Name: Description)
    - Use Auto Resume at Stop: after standstill, op will auto resume when leadcar start moving.
+   - RES count at standstill: some model need to be adjusted so car move when lead car start moving.(reboot required)
+   - Change Cruise Gap at Stop: Cruise Gap changed to 1 step for departure faster, it gets back to orignal Gap after few second.
+   - Standstill Resume Alternative : Some model need this for Auto Resume at Stop.
    - Use Cruise Button Spamming: SCC set speed is changed up and down automatically. turn on to use many functions related to auto speed control.
    - Cruise Start Mode: Set your custom Cruise mode when boot. There are 6 modes. OpenpilotStock/Dist+Curv/Dist/Curv/Oneway/CamSpeed only. OpenpilotStock : Scc button will set scc speed, will work like stock button to set op. Dist+Curv is changed by distance to leadcar and curvature. Dist is distance only. Curv is curvature only. Oneway change camera offset to approach the edge of a road. CamSpeed is changing set speed only by value of speed sign (OSM, Mappy).
    - LaneChange Speed: minimum lane change speed
@@ -69,39 +74,46 @@
    - Str Angle Adjust: To keep car on a straight road, If the value of steering angle is not 0.0, adjust this to be 0.0
    - Stop Steer Assist on Turn Signals: Openpilot doesn't steer your car when turn signal is active.
    - Reset MaxSpeed Over CurrentSpeed: Sync scc speed with car current speed, the OP MaxSpeed synchronize to your car speed.
+   - Enable OSM : use OSM feature
    - Enable OSM SpeedLimit: Use OSM SpeedLimit, active internet required. (reboot required).
    - Use Stock SafetyCAM Speed: Some cars have the signal in CAN message. not for all HKG cars.
-   - SpeedLimit Offset (%, +- or C): Use to set scc speed above or below the OSM or Stock can reported speed. This can be % Speed amount + / - or OSMCustomOffset. This work with OSM and Stock Can Auto Speeedlimit function.
-   - OSMCustomOffset: (Set SpeedLimit Offset to C) set variable OSM speed offset + /- for speeds 40, 50, 60, 70 & 90 mph.
+   - SpeedLimit Offset (%, +- or C): Use to set scc speed above or below the OSM or Stock can reported speed. This can be % Speed amount + / -  
+   - OSMCustomSpeedlimit([SL],[Target Speed]) : (Set SpeedLimit Offset to C) set custom OSM speed offset SL & Target Speeds.
    - SafetyCam SignType: You can select 2 options to show on the screen, circular (EU) type and retangular (US) type of speedlimit sign.
-   - SafetyCamDist Adj(%): Change the target distance if you are in the decel situation of safetycam.
-   - Change Cruise Gap at Stop: Cruise Gap changed to 1 step for departure faster, it gets back to orignal Gap after few second.
-   - VisionCurvDecel(ModelSpeed: CarSpeed): set speed is changed by Curvature of vision.
-   - OSM CurvDecel(%): If OSM has the value of curv speed, up/down this value if you want to add/subtract.
+   - SafetyCamDist Adj(%): Change the target distance if you are in the decel situation of speed limit or safetycam.
+   - Curve Decel Option : Which curve decel you want to use,  Vision / OSM.
+   - VisionCurvDecel([CV],[Target Speed]): set speed is changed by Curve Vector and Target Speed.
+   - OSMCurvDecel([TSL],[Target Speed]) : If OSM has the value of curv, set your target speed.
    - Use Auto Engagement: When OP is in disengagement status, Auto engagement is enabled when your car is moving. Cruise Standby status is needed at least.
    - Auto Engage Speed(km/h): Auto Engagement is enabled at this speed.
    - Use Auto RES while Driving: SCC speed automatically resume when brake is release or gas is applied.(reboot required)
    - AutoRES Option: CruiseSet/MaxSpeedSet, MaxSpeedSet: Your OP MAX Speed set with RES Set speed. CruiseSet:only set to current set speed, not changed OP MAX Speed.
    - AutoRES Condition: RelBrake/OnGas, RelBrake: SCC speed set again when you release from brake pedal. OnGas: SCC speed set again when you step gas pedal.
    - AutoRES Allow(sec): If AutoRES does not occur before set time, then auto resume is cancelled.
-   - RES Count at Standstill: Adjust RES CAN message count to start from StandStill. upper, if the departure is failed. lower, if your car generate cluster error or can error.(no reboot required)
-   - StandStill Alternative: If auto resume from standsill does not work with normal setting.
    - AutoRESDelay (sec) : AutoRes will not reume until set time elapse, to prevent premature resume.
-   - Steer Wind Down: to mitiate torque at error status of your lkas
-   - MainSwitch Openpilot ON/OFF: You can turn on/off OP using Cruise Button on steering wheel.
+   - Set LaneWidth : Adjust if road lane is narrow
+   - Speed LaneWidth : [Spd(m/s)], [Lanewidth] Adjust speed based on lane width.
+   - Routine Drive by Roadname : (WIP) will change drive characteristics based on road, eg if local or highway will handle curve differently.
+Developer Menu
    - DEBUG UI 1: Show debug UI on screen. 2 lines bottom of screen.(no reboot required)
    - DEBUG UI 2: Show debug UI on screen. other lines except 2 lines bottom.(no reboot required)
+   - DEBUG UI 3: Show debug UI on screen. more debug info.(no reboot required)
    - Show TMUX Error: Turn this on, if you want to show tmux error on screen related to process such as controlsd, plannerd and so on.(reboot required)
    - Show LongControl LOG: show long control log at DEBUG UI 1.(no reboot required)
    - Use Smart Prebuilt: Your device can be booted quickly. The file, Prebuilt is removed when you do push 'CHECK' button on the Menu or type 'gi' command on command line, after then it will be created again when boot&compile is completed.(reboot required)
    - Use FingerPrint 2.0(reboot required)
+   - Support WhitePanda: Turn this on if you use WhitePanda. this is related to issue stopping processes when you turn device off.(reboot required)
+   - Set BatteryLess Eon: Screen doesn't show information of battery status.
+   - Turn Off Communication Issue Alarm: Turn this on if you do not want alert of communication error. Sometimes you could get an alarm with error commuication issue. I don't know actually what error is. seems a bug or uncertain reason.
    - Set LDWS Vehicles
    - Set DriveGear by Force: for cars don't have dbc info of gear(reboot required)
-   - Turn Off Communication Issue Alarm: Turn this on if you do not want alert of communication error. Sometimes you could get an alarm with error commuication issue. I don't know actually what error is. seems a bug or uncertain reason.
-   - Support WhitePanda: Turn this on if you use WhitePanda. this is related to issue stopping processes when you turn device off.(reboot required)
    - Ignore of Steering Warning: Some cars have Steerwarning, so that not engaged.
    - Ignore Can Error on ISG: for ISG cars. In order to ignore can error, if you want to prevent disengagement.
-   - Set BatteryLess Eon: Screen doesn't show information of battery status.
+   - Enable FCA11 Message: For some newer vechicle
+   - Steer Wind Down :
+   - MainSwitch Openpilot On/Off :
+   - StockLKAS Enable at disengagement :
+   - C2 with CommaPower: 
    - Use GoogleMap for Mapbox: Use google map when you search your destination at a web browser.
    - Timezone setting(reboot required)
    - Enable Calibration by Force: developer for engagment test
@@ -141,13 +153,22 @@
     - Adjust Stopping Distance: help stopping distance more close to lead car(not recommended)
     - Enable E2E Long: Use Comma E2E long, sometimes it is not comfortable. think it's earlier to release.
 
-4. Additional Features except above or more things to explain.
- - It can change cruise mode pushing GAP Button at Cruise Standby status.(OpenpilotStock, Dist+Curv, Dist only, Curv only, OneWay mode, Speedlimit decelation mode only)
- - MapBox support, appreciate to Dragonpilot
- - Showing IP Address/SSID name
- - It has Cruise Button Spamming to adjust car set speed, it uses OP target speed to keep certain distance to lead car. It makes your car smooth when you approch to lead car and acceleration slower than stock.
- - SmartMDPS support
- - Auto Recognition if SCC bus is on 2.
+4. Main Features.
+ - Advance UI with on screen settings for most openpilot parameters.
+ - Live Tune via UI
+ - Always updated and current.
+ - Change cruise mode pushing GAP Button at Cruise Standby status.(OpenpilotStock, Dist+Curv, Dist only, Curv only, OneWay mode, Speedlimit decelation mode only)
+ - MapBox support, thanks to Dragonpilot
+ - Showing IP Address/SSID name/cell carrier and signal strength
+ - Cruise Button Spamming to adjust car set speed without longitudinal control, using OP target speed to keep certain distance to lead car.    Variable scc speed control for smooth deceleration (better than stock) when you approach the lead car, and smooth acceleration.
+ - SmartMDPS support for steering down to 0 mph.
+ - Auto Recognition of SCC bus on CAN 2 for long control.
+ - Full time lateral control (MAD).
+ - Variable color speed display, braking shades of red, acceleration shades of green, coasting (no brake, no gas) white.
+ - OSM integration for auto SCC speed adjust via button spamming and slow down on curve using custom UI settings.
+ - 2 Users presets.
+ - Auto lane mode selection (laneless or lanefull).
+ - No ssh knowledge required, as most paramater can be adjusted via UI.
 
 ![](https://i.imgur.com/b0ZyIx5.jpg)
 

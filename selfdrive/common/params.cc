@@ -344,6 +344,8 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"SpdLaneWidthSpd", PERSISTENT},
     {"SpdLaneWidthSet", PERSISTENT},
     {"CloseToRoadEdge", PERSISTENT},
+    {"LeftEdgeOffset", PERSISTENT},
+    {"RightEdgeOffset", PERSISTENT},
 };
 
 } // namespace

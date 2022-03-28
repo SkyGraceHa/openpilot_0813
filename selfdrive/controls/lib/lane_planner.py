@@ -53,6 +53,8 @@ class LanePlanner:
 
     self.drive_routine_on = Params().get_bool("RoutineDriveOn")
     self.drive_close_to_edge = Params().get_bool("CloseToRoadEdge")
+    self.left_edge_offset = float(Decimal(Params().get("LeftEdgeOffset", encoding="utf8")) * Decimal('0.01'))
+    self.right_edge_offset = float(Decimal(Params().get("RightEdgeOffset", encoding="utf8")) * Decimal('0.01'))
 
     self.lp_timer = 0
     self.lp_timer2 = 0
@@ -114,12 +116,12 @@ class LanePlanner:
       right_close_prob = md.laneLineProbs[2]
       right_nearside_prob = md.laneLineProbs[3]
       right_edge_prob = np.clip(1.0 - md.roadEdgeStds[1], 0.0, 1.0)
-      if right_nearside_prob < 0.2 and left_nearside_prob < 0.2:
+      if right_nearside_prob < 0.1 and left_nearside_prob < 0.1:
         road_edge_offset = 0.0
       elif right_edge_prob > 0.3 and right_nearside_prob < 0.2 and right_close_prob > 0.5 and left_nearside_prob >= right_nearside_prob:
-        road_edge_offset = 0.05
+        road_edge_offset = -self.right_edge_offset
       elif left_edge_prob > 0.3 and left_nearside_prob < 0.2 and left_close_prob > 0.5 and right_nearside_prob >= left_nearside_prob:
-        road_edge_offset = -0.05
+        road_edge_offset = -self.left_edge_offset
       else:
         road_edge_offset = 0.0
     else:

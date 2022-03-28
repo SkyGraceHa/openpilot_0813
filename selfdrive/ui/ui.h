@@ -195,7 +195,6 @@ typedef struct UIScene {
   bool standStill;
   int limitSpeedCamera;
   float limitSpeedCameraDist;
-  bool limitSCOffsetOption;
   int mapSign;
   float vSetDis;
   bool cruiseAccStatus;
@@ -203,7 +202,6 @@ typedef struct UIScene {
   int recording_count;
   int recording_quality;
   float steerMax_V;
-  int speed_lim_off;
   bool monitoring_mode;
   bool forceGearD;
   bool comma_stock_ui, opkr_livetune_ui;
@@ -251,6 +249,8 @@ typedef struct UIScene {
   int radar_long_helper;
   float engine_rpm;
   bool cal_view = false;
+  float ctrl_speed;
+  float accel;
 
   cereal::DeviceState::Reader deviceState;
   cereal::CarState::Reader car_state;

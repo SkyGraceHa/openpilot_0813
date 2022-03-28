@@ -223,6 +223,7 @@ class Controls:
     self.osm_off_spdlimit = False
     self.osm_off_spdlimit_init = False
     self.v_cruise_kph_set_timer = 0
+    self.safety_speed = 0
 
   def auto_enable(self, CS):
     if self.state != State.enabled:
@@ -786,13 +787,13 @@ class Controls:
           self.hkg_stock_lkas = True
       if not self.hkg_stock_lkas:
         # send car controls over can
-        self.last_actuators, can_sends = self.CI.apply(CC)
+        self.last_actuators, can_sends, self.safety_speed = self.CI.apply(CC)
         self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
         CC.actuatorsOutput = self.last_actuators
     else:
       if not self.read_only and self.initialized:
         # send car controls over can
-        self.last_actuators, can_sends = self.CI.apply(CC)
+        self.last_actuators, can_sends, self.safety_speed = self.CI.apply(CC)
         self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
         CC.actuatorsOutput = self.last_actuators
 
@@ -860,6 +861,8 @@ class Controls:
     controlsState.steerRatio = float(self.steerRatio_to_send)
     controlsState.dynamicTRMode = int(self.sm['longitudinalPlan'].dynamicTRMode)
     controlsState.dynamicTRValue = float(self.sm['longitudinalPlan'].dynamicTRValue)
+    controlsState.accel = float(self.last_actuators.accel)
+    controlsState.safetySpeed = float(self.safety_speed)
 
     lat_tuning = self.CP.lateralTuning.which()
     if self.joystick_mode:

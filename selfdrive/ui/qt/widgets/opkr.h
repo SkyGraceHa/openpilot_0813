@@ -2094,3 +2094,24 @@ private:
   
   void refresh();
 };
+
+class OPKREdgeOffset : public AbstractControl {
+  Q_OBJECT
+
+public:
+  OPKREdgeOffset();
+
+private:
+  QPushButton btnplusl;
+  QPushButton btnminusl;
+  QPushButton btnplusr;
+  QPushButton btnminusr;
+  QLabel labell1;
+  QLabel labelr1;
+  QLabel labell;
+  QLabel labelr;
+  Params params;
+  
+  void refreshl();
+  void refreshr();
+};

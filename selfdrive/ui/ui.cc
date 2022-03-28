@@ -139,6 +139,8 @@ static void update_state(UIState *s) {
     scene.dynamic_tr_mode = scene.controls_state.getDynamicTRMode();
     scene.dynamic_tr_value = scene.controls_state.getDynamicTRValue();
     scene.osm_off_spdlimit = scene.controls_state.getOsmOffSpdLimit();
+    scene.accel = scene.controls_state.getAccel();
+    scene.ctrl_speed = scene.controls_state.getSafetySpeed();
   }
   if (sm.updated("carState")) {
     scene.car_state = sm["carState"].getCarState();
@@ -411,7 +413,6 @@ static void update_status(UIState *s) {
     s->scene.laneless_mode = std::stoi(params.get("LanelessMode"));
     s->scene.recording_count = std::stoi(params.get("RecordingCount"));
     s->scene.recording_quality = std::stoi(params.get("RecordingQuality"));
-    s->scene.speed_lim_off = std::stoi(params.get("OpkrSpeedLimitOffset"));
     s->scene.monitoring_mode = params.getBool("OpkrMonitoringMode");
     s->scene.brightness = std::stoi(params.get("OpkrUIBrightness"));
     s->scene.nVolumeBoost = std::stoi(params.get("OpkrUIVolumeBoost"));
@@ -437,7 +438,6 @@ static void update_status(UIState *s) {
     s->scene.top_text_view = std::stoi(params.get("TopTextView"));
     s->scene.steer_wind_down = params.getBool("SteerWindDown");
     s->scene.show_error = params.getBool("ShowError");
-    s->scene.limitSCOffsetOption = params.getBool("OpkrSpeedLimitOffsetOption");
     s->scene.speedlimit_signtype = params.getBool("OpkrSpeedLimitSignType");
     s->scene.sl_decel_off = params.getBool("SpeedLimitDecelOff");
     s->scene.osm_enabled = params.getBool("OSMEnable") || params.getBool("OSMSpeedLimitEnable") || std::stoi(params.get("CurvDecelOption")) == 1 || std::stoi(params.get("CurvDecelOption")) == 3;
