@@ -87,7 +87,6 @@ def manager_init() -> None:
     ("SteerDeltaUpAdj", "3"),
     ("SteerDeltaDownBaseAdj", "7"),
     ("SteerDeltaDownAdj", "7"),
-    ("SteerMaxvAdj", "10"),
     ("OpkrBatteryChargingControl", "1"),
     ("OpkrBatteryChargingMin", "70"),
     ("OpkrBatteryChargingMax", "80"),
@@ -125,7 +124,6 @@ def manager_init() -> None:
     ("CruiseAutoRes", "0"),
     ("AutoResOption", "0"),
     ("AutoResCondition", "0"),
-    ("SteerWindDown", "0"),
     ("OpkrMonitoringMode", "0"),
     ("OpkrMonitorEyesThreshold", "45"),
     ("OpkrMonitorNormalEyesThreshold", "45"),
@@ -195,6 +193,9 @@ def manager_init() -> None:
     ("CloseToRoadEdge", "0"),
     ("LeftEdgeOffset", "0"),
     ("RightEdgeOffset", "0"),
+    ("AvoidLKASFaultEnabled", "0"),
+    ("AvoidLKASFaultMaxAngle", "90"),
+    ("AvoidLKASFaultMaxFrame", "90"),
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

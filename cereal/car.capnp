@@ -171,6 +171,7 @@ struct CarState {
   # brake pedal, 0.0-1.0
   brake @5 :Float32;      # this is user pedal only
   brakePressed @6 :Bool;  # this is user pedal only
+  parkingBrake @39 :Bool;
   brakeHoldActive @38 :Bool;
 
   # steering wheel
@@ -215,28 +216,28 @@ struct CarState {
   rightBlindspot @34 :Bool; # Is there something blocking the right lane change
 
   # opkr-tpms
-  tpms @39 :TPMS;
+  tpms @40 :TPMS;
 
-  radarDistance @40 :Float32;
-  standStill @41 :Bool;
-  vSetDis @42 :Float32;
-  cruiseButtons @43 :Float32;
-  cruiseAccStatus @44 :Bool;
-  driverAcc @45 :Bool;
-  brakeHold @46 :Bool;    # AutoHold
-  cruiseGapSet @47 :UInt8;
+  radarDistance @41 :Float32;
+  standStill @42 :Bool;
+  vSetDis @43 :Float32;
+  cruiseButtons @44 :Float32;
+  cruiseAccStatus @45 :Bool;
+  driverAcc @46 :Bool;
+  brakeHold @47 :Bool;    # AutoHold
+  cruiseGapSet @48 :UInt8;
 
   # opkr
-  safetyDist @48 :Float32;
-  safetySign @49 :Float32;
-  vEgoOP @50 :Float32;  # openpilot speed
-  electGearStep @51 :Int8;
-  isMph @52 :Bool;
-  aReqValue @53 :Float32;
-  engineRpm @54 :Float32;
+  safetyDist @49 :Float32;
+  safetySign @50 :Float32;
+  vEgoOP @51 :Float32;  # openpilot speed
+  electGearStep @52 :Int8;
+  isMph @53 :Bool;
+  aReqValue @54 :Float32;
+  engineRpm @55 :Float32;
 
   # Hoya
-  currentGear @55 :Float32;  
+  currentGear @56 :Float32;  
 
   struct TPMS {
     unit @0 :Int8;
@@ -345,7 +346,8 @@ struct RadarData @0x888ad6581cf0aacb {
 struct CarControl {
   # must be true for any actuator commands to work
   enabled @0 :Bool;
-  active @7 :Bool;
+  latActive @11: Bool;
+  longActive @12: Bool;
 
   # Actuator commands as computed by controlsd
   actuators @6 :Actuators;
@@ -355,8 +357,8 @@ struct CarControl {
   # and matches what is sent to the car
   actuatorsOutput @10 :Actuators;
 
-  roll @8 :Float32;
-  pitch @9 :Float32;
+  orientationNED @13 :List(Float32);
+  angularVelocity @14 :List(Float32);
 
   cruiseControl @4 :CruiseControl;
   hudControl @5 :HUDControl;
@@ -437,6 +439,9 @@ struct CarControl {
   gasDEPRECATED @1 :Float32;
   brakeDEPRECATED @2 :Float32;
   steeringTorqueDEPRECATED @3 :Float32;
+  active @7 :Bool;
+  rollDEPRECATED @8 :Float32;
+  pitchDEPRECATED @9 :Float32;
 }
 
 # ****** car param ******
@@ -451,18 +456,16 @@ struct CarParams {
   enableDsu @5 :Bool;        # driving support unit
   enableApgs @6 :Bool;       # advanced parking guidance system
   enableBsm @56 :Bool;       # blind spot monitoring
-  flags @63 :UInt32;         # flags for car specific quirks
+  flags @64 :UInt32;         # flags for car specific quirks
 
   minEnableSpeed @7 :Float32;
   minSteerSpeed @8 :Float32;
   maxSteeringAngleDeg @54 :Float32;
-  unsafeMode @64 :Int16;
-  safetyModel @9 :SafetyModel;
-  safetyModelPassive @42 :SafetyModel = silent;
-  safetyParam @10 :Int16;
+  unsafeMode @62 :Int16;
+  alternativeExperience @65 :Int16;      # panda flag for features like no disengage on gas 
 
-  steerMaxBP @11 :List(Float32);
-  steerMaxV @12 :List(Float32);
+  steerMaxBPDEPRECATED @11 :List(Float32);
+  steerMaxVDEPRECATED @12 :List(Float32);
   gasMaxBPDEPRECATED @13 :List(Float32);
   gasMaxVDEPRECATED @14 :List(Float32);
   brakeMaxBPDEPRECATED @15 :List(Float32);
@@ -514,23 +517,23 @@ struct CarParams {
   fingerprintSource @49: FingerprintSource;
   networkLocation @50 :NetworkLocation;  # Where Panda/C2 is integrated into the car's CAN network
 
-  wheelSpeedFactor @62 :Float32; # Multiplier on wheels speeds to computer actual speeds
+  wheelSpeedFactor @63 :Float32; # Multiplier on wheels speeds to computer actual speeds
 
-  mdpsBus @65: Int8;
-  sasBus @66: Int8;
-  sccBus @67: Int8;
-  fcaBus @68: Int8;
-  bsmAvailable @69: Bool;
-  lfaAvailable @70: Bool;
-  lvrAvailable @71: Bool;
-  evgearAvailable @72: Bool;
-  emsAvailable @73: Bool;
-  standStill @74: Bool;
-  vCruisekph @75: Float32;
-  resSpeed @76: Float32;
-  vFuture @77: Float32;
-  aqValue @78: Float32;
-  aqValueRaw @79: Float32;
+  mdpsBus @66: Int8;
+  sasBus @67: Int8;
+  sccBus @68: Int8;
+  fcaBus @69: Int8;
+  bsmAvailable @70: Bool;
+  lfaAvailable @71: Bool;
+  lvrAvailable @72: Bool;
+  evgearAvailable @73: Bool;
+  emsAvailable @74: Bool;
+  standStill @75: Bool;
+  vCruisekph @76: Float32;
+  resSpeed @77: Float32;
+  vFuture @78: Float32;
+  aqValue @79: Float32;
+  aqValueRaw @80: Float32;
 
   struct LateralParams {
     torqueBP @0 :List(Int32);
@@ -617,6 +620,7 @@ struct CarParams {
     hyundaiLegacy @23;
     hyundaiCommunity @24;
     stellantis @25;
+    faw @26;
   }
 
   enum SteerControlType {
@@ -677,6 +681,9 @@ struct CarParams {
   enableCameraDEPRECATED @4 :Bool;
   isPandaBlackDEPRECATED @39 :Bool;
   hasStockCameraDEPRECATED @57 :Bool;
+  safetyParam @10 :Int16;
+  safetyModel @9 :SafetyModel;
+  safetyModelPassive @42 :SafetyModel = silent;
   minSpeedCanDEPRECATED @51 :Float32;
   startAccelDEPRECATED @32 :Float32;
   communityFeatureDEPRECATED @46: Bool;

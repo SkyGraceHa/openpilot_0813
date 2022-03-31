@@ -239,7 +239,6 @@ static void update_state(UIState *s) {
   if (sm.updated("carParams")) {
     auto cp_data = sm["carParams"].getCarParams();
     scene.longitudinal_control = cp_data.getOpenpilotLongitudinalControl();
-    scene.steerMax_V = cp_data.getSteerMaxV()[0];
     scene.steer_actuator_delay = cp_data.getSteerActuatorDelay();
   }
   if (sm.updated("lateralPlan")) {
@@ -436,7 +435,6 @@ static void update_status(UIState *s) {
     s->scene.radar_long_helper = std::stoi(params.get("RadarLongHelper"));
     s->scene.live_tune_panel_enable = params.getBool("OpkrLiveTunePanelEnable");
     s->scene.top_text_view = std::stoi(params.get("TopTextView"));
-    s->scene.steer_wind_down = params.getBool("SteerWindDown");
     s->scene.show_error = params.getBool("ShowError");
     s->scene.speedlimit_signtype = params.getBool("OpkrSpeedLimitSignType");
     s->scene.sl_decel_off = params.getBool("SpeedLimitDecelOff");

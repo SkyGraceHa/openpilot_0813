@@ -1,7 +1,10 @@
-# flake8: noqa
+from dataclasses import dataclass
+from typing import Dict, List, Union
 
 from cereal import car
+from common.conversions import Conversions as CV
 from selfdrive.car import dbc_dict
+from selfdrive.car.docs_definitions import CarInfo
 from common.params import Params
 Ecu = car.CarParams.Ecu
 
@@ -59,6 +62,61 @@ class CAR:
   SELTOS = "KIA SELTOS 2021"
   SOUL_EV = "KIA SOUL EV 2019"
   MOHAVE = "KIA MOHAVE 2019"
+
+
+@dataclass
+class HyundaiCarInfo(CarInfo):
+  package: str = "SCC + LKAS"
+  good_torque: bool = True
+
+
+CAR_INFO: Dict[str, Union[HyundaiCarInfo, List[HyundaiCarInfo]]] = {
+  # genesis
+  CAR.GENESIS: HyundaiCarInfo("Genesis 2015-2016"),
+  CAR.GENESIS_G70: HyundaiCarInfo("Genesis G70 2018", "All"),
+  CAR.GENESIS_G80: HyundaiCarInfo("Genesis G80 2017", "All"),
+  CAR.GENESIS_G90: HyundaiCarInfo("Genesis G90 2017", "All"),
+
+  # hyundai
+  CAR.AVANTE: HyundaiCarInfo("Hyundai Avante", video_link="https://youtu.be/_EdYQtV52-c"),
+  CAR.I30: HyundaiCarInfo("Hyundai I30", "All"),
+  CAR.SONATA: HyundaiCarInfo("Hyundai Sonata 2020-22", "All", video_link="https://www.youtube.com/watch?v=ix63r9kE3Fw"),
+  CAR.SONATA_HEV: HyundaiCarInfo("Hyundai Sonata Hybrid 2021-22", "All"),
+  CAR.SONATA_LF: HyundaiCarInfo("Hyundai LF Sonata"),
+  CAR.SONATA_LF_TURBO: HyundaiCarInfo("Hyundai LF Sonata Turbo"),
+  CAR.SONATA_LF_HEV: HyundaiCarInfo("Hyundai LF Sonata Hybrid"),
+  CAR.KONA: HyundaiCarInfo("Hyundai Kona 2020"),
+  CAR.KONA_EV: HyundaiCarInfo("Hyundai Kona Electric 2018-19"),
+  CAR.KONA_HEV: HyundaiCarInfo("Hyundai Kona Hybrid 2020", video_link="https://youtu.be/_EdYQtV52-c"),
+  CAR.IONIQ_EV: HyundaiCarInfo("Hyundai Ioniq Electric 2019", "All"),
+  CAR.IONIQ_HEV: HyundaiCarInfo("Hyundai Ioniq Hybrid 2020-22", "SCC + LFA"),
+  CAR.SANTA_FE: HyundaiCarInfo("Hyundai Santa Fe 2019-20", "All"),
+  CAR.PALISADE: [
+    HyundaiCarInfo("Hyundai Palisade 2020-21", "All", video_link="https://youtu.be/TAnDqjF4fDY?t=456"),
+    HyundaiCarInfo("Kia Telluride 2020"),
+  ],
+  CAR.VELOSTER: HyundaiCarInfo("Hyundai Veloster 2019-20", "All"),
+  CAR.GRANDEUR_IG: HyundaiCarInfo("Hyundai Grandeur IG", "All"),
+  CAR.GRANDEUR_IG_HEV: HyundaiCarInfo("Hyundai Grandeur IG Hybrid", "All"),
+  CAR.GRANDEUR_IG_FL: HyundaiCarInfo("Hyundai Grandeur IG FL", "All"),
+  CAR.GRANDEUR_IG_FL_HEV: HyundaiCarInfo("Hyundai Grandeur IG FL Hybrid", "All"),
+  CAR.NEXO: HyundaiCarInfo("Hyundai Nexo", "All"),
+
+  # Kia
+  CAR.K3: HyundaiCarInfo("Kia K3 2018-21"),
+  CAR.K5: HyundaiCarInfo("Kia K5 2021-22", "SCC + LFA"),
+  CAR.K5_HEV: HyundaiCarInfo("Kia K5 Hybrid 2017"),
+  CAR.SPORTAGE: HyundaiCarInfo("Kia Sportage"),
+  CAR.SORENTO: HyundaiCarInfo("Kia Sorento 2018-19", video_link="https://www.youtube.com/watch?v=Fkh3s6WHJz8"),
+  CAR.STINGER: HyundaiCarInfo("Kia Stinger 2018", video_link="https://www.youtube.com/watch?v=MJ94qoofYw0"),
+  CAR.NIRO_EV: HyundaiCarInfo("Kia Niro Electric 2019-22", "All", video_link="https://www.youtube.com/watch?v=lT7zcG6ZpGo"),
+  CAR.NIRO_HEV: HyundaiCarInfo("Kia Niro Plug-In Hybrid 2019"),
+  CAR.K7: HyundaiCarInfo("Kia K7 2016-19"),
+  CAR.K7_HEV: HyundaiCarInfo("Kia K7 Hybrid 2016-19"),
+  CAR.SELTOS: HyundaiCarInfo("Kia Seltos 2021"),
+  CAR.SOUL_EV: HyundaiCarInfo("Kia Soul EV 2019"),
+  CAR.MOHAVE: HyundaiCarInfo("Kia Mohave 2019"),
+}
 
 class Buttons:
   NONE = 0

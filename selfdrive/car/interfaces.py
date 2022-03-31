@@ -47,7 +47,6 @@ class CarInterfaceBase(ABC):
     if CarController is not None:
       self.CC = CarController(self.cp.dbc_name, CP, self.VM)
 
-    self.steer_wind_down_enabled = Params().get_bool("SteerWindDown")
     self.steer_warning_fix_enabled = Params().get_bool("SteerWarningFix")
 
   @staticmethod
@@ -56,7 +55,7 @@ class CarInterfaceBase(ABC):
 
   @staticmethod
   @abstractmethod
-  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None):
+  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None, disable_radar=False):
     pass
 
   @staticmethod
@@ -78,12 +77,9 @@ class CarInterfaceBase(ABC):
   def get_std_params(candidate, fingerprint):
     ret = car.CarParams.new_message()
     ret.carFingerprint = candidate
-    ret.unsafeMode = 0  # see panda/board/safety_declarations.h for allowed values
 
     # standard ALC params
     ret.steerControlType = car.CarParams.SteerControlType.torque
-    ret.steerMaxBP = [0.]
-    ret.steerMaxV = [1.]
     ret.minSteerSpeed = 0.
     ret.wheelSpeedFactor = 1.0
 
@@ -106,6 +102,7 @@ class CarInterfaceBase(ABC):
     ret.longitudinalTuning.kdV = [0.]
     ret.longitudinalTuning.kfBP = [0.]
     ret.longitudinalTuning.kfV = [1.]
+    # TODO estimate car specific lag, use .15s for now
     ret.longitudinalActuatorDelayLowerBound = 0.15
     ret.longitudinalActuatorDelayUpperBound = 0.15
     ret.steerLimitTimer = 1.0
@@ -153,7 +150,7 @@ class CarInterfaceBase(ABC):
     self.steering_unpressed = 0 if cs_out.steeringPressed else self.steering_unpressed + 1
     if cs_out.steerFaultTemporary and not self.steer_warning_fix_enabled:
       # if the user overrode recently, show a less harsh alert
-      if (cs_out.vEgo < 0.1 or cs_out.standstill) and not self.steer_wind_down_enabled and cs_out.steeringAngleDeg < 90:
+      if (cs_out.vEgo < 0.1 or cs_out.standstill) and cs_out.steeringAngleDeg < 90:
         events.add(EventName.isgActive)
       elif self.silent_steer_warning or cs_out.standstill or self.steering_unpressed < int(1.5 / DT_CTRL) and cs_out.vEgo > 1:
         self.silent_steer_warning = True

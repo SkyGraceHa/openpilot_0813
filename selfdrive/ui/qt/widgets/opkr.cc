@@ -3183,69 +3183,6 @@ void SteerMaxMax::refresh() {
   btnplus.setText("＋");
 }
 
-SteerMaxv::SteerMaxv() : AbstractControl("SteerMaxV", "Adjust the SteerMaxV value.", "../assets/offroad/icon_shell.png") {
-
-  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
-  label.setStyleSheet("color: #e0e879");
-  hlayout->addWidget(&label);
-
-  btnminus.setStyleSheet(R"(
-    padding: 0;
-    border-radius: 50px;
-    font-size: 35px;
-    font-weight: 500;
-    color: #E4E4E4;
-    background-color: #393939;
-  )");
-  btnplus.setStyleSheet(R"(
-    padding: 0;
-    border-radius: 50px;
-    font-size: 35px;
-    font-weight: 500;
-    color: #E4E4E4;
-    background-color: #393939;
-  )");
-  btnminus.setFixedSize(150, 100);
-  btnplus.setFixedSize(150, 100);
-  hlayout->addWidget(&btnminus);
-  hlayout->addWidget(&btnplus);
-
-  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
-    auto str = QString::fromStdString(params.get("SteerMaxvAdj"));
-    int value = str.toInt();
-    value = value - 1;
-    if (value <= 10 ) {
-      value = 10;
-    }
-    QString values = QString::number(value);
-    params.put("SteerMaxvAdj", values.toStdString());
-    refresh();
-  });
-  
-  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
-    auto str = QString::fromStdString(params.get("SteerMaxvAdj"));
-    int value = str.toInt();
-    value = value + 1;
-    if (value >= 30 ) {
-      value = 30;
-    }
-    QString values = QString::number(value);
-    params.put("SteerMaxvAdj", values.toStdString());
-    refresh();
-  });
-  refresh();
-}
-
-void SteerMaxv::refresh() {
-  auto strs = QString::fromStdString(params.get("SteerMaxvAdj"));
-  int valuei = strs.toInt();
-  float valuef = valuei * 0.1;
-  QString valuefs = QString::number(valuef);
-  label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
-}
-
 SteerDeltaUpBase::SteerDeltaUpBase() : AbstractControl("SteerDeltaUpDefault", "Adjust the Steer DeltaUp default value.", "../assets/offroad/icon_shell.png") {
 
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
@@ -6417,4 +6354,124 @@ void OPKREdgeOffset::refreshr() {
   float valuef = valuei * 0.01;
   QString valuefs = QString::number(valuef);
   labelr.setText(QString::fromStdString(valuefs.toStdString()));
+}
+
+ToAvoidLKASFault::ToAvoidLKASFault() : AbstractControl("", "", "") {
+
+  labell1.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  labell1.setText("MaxAngle: ");
+  hlayout->addWidget(&labell1);
+  labell.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  labell.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&labell);
+  btnminusl.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplusl.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminusl.setFixedSize(90, 100);
+  btnplusl.setFixedSize(90, 100);
+  hlayout->addWidget(&btnminusl);
+  hlayout->addWidget(&btnplusl);
+
+  labelr1.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+  labelr1.setText("MaxFrame: ");
+  hlayout->addWidget(&labelr1);
+  labelr.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  labelr.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&labelr);
+  btnminusr.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplusr.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminusr.setFixedSize(90, 100);
+  btnplusr.setFixedSize(90, 100);
+  hlayout->addWidget(&btnminusr);
+  hlayout->addWidget(&btnplusr);
+
+  btnminusl.setText("－");
+  btnplusl.setText("＋");
+  btnminusr.setText("－");
+  btnplusr.setText("＋");
+
+  QObject::connect(&btnminusl, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("AvoidLKASFaultMaxAngle"));
+    int value = str.toInt();
+    value = value - 1;
+    if (value <= 45 ) {
+      value = 45;
+    }
+    QString values = QString::number(value);
+    params.put("AvoidLKASFaultMaxAngle", values.toStdString());
+    refreshl();
+  });
+  
+  QObject::connect(&btnplusl, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("AvoidLKASFaultMaxAngle"));
+    int value = str.toInt();
+    value = value + 1;
+    if (value >= 99 ) {
+      value = 99;
+    }
+    QString values = QString::number(value);
+    params.put("AvoidLKASFaultMaxAngle", values.toStdString());
+    refreshl();
+  });
+
+  QObject::connect(&btnminusr, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("AvoidLKASFaultMaxFrame"));
+    int value = str.toInt();
+    value = value - 1;
+    if (value <= 10 ) {
+      value = 10;
+    }
+    QString values = QString::number(value);
+    params.put("AvoidLKASFaultMaxFrame", values.toStdString());
+    refreshr();
+  });
+  
+  QObject::connect(&btnplusr, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("AvoidLKASFaultMaxFrame"));
+    int value = str.toInt();
+    value = value + 1;
+    if (value >= 150 ) {
+      value = 150;
+    }
+    QString values = QString::number(value);
+    params.put("AvoidLKASFaultMaxFrame", values.toStdString());
+    refreshr();
+  });
+  refreshl();
+  refreshr();
+}
+
+void ToAvoidLKASFault::refreshl() {
+  labell.setText(QString::fromStdString(params.get("AvoidLKASFaultMaxAngle")));
+}
+
+void ToAvoidLKASFault::refreshr() {
+  labelr.setText(QString::fromStdString(params.get("AvoidLKASFaultMaxFrame")));
 }

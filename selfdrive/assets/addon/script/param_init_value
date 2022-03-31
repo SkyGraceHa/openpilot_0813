@@ -40,7 +40,6 @@ SteerDeltaUpBaseAdj:3
 SteerDeltaUpAdj:3
 SteerDeltaDownBaseAdj:7
 SteerDeltaDownAdj:7
-SteerMaxvAdj:10
 OpkrBatteryChargingControl:1
 OpkrBatteryChargingMin:70
 OpkrBatteryChargingMax:80
@@ -72,7 +71,6 @@ AutoEnable:1
 CruiseAutoRes:0
 AutoResOption:0
 AutoResCondition:0
-SteerWindDown:0
 OpkrMonitoringMode:0
 OpkrMonitorEyesThreshold:45
 OpkrMonitorNormalEyesThreshold:45
@@ -124,3 +122,6 @@ SpdLaneWidthSet:2.8,3.5
 CloseToRoadEdge:0
 LeftEdgeOffset:0
 RightEdgeOffset:0
+AvoidLKASFaultEnabled:0
+AvoidLKASFaultMaxAngle:90
+AvoidLKASFaultMaxFrame:90

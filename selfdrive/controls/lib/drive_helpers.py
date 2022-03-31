@@ -4,8 +4,11 @@ from common.numpy_fast import clip, interp
 from common.realtime import DT_MDL
 from common.conversions import Conversions as CV
 from selfdrive.modeld.constants import T_IDXS
+
 from common.params import Params
 from decimal import Decimal
+
+import common.MoveAvg as mvAvg
 
 # from chanhojung's idea, parameterized by opkr
 if Params().get("DesiredCurvatureLimit", encoding="utf8") is not None:
@@ -27,10 +30,12 @@ CAR_ROTATION_RADIUS = 0.0
 MAX_LATERAL_JERK = 5.0
 
 # atom
-# MAX_LATERAL_JERKS = [0, 0.0000001, MAX_LATERAL_JERK]
-# MAX_LATERAL_JERK_SPEEDS = [0, 10*CV.KPH_TO_MS, 50*CV.KPH_TO_MS]
-STEER_ACTUATOR_DELAYS =[0.5, 0.3, 0.1]
-STEER_ACTUATOR_DELAY_SPEEDS = [10*CV.KPH_TO_MS, 50*CV.KPH_TO_MS, 100*CV.KPH_TO_MS]
+# MAX_LATERAL_JERKS = [0, 0.000001, MAX_LATERAL_JERK]
+# MAX_LATERAL_JERK_SPEEDS = [0, 20*CV.KPH_TO_MS, 50*CV.KPH_TO_MS]
+STEER_ACTUATOR_DELAYS =[0.8, 0.3, 0.1]
+STEER_ACTUATOR_DELAY_SPEEDS = [5*CV.KPH_TO_MS, 50*CV.KPH_TO_MS, 100*CV.KPH_TO_MS]
+
+moveAvg = mvAvg.MoveAvg()
 
 CRUISE_LONG_PRESS = 50
 CRUISE_NEAREST_FUNC = {
@@ -51,10 +56,6 @@ class MPC_COST_LAT:
 
 def rate_limit(new_value, last_value, dw_step, up_step):
   return clip(new_value, last_value + dw_step, last_value + up_step)
-
-
-def get_steer_max(CP, v_ego):
-  return interp(v_ego, CP.steerMaxBP, CP.steerMaxV)
 
 
 def update_v_cruise(v_cruise_kph, buttonEvents, button_timers, enabled, metric):
@@ -114,7 +115,14 @@ def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
   delay = max(0.01, interp(v_ego, STEER_ACTUATOR_DELAY_SPEEDS, STEER_ACTUATOR_DELAYS))
   # LATERAL_JERK = interp(v_ego, MAX_LATERAL_JERK_SPEEDS, MAX_LATERAL_JERKS)
 
-  current_curvature = curvatures[0]
+  # current_curvature = curvatures[0]
+
+  if v_ego < 3:
+    #current_curvature = moveAvg.get_min(curvatures[0], 5)
+    current_curvature = moveAvg.get_avg(curvatures[0], 3)
+  else:
+    current_curvature = curvatures[0]
+
   psi = interp(delay, T_IDXS[:CONTROL_N], psis)
   desired_curvature_rate = curvature_rates[0]
 
@@ -132,5 +140,4 @@ def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
   safe_desired_curvature = clip(desired_curvature,
                                      current_curvature - max_curvature_rate * DESIRED_CURVATURE_LIMIT,
                                      current_curvature + max_curvature_rate * DESIRED_CURVATURE_LIMIT)
-                                     
   return safe_desired_curvature, safe_desired_curvature_rate

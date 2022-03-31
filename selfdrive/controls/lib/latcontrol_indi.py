@@ -5,7 +5,6 @@ from cereal import log
 from common.filter_simple import FirstOrderFilter
 from common.numpy_fast import clip, interp
 from common.realtime import DT_CTRL
-from selfdrive.controls.lib.drive_helpers import get_steer_max
 from selfdrive.controls.lib.latcontrol import LatControl, MIN_STEER_SPEED
 from common.params import Params
 from decimal import Decimal
@@ -132,8 +131,7 @@ class LatControlINDI(LatControl):
 
       output_steer = self.steer_filter.x + delta_u
 
-      steers_max = get_steer_max(CP, CS.vEgo)
-      output_steer = clip(output_steer, -steers_max, steers_max)
+      output_steer = clip(output_steer, -self.steer_max, self.steer_max)
 
       indi_log.active = True
       indi_log.rateSetPoint = float(rate_sp)
@@ -142,6 +140,6 @@ class LatControlINDI(LatControl):
       indi_log.delayedOutput = float(self.steer_filter.x)
       indi_log.delta = float(delta_u)
       indi_log.output = float(output_steer)
-      indi_log.saturated = self._check_saturation(steers_max - abs(output_steer) < 1e-3, CS)
+      indi_log.saturated = self._check_saturation(self.steer_max - abs(output_steer) < 1e-3, CS)
 
     return float(output_steer), float(steers_des), indi_log

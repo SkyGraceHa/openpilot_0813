@@ -163,8 +163,7 @@ static void ui_draw_vision_lane_lines(UIState *s) {
   const UIScene &scene = s->scene;
   NVGpaint track_bg;
   int steerOverride = scene.car_state.getSteeringPressed();
-  float steer_max_v = scene.steerMax_V - (1.5 * (scene.steerMax_V - 0.9));
-  int torque_scale = (int)fabs(255*(float)scene.output_scale*steer_max_v);
+  int torque_scale = (int)fabs(255*(float)scene.output_scale*0.9);
   int red_lvl = fmin(255, torque_scale);
   int green_lvl = fmin(255, 255-torque_scale);
 
@@ -268,7 +267,7 @@ static void ui_draw_tpms(UIState *s) {
     const int w = 55;
     const int h = 123;
     int x = 1920 - 160;
-    int y = 740;
+    int y = 920;
     int txt_x_gap = 5;
 
     const Rect rect = {x - w - 10, y - 5, w * 3 + 20, h + 10};
@@ -1104,7 +1103,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
         value_fontSize, label_fontSize, uom_fontSize, false);
   }
   //engine rpm
-  if (scene.batt_less && scene.engine_rpm > 1) {
+  if (scene.engine_rpm > 1) {
     //char val_str[16];
     char uom_str[6];
     std::string engine_rpm_val = std::to_string(int(scene.engine_rpm));
@@ -1788,7 +1787,7 @@ static void ui_draw_live_tune_panel(UIState *s) {
 
 static void ui_draw_auto_hold(UIState *s) {
   int y_pos = 0;
-  if (s->scene.steer_warning && (s->scene.car_state.getVEgo() < 0.1 || s->scene.stand_still) && !s->scene.steer_wind_down && s->scene.car_state.getSteeringAngleDeg() < 90) {
+  if (s->scene.steer_warning && (s->scene.car_state.getVEgo() < 0.1 || s->scene.stand_still) && s->scene.car_state.getSteeringAngleDeg() < 90) {
     y_pos = 500;
   } else {
     y_pos = 740-140;

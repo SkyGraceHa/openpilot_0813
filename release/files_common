@@ -98,6 +98,7 @@ selfdrive/boardd/pigeon.h
 selfdrive/boardd/set_time.py
 
 selfdrive/car/__init__.py
+selfdrive/car/docs_definitions.py
 selfdrive/car/car_helpers.py
 selfdrive/car/fingerprints.py
 selfdrive/car/interfaces.py
@@ -339,7 +340,6 @@ selfdrive/thermald/fan_controller.py
 selfdrive/test/__init__.py
 selfdrive/test/helpers.py
 selfdrive/test/setup_device_ci.sh
-selfdrive/test/test_fingerprints.py
 selfdrive/test/test_onroad.py
 
 selfdrive/ui/.gitignore

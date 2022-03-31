@@ -6,6 +6,7 @@ from cereal import log, car
 import cereal.messaging as messaging
 from common.conversions import Conversions as CV
 from common.realtime import DT_CTRL
+from common.conversions import Conversions as CV
 from selfdrive.locationd.calibrationd import MIN_SPEED_FILTER
 
 AlertSize = log.ControlsState.AlertSize

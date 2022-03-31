@@ -2,6 +2,7 @@ import os
 
 from selfdrive.hardware import EON, TICI, PC
 from selfdrive.manager.process import PythonProcess, NativeProcess, DaemonProcess
+
 from common.params import Params
 
 WEBCAM = os.getenv("USE_WEBCAM") is not None
@@ -51,6 +52,9 @@ procs = [
   PythonProcess("androidd", "selfdrive.hardware.eon.androidd", enabled=EON, persistent=True),
   #PythonProcess("gpxd", "selfdrive.dragonpilot.gpxd"),
   #PythonProcess("otisserv", "selfdrive.dragonpilot.otisserv", persistent=True),
+
+  # Experimental
+  #PythonProcess("rawgpsd", "selfdrive.sensord.rawgps.rawgpsd", enabled=os.path.isfile("/persist/comma/use-quectel-rawgps")),
 ]
 
 if EnableLogger:

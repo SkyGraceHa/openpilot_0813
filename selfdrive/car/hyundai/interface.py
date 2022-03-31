@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from cereal import car
 from panda import Panda
-from common.params import Params
 from common.conversions import Conversions as CV
 from selfdrive.car.hyundai.values import CAR, EV_CAR, HYBRID_CAR, Buttons, CarControllerParams
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, gen_empty_fingerprint
@@ -29,7 +28,7 @@ class CarInterface(CarInterfaceBase):
     return CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX
 
   @staticmethod
-  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=[]):  # pylint: disable=dangerous-default-value
+  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=[], disable_radar=False):  # pylint: disable=dangerous-default-value
     ret = CarInterfaceBase.get_std_params(candidate, fingerprint)
 
     ret.carName = "hyundai"
@@ -98,7 +97,6 @@ class CarInterface(CarInterfaceBase):
     Scale = float(Decimal(params.get("Scale", encoding="utf8")) * Decimal('1.0'))
     LqrKi = float(Decimal(params.get("LqrKi", encoding="utf8")) * Decimal('0.001'))
     DcGain = float(Decimal(params.get("DcGain", encoding="utf8")) * Decimal('0.00001'))
-    SteerMaxV = float(Decimal(params.get("SteerMaxvAdj", encoding="utf8")) * Decimal('0.1'))
 
     tire_stiffness_factor = float(Decimal(params.get("TireStiffnessFactorAdj", encoding="utf8")) * Decimal('0.01'))
     ret.steerActuatorDelay = float(Decimal(params.get("SteerActuatorDelayAdj", encoding="utf8")) * Decimal('0.01'))
@@ -155,9 +153,6 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.lqr.k = [-110., 451.]
       ret.lateralTuning.lqr.l = [0.33, 0.318]
       ret.lateralTuning.lqr.dcGain = DcGain
-
-    ret.steerMaxV = [SteerMaxV]
-    ret.steerMaxBP = [0.]
 
     # genesis
     if candidate == CAR.GENESIS:
