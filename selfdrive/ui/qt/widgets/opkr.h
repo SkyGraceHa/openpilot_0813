@@ -678,6 +678,18 @@ public:
   }
 };
 
+class ToAvoidLKASFaultBeyondToggle : public ToggleControl {
+  Q_OBJECT
+
+public:
+  ToAvoidLKASFaultBeyondToggle() : ToggleControl("To Avoid LKAS Fault with More Steer", "This is just in case you are using other panda setting.(delta up&down, maxsteer, rtdelta and etc).", "../assets/offroad/icon_shell.png", Params().getBool("AvoidLKASFaultBeyond")) {
+    QObject::connect(this, &ToAvoidLKASFaultBeyondToggle::toggleFlipped, [=](int state) {
+      bool status = state ? true : false;
+      Params().putBool("AvoidLKASFaultBeyond", status);
+    });
+  }
+};
+
 // openpilot preview
 class OpenpilotView : public AbstractControl {
   Q_OBJECT

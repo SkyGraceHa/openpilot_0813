@@ -657,6 +657,7 @@ DeveloperPanel::DeveloperPanel(QWidget *parent) : QFrame(parent) {
   layout->addWidget(new MaxRTDelta());
   layout->addWidget(new MaxRateUp());
   layout->addWidget(new MaxRateDown());
+  layout->addWidget(new ToAvoidLKASFaultBeyondToggle());
   const char* p_edit_go = "/data/openpilot/selfdrive/assets/addon/script/p_edit.sh ''";
   auto peditbtn = new ButtonControl("Change Panda Values", "RUN");
   QObject::connect(peditbtn, &ButtonControl::clicked, [=]() {
