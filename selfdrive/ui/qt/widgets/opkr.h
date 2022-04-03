@@ -194,7 +194,7 @@ class VariableSteerMaxToggle : public ToggleControl {
   Q_OBJECT
 
 public:
-  VariableSteerMaxToggle() : ToggleControl("Use variable SteerMax", "Use the variable SteerMax by curvature.", "../assets/offroad/icon_shell.png", Params().getBool("OpkrVariableSteerMax")) {
+  VariableSteerMaxToggle() : ToggleControl("SteerMax/Variable SteerMax Toggle", "Use the variable SteerMax by curvature. If this is off, runs only with base value below. STBase: SteerMax Default value. STMax: SteerMax Maximum value.", "../assets/offroad/icon_shell.png", Params().getBool("OpkrVariableSteerMax")) {
     QObject::connect(this, &VariableSteerMaxToggle::toggleFlipped, [=](int state) {
       bool status = state ? true : false;
       Params().putBool("OpkrVariableSteerMax", status);
@@ -206,7 +206,7 @@ class VariableSteerDeltaToggle : public ToggleControl {
   Q_OBJECT
 
 public:
-  VariableSteerDeltaToggle() : ToggleControl("Use variable SteerDelta", "Use variable SteerDelta by curvature. It changes from default to 5(DeltaUp) and 10(DeltaDown).", "../assets/offroad/icon_shell.png", Params().getBool("OpkrVariableSteerDelta")) {
+  VariableSteerDeltaToggle() : ToggleControl("DeltaUpDown/Variable Delta Toggle", "Use variable SteerDelta by curvature. If this is off, runs only with base value below. DUBase: Steer DeltaUp Default value. DUMax: Steer DeltaUp Maximum value. DDBase: Steer DeltaDown Default value. DDMax: Steer DeltaDown Maximum value.", "../assets/offroad/icon_shell.png", Params().getBool("OpkrVariableSteerDelta")) {
     QObject::connect(this, &VariableSteerDeltaToggle::toggleFlipped, [=](int state) {
       bool status = state ? true : false;
       Params().putBool("OpkrVariableSteerDelta", status);
@@ -1118,96 +1118,68 @@ private:
   void refresh();
 };
 
-class SteerMaxBase : public AbstractControl {
+class SteerMax : public AbstractControl {
   Q_OBJECT
 
 public:
-  SteerMaxBase();
+  SteerMax();
 
 private:
-  QPushButton btnplus;
-  QPushButton btnminus;
-  QLabel label;
+  QPushButton btnplusl;
+  QPushButton btnminusl;
+  QPushButton btnplusr;
+  QPushButton btnminusr;
+  QLabel labell1;
+  QLabel labelr1;
+  QLabel labell;
+  QLabel labelr;
   Params params;
   
-  void refresh();
+  void refreshl();
+  void refreshr();
 };
 
-class SteerMaxMax : public AbstractControl {
+class SteerDeltaUp : public AbstractControl {
   Q_OBJECT
 
 public:
-  SteerMaxMax();
+  SteerDeltaUp();
 
 private:
-  QPushButton btnplus;
-  QPushButton btnminus;
-  QLabel label;
+  QPushButton btnplusl;
+  QPushButton btnminusl;
+  QPushButton btnplusr;
+  QPushButton btnminusr;
+  QLabel labell1;
+  QLabel labelr1;
+  QLabel labell;
+  QLabel labelr;
   Params params;
   
-  void refresh();
+  void refreshl();
+  void refreshr();
 };
 
-class SteerDeltaUpBase : public AbstractControl {
+class SteerDeltaDown : public AbstractControl {
   Q_OBJECT
 
 public:
-  SteerDeltaUpBase();
+  SteerDeltaDown();
 
 private:
-  QPushButton btnplus;
-  QPushButton btnminus;
-  QLabel label;
+  QPushButton btnplusl;
+  QPushButton btnminusl;
+  QPushButton btnplusr;
+  QPushButton btnminusr;
+  QLabel labell1;
+  QLabel labelr1;
+  QLabel labell;
+  QLabel labelr;
   Params params;
   
-  void refresh();
+  void refreshl();
+  void refreshr();
 };
-
-class SteerDeltaUpMax : public AbstractControl {
-  Q_OBJECT
-
-public:
-  SteerDeltaUpMax();
-
-private:
-  QPushButton btnplus;
-  QPushButton btnminus;
-  QLabel label;
-  Params params;
-  
-  void refresh();
-};
-
-class SteerDeltaDownBase : public AbstractControl {
-  Q_OBJECT
-
-public:
-  SteerDeltaDownBase();
-
-private:
-  QPushButton btnplus;
-  QPushButton btnminus;
-  QLabel label;
-  Params params;
-  
-  void refresh();
-};
-
-class SteerDeltaDownMax : public AbstractControl {
-  Q_OBJECT
-
-public:
-  SteerDeltaDownMax();
-
-private:
-  QPushButton btnplus;
-  QPushButton btnminus;
-  QLabel label;
-  Params params;
-  
-  void refresh();
-};
-
 
 // control
 class LateralControl : public AbstractControl {

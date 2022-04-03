@@ -203,7 +203,7 @@ class CarController():
     self.vRel = self.sm['radarState'].leadOne.vRel #EON Lead
     self.yRel = self.sm['radarState'].leadOne.yRel #EON Lead
 
-    if self.enable_steer_more and self.to_avoid_lkas_fault_enabled and abs(CS.out.steeringAngleDeg) > 60 and \
+    if self.enable_steer_more and self.to_avoid_lkas_fault_enabled and abs(CS.out.steeringAngleDeg) > self.to_avoid_lkas_fault_max_angle and \
      CS.out.vEgo <= 8.3 and not (0 <= self.driver_steering_torque_above_timer < 100):
       self.steerMax = self.p.STEER_MAX
       self.steerDeltaUp = self.p.STEER_DELTA_UP

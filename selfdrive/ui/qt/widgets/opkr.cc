@@ -2313,7 +2313,7 @@ void MaxSteer::refresh() {
   btnplus.setText("＋");
 }
 
-MaxRTDelta::MaxRTDelta() : AbstractControl("RT_DELTA", "Modify the panda RT_DELTA value. Press the Run button below to apply.", "../assets/offroad/icon_shell.png") {
+MaxRTDelta::MaxRTDelta() : AbstractControl("RT_DELTA", "Modify the panda RT_DELTA value. Press the Run button below to apply. It might be 7(DeltaDown)X16=112?", "../assets/offroad/icon_shell.png") {
 
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
   label.setStyleSheet("color: #e0e879");
@@ -3065,13 +3065,15 @@ void TireStiffnessFactor::refresh() {
   btnplus.setText("＋");
 }
 
-SteerMaxBase::SteerMaxBase() : AbstractControl("SteerMaxDefault", "Adjust the SteerMax default.", "../assets/offroad/icon_shell.png") {
+SteerMax::SteerMax() : AbstractControl("", "", "") {
 
-  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
-  label.setStyleSheet("color: #e0e879");
-  hlayout->addWidget(&label);
-
-  btnminus.setStyleSheet(R"(
+  labell1.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  labell1.setText("SMBase: ");
+  hlayout->addWidget(&labell1);
+  labell.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  labell.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&labell);
+  btnminusl.setStyleSheet(R"(
     padding: 0;
     border-radius: 50px;
     font-size: 35px;
@@ -3079,7 +3081,7 @@ SteerMaxBase::SteerMaxBase() : AbstractControl("SteerMaxDefault", "Adjust the St
     color: #E4E4E4;
     background-color: #393939;
   )");
-  btnplus.setStyleSheet(R"(
+  btnplusl.setStyleSheet(R"(
     padding: 0;
     border-radius: 50px;
     font-size: 35px;
@@ -3087,109 +3089,121 @@ SteerMaxBase::SteerMaxBase() : AbstractControl("SteerMaxDefault", "Adjust the St
     color: #E4E4E4;
     background-color: #393939;
   )");
-  btnminus.setFixedSize(150, 100);
-  btnplus.setFixedSize(150, 100);
-  hlayout->addWidget(&btnminus);
-  hlayout->addWidget(&btnplus);
+  btnminusl.setFixedSize(100, 100);
+  btnplusl.setFixedSize(100, 100);
+  hlayout->addWidget(&btnminusl);
+  hlayout->addWidget(&btnplusl);
 
-  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+  labelr1.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+  labelr1.setText("SMMax: ");
+  hlayout->addWidget(&labelr1);
+  labelr.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  labelr.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&labelr);
+  btnminusr.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplusr.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminusr.setFixedSize(100, 100);
+  btnplusr.setFixedSize(100, 100);
+  hlayout->addWidget(&btnminusr);
+  hlayout->addWidget(&btnplusr);
+
+  btnminusl.setText("－");
+  btnplusl.setText("＋");
+  btnminusr.setText("－");
+  btnplusr.setText("＋");
+
+  QObject::connect(&btnminusl, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("SteerMaxBaseAdj"));
     int value = str.toInt();
-    value = value - 2;
-    if (value <= 200 ) {
+    value = value - 1;
+    if (value <= 200) {
       value = 200;
     }
     QString values = QString::number(value);
     params.put("SteerMaxBaseAdj", values.toStdString());
-    refresh();
+    refreshl();
   });
   
-  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+  QObject::connect(&btnplusl, &QPushButton::clicked, [=]() {
+    auto str1 = QString::fromStdString(params.get("SteerMaxAdj"));
+    int value1 = str1.toInt();
     auto str = QString::fromStdString(params.get("SteerMaxBaseAdj"));
     int value = str.toInt();
-    value = value + 2;
-    if (value >= 512 ) {
+    value = value + 1;
+    if (value > value1) {
+      value = value1;
+      ConfirmationDialog::alert("The value cannot exceed SteerMax(" + str1 + ")", this);
+    } else if (value >= 512) {
       value = 512;
     }
     QString values = QString::number(value);
     params.put("SteerMaxBaseAdj", values.toStdString());
-    refresh();
+    refreshl();
   });
-  refresh();
-}
 
-void SteerMaxBase::refresh() {
-  label.setText(QString::fromStdString(params.get("SteerMaxBaseAdj")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
-}
-
-SteerMaxMax::SteerMaxMax() : AbstractControl("SteerMaxMax", "Adjust the SteerMax maximum.", "../assets/offroad/icon_shell.png") {
-
-  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
-  label.setStyleSheet("color: #e0e879");
-  hlayout->addWidget(&label);
-
-  btnminus.setStyleSheet(R"(
-    padding: 0;
-    border-radius: 50px;
-    font-size: 35px;
-    font-weight: 500;
-    color: #E4E4E4;
-    background-color: #393939;
-  )");
-  btnplus.setStyleSheet(R"(
-    padding: 0;
-    border-radius: 50px;
-    font-size: 35px;
-    font-weight: 500;
-    color: #E4E4E4;
-    background-color: #393939;
-  )");
-  btnminus.setFixedSize(150, 100);
-  btnplus.setFixedSize(150, 100);
-  hlayout->addWidget(&btnminus);
-  hlayout->addWidget(&btnplus);
-
-  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+  QObject::connect(&btnminusr, &QPushButton::clicked, [=]() {
+    auto str1 = QString::fromStdString(params.get("SteerMaxBaseAdj"));
+    int value1 = str1.toInt();
     auto str = QString::fromStdString(params.get("SteerMaxAdj"));
     int value = str.toInt();
-    value = value - 2;
-    if (value <= 254 ) {
+    value = value - 1;
+    if (value < value1) {
+      value = value1;
+      ConfirmationDialog::alert("The value cannot be less than SteerMaxBase(" + str1 + ")", this);
+    } else if (value <= 254) {
       value = 254;
     }
     QString values = QString::number(value);
     params.put("SteerMaxAdj", values.toStdString());
-    refresh();
+    refreshr();
   });
   
-  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+  QObject::connect(&btnplusr, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("SteerMaxAdj"));
     int value = str.toInt();
-    value = value + 2;
-    if (value >= 1024 ) {
+    value = value + 1;
+    if (value >= 1024) {
       value = 1024;
     }
     QString values = QString::number(value);
     params.put("SteerMaxAdj", values.toStdString());
-    refresh();
+    refreshr();
   });
-  refresh();
+  refreshl();
+  refreshr();
 }
 
-void SteerMaxMax::refresh() {
-  label.setText(QString::fromStdString(params.get("SteerMaxAdj")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
+void SteerMax::refreshl() {
+  labell.setText(QString::fromStdString(params.get("SteerMaxBaseAdj")));
 }
 
-SteerDeltaUpBase::SteerDeltaUpBase() : AbstractControl("SteerDeltaUpDefault", "Adjust the Steer DeltaUp default value.", "../assets/offroad/icon_shell.png") {
+void SteerMax::refreshr() {
+  labelr.setText(QString::fromStdString(params.get("SteerMaxAdj")));
+}
 
-  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
-  label.setStyleSheet("color: #e0e879");
-  hlayout->addWidget(&label);
+SteerDeltaUp::SteerDeltaUp() : AbstractControl("", "", "") {
 
-  btnminus.setStyleSheet(R"(
+  labell1.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  labell1.setText("DtUpBase: ");
+  hlayout->addWidget(&labell1);
+  labell.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  labell.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&labell);
+  btnminusl.setStyleSheet(R"(
     padding: 0;
     border-radius: 50px;
     font-size: 35px;
@@ -3197,7 +3211,7 @@ SteerDeltaUpBase::SteerDeltaUpBase() : AbstractControl("SteerDeltaUpDefault", "A
     color: #E4E4E4;
     background-color: #393939;
   )");
-  btnplus.setStyleSheet(R"(
+  btnplusl.setStyleSheet(R"(
     padding: 0;
     border-radius: 50px;
     font-size: 35px;
@@ -3205,109 +3219,121 @@ SteerDeltaUpBase::SteerDeltaUpBase() : AbstractControl("SteerDeltaUpDefault", "A
     color: #E4E4E4;
     background-color: #393939;
   )");
-  btnminus.setFixedSize(150, 100);
-  btnplus.setFixedSize(150, 100);
-  hlayout->addWidget(&btnminus);
-  hlayout->addWidget(&btnplus);
+  btnminusl.setFixedSize(100, 100);
+  btnplusl.setFixedSize(100, 100);
+  hlayout->addWidget(&btnminusl);
+  hlayout->addWidget(&btnplusl);
 
-  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+  labelr1.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+  labelr1.setText("DtUpMax: ");
+  hlayout->addWidget(&labelr1);
+  labelr.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  labelr.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&labelr);
+  btnminusr.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplusr.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminusr.setFixedSize(100, 100);
+  btnplusr.setFixedSize(100, 100);
+  hlayout->addWidget(&btnminusr);
+  hlayout->addWidget(&btnplusr);
+
+  btnminusl.setText("－");
+  btnplusl.setText("＋");
+  btnminusr.setText("－");
+  btnplusr.setText("＋");
+
+  QObject::connect(&btnminusl, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("SteerDeltaUpBaseAdj"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 2 ) {
+    if (value <= 2) {
       value = 2;
     }
     QString values = QString::number(value);
     params.put("SteerDeltaUpBaseAdj", values.toStdString());
-    refresh();
+    refreshl();
   });
   
-  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+  QObject::connect(&btnplusl, &QPushButton::clicked, [=]() {
+    auto str1 = QString::fromStdString(params.get("SteerDeltaUpAdj"));
+    int value1 = str1.toInt();
     auto str = QString::fromStdString(params.get("SteerDeltaUpBaseAdj"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 7 ) {
+    if (value > value1) {
+      value = value1;
+      ConfirmationDialog::alert("The value cannot exceed maximum DeltaUp value(" + str1 + ")", this);
+    } else if (value >= 7) {
       value = 7;
     }
     QString values = QString::number(value);
     params.put("SteerDeltaUpBaseAdj", values.toStdString());
-    refresh();
+    refreshl();
   });
-  refresh();
-}
 
-void SteerDeltaUpBase::refresh() {
-  label.setText(QString::fromStdString(params.get("SteerDeltaUpBaseAdj")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
-}
-
-SteerDeltaUpMax::SteerDeltaUpMax() : AbstractControl("SteerDeltaUpMax", "Adjust the Steer DeltaUp maximum value.", "../assets/offroad/icon_shell.png") {
-
-  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
-  label.setStyleSheet("color: #e0e879");
-  hlayout->addWidget(&label);
-
-  btnminus.setStyleSheet(R"(
-    padding: 0;
-    border-radius: 50px;
-    font-size: 35px;
-    font-weight: 500;
-    color: #E4E4E4;
-    background-color: #393939;
-  )");
-  btnplus.setStyleSheet(R"(
-    padding: 0;
-    border-radius: 50px;
-    font-size: 35px;
-    font-weight: 500;
-    color: #E4E4E4;
-    background-color: #393939;
-  )");
-  btnminus.setFixedSize(150, 100);
-  btnplus.setFixedSize(150, 100);
-  hlayout->addWidget(&btnminus);
-  hlayout->addWidget(&btnplus);
-
-  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+  QObject::connect(&btnminusr, &QPushButton::clicked, [=]() {
+    auto str1 = QString::fromStdString(params.get("SteerDeltaUpBaseAdj"));
+    int value1 = str1.toInt();
     auto str = QString::fromStdString(params.get("SteerDeltaUpAdj"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 3 ) {
+    if (value < value1) {
+      value = value1;
+      ConfirmationDialog::alert("The value cannot be less than DeltaUp default value(" + str1 + ")", this);
+    } else if (value <= 3) {
       value = 3;
     }
     QString values = QString::number(value);
     params.put("SteerDeltaUpAdj", values.toStdString());
-    refresh();
+    refreshr();
   });
   
-  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+  QObject::connect(&btnplusr, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("SteerDeltaUpAdj"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 7 ) {
+    if (value >= 7) {
       value = 7;
     }
     QString values = QString::number(value);
     params.put("SteerDeltaUpAdj", values.toStdString());
-    refresh();
+    refreshr();
   });
-  refresh();
+  refreshl();
+  refreshr();
 }
 
-void SteerDeltaUpMax::refresh() {
-  label.setText(QString::fromStdString(params.get("SteerDeltaUpAdj")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
+void SteerDeltaUp::refreshl() {
+  labell.setText(QString::fromStdString(params.get("SteerDeltaUpBaseAdj")));
 }
 
-SteerDeltaDownBase::SteerDeltaDownBase() : AbstractControl("SteerDeltaDownDefault", "Adjust the SteerDeltaDown default.", "../assets/offroad/icon_shell.png") {
+void SteerDeltaUp::refreshr() {
+  labelr.setText(QString::fromStdString(params.get("SteerDeltaUpAdj")));
+}
 
-  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
-  label.setStyleSheet("color: #e0e879");
-  hlayout->addWidget(&label);
+SteerDeltaDown::SteerDeltaDown() : AbstractControl("", "", "") {
 
-  btnminus.setStyleSheet(R"(
+  labell1.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  labell1.setText("DtDnBase: ");
+  hlayout->addWidget(&labell1);
+  labell.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  labell.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&labell);
+  btnminusl.setStyleSheet(R"(
     padding: 0;
     border-radius: 50px;
     font-size: 35px;
@@ -3315,7 +3341,7 @@ SteerDeltaDownBase::SteerDeltaDownBase() : AbstractControl("SteerDeltaDownDefaul
     color: #E4E4E4;
     background-color: #393939;
   )");
-  btnplus.setStyleSheet(R"(
+  btnplusl.setStyleSheet(R"(
     padding: 0;
     border-radius: 50px;
     font-size: 35px;
@@ -3323,100 +3349,110 @@ SteerDeltaDownBase::SteerDeltaDownBase() : AbstractControl("SteerDeltaDownDefaul
     color: #E4E4E4;
     background-color: #393939;
   )");
-  btnminus.setFixedSize(150, 100);
-  btnplus.setFixedSize(150, 100);
-  hlayout->addWidget(&btnminus);
-  hlayout->addWidget(&btnplus);
+  btnminusl.setFixedSize(100, 100);
+  btnplusl.setFixedSize(100, 100);
+  hlayout->addWidget(&btnminusl);
+  hlayout->addWidget(&btnplusl);
 
-  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+  labelr1.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+  labelr1.setText("DtDnMax: ");
+  hlayout->addWidget(&labelr1);
+  labelr.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  labelr.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&labelr);
+  btnminusr.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplusr.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminusr.setFixedSize(100, 100);
+  btnplusr.setFixedSize(100, 100);
+  hlayout->addWidget(&btnminusr);
+  hlayout->addWidget(&btnplusr);
+
+  btnminusl.setText("－");
+  btnplusl.setText("＋");
+  btnminusr.setText("－");
+  btnplusr.setText("＋");
+
+  QObject::connect(&btnminusl, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("SteerDeltaDownBaseAdj"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 3 ) {
+    if (value <= 3) {
       value = 3;
     }
     QString values = QString::number(value);
     params.put("SteerDeltaDownBaseAdj", values.toStdString());
-    refresh();
+    refreshl();
   });
   
-  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+  QObject::connect(&btnplusl, &QPushButton::clicked, [=]() {
+    auto str1 = QString::fromStdString(params.get("SteerDeltaDownAdj"));
+    int value1 = str1.toInt();
     auto str = QString::fromStdString(params.get("SteerDeltaDownBaseAdj"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 15 ) {
+    if (value > value1) {
+      value = value1;
+      ConfirmationDialog::alert("The value cannot exceed maximum DeltaDown value(" + str1 + ")", this);
+    } else if (value >= 15) {
       value = 15;
     }
     QString values = QString::number(value);
     params.put("SteerDeltaDownBaseAdj", values.toStdString());
-    refresh();
+    refreshl();
   });
-  refresh();
-}
 
-void SteerDeltaDownBase::refresh() {
-  label.setText(QString::fromStdString(params.get("SteerDeltaDownBaseAdj")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
-}
-
-SteerDeltaDownMax::SteerDeltaDownMax() : AbstractControl("SteerDeltaDownMax", "Adjust the SteerDeltaDown maximum.", "../assets/offroad/icon_shell.png") {
-
-  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
-  label.setStyleSheet("color: #e0e879");
-  hlayout->addWidget(&label);
-
-  btnminus.setStyleSheet(R"(
-    padding: 0;
-    border-radius: 50px;
-    font-size: 35px;
-    font-weight: 500;
-    color: #E4E4E4;
-    background-color: #393939;
-  )");
-  btnplus.setStyleSheet(R"(
-    padding: 0;
-    border-radius: 50px;
-    font-size: 35px;
-    font-weight: 500;
-    color: #E4E4E4;
-    background-color: #393939;
-  )");
-  btnminus.setFixedSize(150, 100);
-  btnplus.setFixedSize(150, 100);
-  hlayout->addWidget(&btnminus);
-  hlayout->addWidget(&btnplus);
-
-  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+  QObject::connect(&btnminusr, &QPushButton::clicked, [=]() {
+    auto str1 = QString::fromStdString(params.get("SteerDeltaDownBaseAdj"));
+    int value1 = str1.toInt();
     auto str = QString::fromStdString(params.get("SteerDeltaDownAdj"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 7 ) {
+    if (value < value1) {
+      value = value1;
+      ConfirmationDialog::alert("The value cannot be less than DeltaDown default value(" + str1 + ")", this);
+    } else if (value <= 7) {
       value = 7;
     }
     QString values = QString::number(value);
     params.put("SteerDeltaDownAdj", values.toStdString());
-    refresh();
+    refreshr();
   });
   
-  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+  QObject::connect(&btnplusr, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("SteerDeltaDownAdj"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 15 ) {
+    if (value >= 15) {
       value = 15;
     }
     QString values = QString::number(value);
     params.put("SteerDeltaDownAdj", values.toStdString());
-    refresh();
+    refreshr();
   });
-  refresh();
+  refreshl();
+  refreshr();
 }
 
-void SteerDeltaDownMax::refresh() {
-  label.setText(QString::fromStdString(params.get("SteerDeltaDownAdj")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
+void SteerDeltaDown::refreshl() {
+  labell.setText(QString::fromStdString(params.get("SteerDeltaDownBaseAdj")));
+}
+
+void SteerDeltaDown::refreshr() {
+  labelr.setText(QString::fromStdString(params.get("SteerDeltaDownAdj")));
 }
 
 SteerThreshold::SteerThreshold() : AbstractControl("SteerThreshold", "Adjust the SteerThreshold value.", "../assets/offroad/icon_shell.png") {
