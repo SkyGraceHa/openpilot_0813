@@ -75,13 +75,13 @@ OpkrMonitoringMode:0
 OpkrMonitorEyesThreshold:45
 OpkrMonitorNormalEyesThreshold:45
 OpkrMonitorBlinkThreshold:35
-CruiseGap1:10
-CruiseGap2:12
-CruiseGap3:14
-CruiseGap4:16
+CruiseGap1:11
+CruiseGap2:13
+CruiseGap3:15
+CruiseGap4:17
 DynamicTRGap:2
 DynamicTRSpd:0,20,40,60,110
-DynamicTRSet:1.2,1.3,1.4,1.5,1.6
+DynamicTRSet:1.3,1.4,1.5,1.6,1.7
 CustomTREnabled:0
 LCTimingFactorUD:1
 LCTimingFactor30:10
@@ -123,5 +123,6 @@ CloseToRoadEdge:0
 LeftEdgeOffset:0
 RightEdgeOffset:0
 AvoidLKASFaultEnabled:0
-AvoidLKASFaultMaxAngle:90
+AvoidLKASFaultMaxAngle:85
 AvoidLKASFaultMaxFrame:90
+AvoidLKASFaultBeyond:0

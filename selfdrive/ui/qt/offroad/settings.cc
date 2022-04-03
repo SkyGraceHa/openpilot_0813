@@ -685,14 +685,12 @@ TuningPanel::TuningPanel(QWidget *parent) : QFrame(parent) {
   layout->addWidget(new SteerRateCost());
   layout->addWidget(new SteerLimitTimer());
   layout->addWidget(new TireStiffnessFactor());
-  layout->addWidget(new SteerMaxBase());
-  layout->addWidget(new SteerMaxMax());
   layout->addWidget(new VariableSteerMaxToggle());
-  layout->addWidget(new SteerDeltaUpBase());
-  layout->addWidget(new SteerDeltaUpMax());
-  layout->addWidget(new SteerDeltaDownBase());
-  layout->addWidget(new SteerDeltaDownMax());
+  layout->addWidget(new SteerMax());
   layout->addWidget(new VariableSteerDeltaToggle());
+  layout->addWidget(new SteerDeltaUp());
+  layout->addWidget(new SteerDeltaDown());
+  layout->addWidget(new ToAvoidLKASFaultBeyondToggle());
   layout->addWidget(new SteerThreshold());
   layout->addWidget(new DesiredCurvatureLimit());
 

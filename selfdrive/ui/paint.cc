@@ -460,6 +460,7 @@ static void ui_draw_debug(UIState *s) {
       nvgFontSize(s->vg, 50);
     }
     //ui_print(s, ui_viz_rx, ui_viz_ry, "Live Parameters");
+    ui_print(s, ui_viz_rx, ui_viz_ry+200, "%.0f", scene.ctrl_speed);
     ui_print(s, ui_viz_rx, ui_viz_ry+240, "SR:%.2f", scene.liveParams.steerRatio);
     //ui_print(s, ui_viz_rx, ui_viz_ry+100, "AOfs:%.2f", scene.liveParams.angleOffset);
     ui_print(s, ui_viz_rx, ui_viz_ry+280, "AA:%.2f", scene.liveParams.angleOffsetAverage);
@@ -668,9 +669,9 @@ static void ui_draw_vision_maxspeed_org(UIState *s) {
   float cruise_speed = round(s->scene.vSetDis);
   const bool is_cruise_set = maxspeed != 0 && maxspeed != SET_SPEED_NA;
   if (s->scene.cruiseAccStatus) {
-    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363))+1.5 > s->scene.ctrl_speed);
+    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363)) > s->scene.ctrl_speed+1.5);
   } else {
-    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363))+1.5 > s->scene.limitSpeedCamera);
+    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363)) > s->scene.limitSpeedCamera+1.5);
   }
   //if (is_cruise_set && !s->scene.is_metric) { maxspeed *= 0.6225; }
 
@@ -731,9 +732,9 @@ static void ui_draw_vision_cruise_speed(UIState *s) {
   //if (is_cruise_set && !s->scene.is_metric) { maxspeed *= 0.6225; }
   float cruise_speed = round(s->scene.vSetDis);
   if (s->scene.cruiseAccStatus) {
-    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363))+1.5 > s->scene.ctrl_speed);
+    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363)) > s->scene.ctrl_speed+1.5);
   } else {
-    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363))+1.5 > s->scene.limitSpeedCamera);
+    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363)) > s->scene.limitSpeedCamera+1.5);
   }
 
   const Rect rect = {bdr_s, bdr_s, 184, 202};
@@ -928,10 +929,19 @@ static int bb_ui_draw_measure(UIState *s, const char* bb_value, const char* bb_u
     nvgFillPaint(s->vg, rpm_gradient);
     nvgFill(s->vg);
 
+    //print value
+    int dx = 0;
+    if (strlen(bb_uom) > 0) {
+      dx = (int)(bb_uomFontSize*2.5/2);
+    }
+    nvgFontFace(s->vg, "sans-semibold");
+    nvgFontSize(s->vg, bb_valueFontSize*0.6);
+    nvgFillColor(s->vg, bb_valueColor);
+    nvgText(s->vg, bb_x-dx/2-15, bb_y+ (int)(bb_valueFontSize*2.5)+5-20, bb_value, NULL);
     //print label
     nvgFontFace(s->vg, "sans-regular");
     nvgFontSize(s->vg, bb_labelFontSize*2.5);
-    nvgFillColor(s->vg, bb_valueColor);
+    nvgFillColor(s->vg, bb_labelColor);
     nvgText(s->vg, bb_x, bb_y + (int)(bb_valueFontSize*2.5)+5 + (int)(bb_labelFontSize*2.5)+5, bb_label, NULL);
     //print uom
     if (strlen(bb_uom) > 0) {
@@ -1115,7 +1125,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
       val_color = nvgRGBA(255, 0, 0, 200);
     }
     snprintf(uom_str, sizeof(uom_str), "rpm");
-    bb_ry +=bb_ui_draw_measure(s, engine_rpm_val.c_str(), uom_str, engine_rpm_val.c_str(),
+    bb_ry +=bb_ui_draw_measure(s, engine_rpm_val.c_str(), uom_str, "ENG RPM",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize, true);
@@ -1633,43 +1643,32 @@ void draw_top_text(UIState *s) {
     snprintf(now,sizeof(now),"%02d/%02d %s %02d:%02d:%02d", tm.tm_mon + 1, tm.tm_mday, dayofweek, tm.tm_hour, tm.tm_min, tm.tm_sec);
     std::string str(now);
     text_out = str;
-    rect_w = 650;
-    rect_x = s->fb_w/2 - rect_w/2;
   } else if (s->scene.top_text_view == 2) {
     snprintf(now,sizeof(now),"%02d/%02d %s", tm.tm_mon + 1, tm.tm_mday, dayofweek);
     std::string str(now);
     text_out = str;
-    rect_w = 400;
-    rect_x = s->fb_w/2 - rect_w/2;
   } else if (s->scene.top_text_view == 3) {
     snprintf(now,sizeof(now),"%02d:%02d:%02d", tm.tm_hour, tm.tm_min, tm.tm_sec);
     std::string str(now);
     text_out = str;
-    rect_w = 300;
-    rect_x = s->fb_w/2 - rect_w/2;
   } else if (s->scene.top_text_view == 4 && s->scene.osm_enabled) {
     snprintf(now,sizeof(now),"%02d/%02d %s %02d:%02d:%02d ", tm.tm_mon + 1, tm.tm_mday, dayofweek, tm.tm_hour, tm.tm_min, tm.tm_sec);
     std::string str(now);
     text_out = road_name + "  " + str;
-    rect_w = 1450; //1050
-    rect_x = s->fb_w/2 - rect_w/2;
   } else if (s->scene.top_text_view == 5 && s->scene.osm_enabled) {
     snprintf(now,sizeof(now),"%02d/%02d %s ", tm.tm_mon + 1, tm.tm_mday, dayofweek);
     std::string str(now);
     text_out = road_name + "  " + str;
-    rect_w = 1100; //850;
-    rect_x = s->fb_w/2 - rect_w/2;
   } else if (s->scene.top_text_view == 6 && s->scene.osm_enabled) {
     snprintf(now,sizeof(now),"%02d:%02d:%02d ", tm.tm_hour, tm.tm_min, tm.tm_sec);
     std::string str(now);
     text_out = road_name + "  " + str;
-    rect_w = 1100; //750;
-    rect_x = s->fb_w/2 - rect_w/2;
   } else if (s->scene.top_text_view == 7 && s->scene.osm_enabled) {
     text_out = road_name;
-    rect_w = 900; //500
-    rect_x = s->fb_w/2 - rect_w/2;
   }
+  float tw = nvgTextBounds(s->vg, 0, 0, text_out.c_str(), nullptr, nullptr);
+  rect_w = tw*2;
+  rect_x = s->fb_w/2 - rect_w/2;
   nvgBeginPath(s->vg);
   nvgRoundedRect(s->vg, rect_x, rect_y, rect_w, rect_h, 15);
   nvgStrokeWidth(s->vg, 0);
