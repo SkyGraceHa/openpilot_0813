@@ -460,7 +460,7 @@ static void ui_draw_debug(UIState *s) {
       nvgFontSize(s->vg, 50);
     }
     //ui_print(s, ui_viz_rx, ui_viz_ry, "Live Parameters");
-    ui_print(s, ui_viz_rx, ui_viz_ry+200, "%.0f", scene.ctrl_speed);
+    //ui_print(s, ui_viz_rx, ui_viz_ry+200, "%.0f", scene.ctrl_speed);
     ui_print(s, ui_viz_rx, ui_viz_ry+240, "SR:%.2f", scene.liveParams.steerRatio);
     //ui_print(s, ui_viz_rx, ui_viz_ry+100, "AOfs:%.2f", scene.liveParams.angleOffset);
     ui_print(s, ui_viz_rx, ui_viz_ry+280, "AA:%.2f", scene.liveParams.angleOffsetAverage);
@@ -988,7 +988,7 @@ static int bb_ui_draw_measure(UIState *s, const char* bb_value, const char* bb_u
   return (int)((bb_valueFontSize + bb_labelFontSize)*2) + 5;
 }
 
-static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) {
+static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w ) {
   const UIScene &scene = s->scene;
   int bb_rx = bb_x + (int)(bb_w/2);
   int bb_ry = bb_y - 20;
@@ -1139,7 +1139,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
   nvgStroke(s->vg);
 }
 
-static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w ) {
+static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) {
   const UIScene &scene = s->scene;
   int bb_rx = bb_x + (int)(bb_w/2);
   int bb_ry = bb_y - 20;
@@ -1225,8 +1225,8 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
       val_color = COLOR_RED_ALPHA(200);
     }
     // steering is in degrees
-    snprintf(val_str, sizeof(val_str), "%.1f°",(scene.angleSteers));
-    snprintf(uom_str, sizeof(uom_str), "   °");
+    snprintf(val_str, sizeof(val_str), "%.1f",(scene.angleSteers));
+    snprintf(uom_str, sizeof(uom_str), "%.1f",(scene.desired_angle_steers));
 
     bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "STR ANG",
         bb_rx, bb_ry, bb_uom_dx,
@@ -1293,8 +1293,8 @@ static void bb_ui_draw_UI(UIState *s) {
   const int bb_dmr_x = s->fb_w - bb_dmr_w - bdr_s;
   const int bb_dmr_y = bdr_s + 220;
 
-  bb_ui_draw_measures_right(s, bb_dml_x, bb_dml_y, bb_dml_w);
-  bb_ui_draw_measures_left(s, bb_dmr_x, bb_dmr_y-20, bb_dmr_w);
+  bb_ui_draw_measures_left(s, bb_dml_x, bb_dml_y, bb_dml_w);
+  bb_ui_draw_measures_right(s, bb_dmr_x, bb_dmr_y-20, bb_dmr_w);
 }
 
 // show speedlimit value

@@ -182,6 +182,7 @@ typedef struct UIScene {
   int blindspot_blinkingrate = 120;
   int car_valid_status_changed = 0;
   float angleSteers;
+  float desired_angle_steers;
   float steerRatio;
   bool brakeLights;
   bool steerOverride;
