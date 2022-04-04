@@ -226,6 +226,8 @@ class Controls:
     self.v_cruise_kph_set_timer = 0
     self.safety_speed = 0
 
+    self.desired_angle_deg = 0
+
   def auto_enable(self, CS):
     if self.state != State.enabled:
       if CS.cruiseState.available and CS.vEgo >= self.auto_enable_speed * CV.KPH_TO_MS and CS.gearShifter == GearShifter.drive and \
@@ -649,6 +651,7 @@ class Controls:
                                                                              lat_plan.curvatureRates)
       actuators.steer, actuators.steeringAngleDeg, lac_log = self.LaC.update(lat_active, CS, self.CP, self.VM, params, self.last_actuators,
                                                                              desired_curvature, desired_curvature_rate)
+      self.desired_angle_deg = actuators.steeringAngleDeg
     else:
       lac_log = log.ControlsState.LateralDebugState.new_message()
       if self.sm.rcv_frame['testJoystick'] > 0 and self.active:
@@ -657,6 +660,7 @@ class Controls:
         steer = clip(self.sm['testJoystick'].axes[1], -1, 1)
         # max angle is 45 for angle-based cars
         actuators.steer, actuators.steeringAngleDeg = steer, steer * 45.
+        self.desired_angle_deg = actuators.steeringAngleDeg
 
         lac_log.active = True
         lac_log.steeringAngleDeg = CS.steeringAngleDeg
@@ -880,6 +884,8 @@ class Controls:
       controlsState.lateralControlState.lqrState = lac_log
     elif lat_tuning == 'indi':
       controlsState.lateralControlState.indiState = lac_log
+    controlsState.steeringAngleDesiredDeg = self.desired_angle_deg
+
     self.pm.send('controlsState', dat)
 
     # carState

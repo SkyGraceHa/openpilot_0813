@@ -141,6 +141,7 @@ static void update_state(UIState *s) {
     scene.osm_off_spdlimit = scene.controls_state.getOsmOffSpdLimit();
     scene.accel = scene.controls_state.getAccel();
     scene.ctrl_speed = scene.controls_state.getSafetySpeed();
+    scene.desired_angle_steers = scene.controls_state.getSteeringAngleDesiredDeg();
   }
   if (sm.updated("carState")) {
     scene.car_state = sm["carState"].getCarState();
