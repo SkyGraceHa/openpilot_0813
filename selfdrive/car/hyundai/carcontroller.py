@@ -142,10 +142,13 @@ class CarController():
     self.steerMax_base = int(self.params.get("SteerMaxBaseAdj", encoding="utf8"))
     self.steerDeltaUp_base = int(self.params.get("SteerDeltaUpBaseAdj", encoding="utf8"))
     self.steerDeltaDown_base = int(self.params.get("SteerDeltaDownBaseAdj", encoding="utf8"))
-    self.model_speed_range = [30, 40, 255]
-    self.steerMax_range = [self.p.STEER_MAX, self.steerMax_base, self.steerMax_base]
-    self.steerDeltaUp_range = [self.p.STEER_DELTA_UP, self.steerDeltaUp_base, self.steerDeltaUp_base]
-    self.steerDeltaDown_range = [self.p.STEER_DELTA_DOWN, self.steerDeltaDown_base, self.steerDeltaDown_base]
+    self.steerMax_Max = int(self.params.get("SteerMaxAdj", encoding="utf8"))
+    self.steerDeltaUp_Max = int(self.params.get("SteerDeltaUpAdj", encoding="utf8"))
+    self.steerDeltaDown_Max = int(self.params.get("SteerDeltaDownAdj", encoding="utf8"))
+    self.model_speed_range = [30, 100, 255]
+    self.steerMax_range = [self.steerMax_Max, self.steerMax_base, self.steerMax_base]
+    self.steerDeltaUp_range = [self.steerDeltaUp_Max, self.steerDeltaUp_base, self.steerDeltaUp_base]
+    self.steerDeltaDown_range = [self.steerDeltaDown_Max, self.steerDeltaDown_base, self.steerDeltaDown_base]
     self.steerMax = 0
     self.steerDeltaUp = 0
     self.steerDeltaDown = 0
@@ -191,8 +194,6 @@ class CarController():
   def update(self, c, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
              left_lane, right_lane, left_lane_depart, right_lane_depart, set_speed, lead_visible, v_future):
 
-    param = self.p
-
     self.vFuture = v_future
     path_plan = self.NC.update_lateralPlan()
     if frame % 10 == 0:
@@ -204,11 +205,11 @@ class CarController():
     self.yRel = self.sm['radarState'].leadOne.yRel #EON Lead
 
     if self.enable_steer_more and self.to_avoid_lkas_fault_enabled and abs(CS.out.steeringAngleDeg) > self.to_avoid_lkas_fault_max_angle and \
-     CS.out.vEgo <= 8.3 and not (0 <= self.driver_steering_torque_above_timer < 100):
-      self.steerMax = self.p.STEER_MAX
-      self.steerDeltaUp = self.p.STEER_DELTA_UP
-      self.steerDeltaDown = self.p.STEER_DELTA_DOWN
-    elif CS.out.vEgo > 8.3:
+     CS.out.vEgo <= 11.1 and not (0 <= self.driver_steering_torque_above_timer < 100):
+      self.steerMax = self.steerMax_Max
+      self.steerDeltaUp = self.steerDeltaUp_Max
+      self.steerDeltaDown = self.steerDeltaDown_Max
+    elif CS.out.vEgo > 11.1:
       if self.variable_steer_max:
         self.steerMax = interp(int(abs(self.model_speed)), self.model_speed_range, self.steerMax_range)
       else:
@@ -224,9 +225,9 @@ class CarController():
       self.steerDeltaUp = self.steerDeltaUp_base
       self.steerDeltaDown = self.steerDeltaDown_base
 
-    self.p.STEER_MAX = min(self.p.STEER_MAX, self.steerMax) # variable steermax
-    self.p.STEER_DELTA_UP = min(self.p.STEER_DELTA_UP, self.steerDeltaUp) # variable deltaUp
-    self.p.STEER_DELTA_DOWN = min(self.p.STEER_DELTA_DOWN, self.steerDeltaDown) # variable deltaDown
+    self.p.STEER_MAX = self.steerMax
+    self.p.STEER_DELTA_UP = self.steerDeltaUp
+    self.p.STEER_DELTA_DOWN = self.steerDeltaDown
 
     # Steering Torque
     if 0 <= self.driver_steering_torque_above_timer < 100:
@@ -785,8 +786,8 @@ class CarController():
       self.scc11cnt = CS.scc11init["AliveCounterACC"]
 
     setSpeed = round(set_speed * CV.MS_TO_KPH)
-    str_log1 = 'MD={}  BS={:1.0f}/{:1.0f}  CV={:03.0f}/{:0.4f}  TQ={:03.0f}/{:03.0f}  ST={:03.0f}/{:01.0f}/{:01.0f}  FR={:03.0f}'.format(
-      CS.out.cruiseState.modeSel, CS.CP.mdpsBus, CS.CP.sccBus, self.model_speed, abs(self.sm['controlsState'].curvature), abs(new_steer), abs(CS.out.steeringTorque), self.p.STEER_MAX, self.p.STEER_DELTA_UP, self.p.STEER_DELTA_DOWN, self.timer1.sampleTime())
+    str_log1 = 'MD={}  BS={:1.0f}/{:1.0f}  CV={:03.0f}/{:0.4f}  TQ={:03.0f}/{:03.0f}/{:03.0f}  ST={:03.0f}/{:01.0f}/{:01.0f}  FR={:03.0f}'.format(
+      CS.out.cruiseState.modeSel, CS.CP.mdpsBus, CS.CP.sccBus, self.model_speed, abs(self.sm['controlsState'].curvature), abs(new_steer), abs(CS.out.steeringTorque), abs(apply_steer), self.p.STEER_MAX, self.p.STEER_DELTA_UP, self.p.STEER_DELTA_DOWN, self.timer1.sampleTime())
     if CS.out.cruiseState.accActive:
       str_log2 = 'AQ={:+04.2f}  VF={:03.0f}  TS={:03.0f}  SS/VS={:03.0f}/{:03.0f}  RD/LD={:04.1f}/{:03.1f}  CG={:1.0f}  FR={:03.0f}'.format(
        self.aq_value if self.longcontrol else CS.scc12["aReqValue"], v_future, self.NC.ctrl_speed , setSpeed, round(CS.VSetDis), CS.lead_distance, self.last_lead_distance, CS.cruiseGapSet, self.timer1.sampleTime())
