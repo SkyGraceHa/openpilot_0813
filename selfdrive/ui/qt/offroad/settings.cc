@@ -638,6 +638,7 @@ DeveloperPanel::DeveloperPanel(QWidget *parent) : QFrame(parent) {
   layout->addWidget(new MadModeEnabledToggle());
   layout->addWidget(new StockLKASEnabledatDisenagedStatusToggle());
   layout->addWidget(new C2WithCommaPowerToggle());
+  layout->addWidget(new JoystickModeToggle());
   layout->addWidget(new TimeZoneSelectCombo());
   const char* cal_ok = "cp -f /data/openpilot/selfdrive/assets/addon/param/CalibrationParams /data/params/d/";
   auto calokbtn = new ButtonControl("Enable Calibration by Force", "RUN");
@@ -727,6 +728,7 @@ TuningPanel::TuningPanel(QWidget *parent) : QFrame(parent) {
   layout->addWidget(new RadarLongHelperOption());
   layout->addWidget(new StoppingDistAdjToggle());
   layout->addWidget(new E2ELongToggle());
+  layout->addWidget(new StockDecelonCamToggle());
   //layout->addWidget(new RadarDisableToggle());
   //layout->addWidget(new UseRadarTrackToggle());
 }

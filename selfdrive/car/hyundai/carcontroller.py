@@ -156,6 +156,7 @@ class CarController():
     self.variable_steer_max = self.params.get_bool("OpkrVariableSteerMax")
     self.variable_steer_delta = self.params.get_bool("OpkrVariableSteerDelta")
     self.osm_spdlimit_enabled = self.params.get_bool("OSMSpeedLimitEnable")
+    self.stock_safety_decel_enabled = self.params.get_bool("UseStockDecelOnSS")
 
     self.cc_timer = 0
     self.on_speed_control = False
@@ -756,6 +757,10 @@ class CarController():
         else:
           self.stopped = False
           stock_weight = 0.
+
+        if self.stock_safety_decel_enabled:
+          if CS.scc11["Navi_SCC_Camera_Act"] == 2 and accel > aReqValue:
+            accel = aReqValue
         accel = clip(accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX)
         self.aq_value = accel
         self.aq_value_raw = aReqValue

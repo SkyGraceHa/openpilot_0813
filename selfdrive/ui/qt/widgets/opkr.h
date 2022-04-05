@@ -690,6 +690,30 @@ public:
   }
 };
 
+class StockDecelonCamToggle : public ToggleControl {
+  Q_OBJECT
+
+public:
+  StockDecelonCamToggle() : ToggleControl("Use Stock Decel on SaftySection", "Use stock deceleration on safety section.(the vehicle equipped with Stock Navigation)", "../assets/offroad/icon_shell.png", Params().getBool("UseStockDecelOnSS")) {
+    QObject::connect(this, &StockDecelonCamToggle::toggleFlipped, [=](int state) {
+      bool status = state ? true : false;
+      Params().putBool("UseStockDecelOnSS", status);
+    });
+  }
+};
+
+class JoystickModeToggle : public ToggleControl {
+  Q_OBJECT
+
+public:
+  JoystickModeToggle() : ToggleControl("JoyStick Debug Mode", "How to use: https://github.com/commaai/openpilot/tree/master/tools/joystick", "../assets/offroad/icon_shell.png", Params().getBool("JoystickDebugMode")) {
+    QObject::connect(this, &JoystickModeToggle::toggleFlipped, [=](int state) {
+      bool status = state ? true : false;
+      Params().putBool("JoystickDebugMode", status);
+    });
+  }
+};
+
 // openpilot preview
 class OpenpilotView : public AbstractControl {
   Q_OBJECT
