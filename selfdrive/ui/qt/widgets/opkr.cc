@@ -476,6 +476,8 @@ AutoShutdown::AutoShutdown() : AbstractControl("EON AutoShutdown", "EON is autom
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -483,7 +485,7 @@ AutoShutdown::AutoShutdown() : AbstractControl("EON AutoShutdown", "EON is autom
     auto str = QString::fromStdString(params.get("OpkrAutoShutdown"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 0 ) {
+    if (value <= 0) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -495,7 +497,7 @@ AutoShutdown::AutoShutdown() : AbstractControl("EON AutoShutdown", "EON is autom
     auto str = QString::fromStdString(params.get("OpkrAutoShutdown"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 10 ) {
+    if (value >= 10) {
       value = 10;
     }
     QString values = QString::number(value);
@@ -530,8 +532,6 @@ void AutoShutdown::refresh() {
   } else if (option == "10") {
     label.setText(QString::fromStdString("5hours"));
   }
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 ForceShutdown::ForceShutdown() : AbstractControl("EON ForceShutdown", "If the screen is turned off while off-road without driving (on-road X), force it to turn off after a certain period of time. When a touch event occurs, the off time is reset.", "../assets/offroad/icon_shell.png") {
@@ -558,6 +558,8 @@ ForceShutdown::ForceShutdown() : AbstractControl("EON ForceShutdown", "If the sc
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -565,7 +567,7 @@ ForceShutdown::ForceShutdown() : AbstractControl("EON ForceShutdown", "If the sc
     auto str = QString::fromStdString(params.get("OpkrForceShutdown"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 0 ) {
+    if (value <= 0) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -577,7 +579,7 @@ ForceShutdown::ForceShutdown() : AbstractControl("EON ForceShutdown", "If the sc
     auto str = QString::fromStdString(params.get("OpkrForceShutdown"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 5 ) {
+    if (value >= 5) {
       value = 5;
     }
     QString values = QString::number(value);
@@ -602,8 +604,6 @@ void ForceShutdown::refresh() {
   } else if (option == "5") {
     label.setText(QString::fromStdString("30mins"));
   }
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 
@@ -632,6 +632,8 @@ VolumeControl::VolumeControl() : AbstractControl("EON Volume Control(%)", "Adjus
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -639,7 +641,7 @@ VolumeControl::VolumeControl() : AbstractControl("EON Volume Control(%)", "Adjus
     auto str = QString::fromStdString(params.get("OpkrUIVolumeBoost"));
     int value = str.toInt();
     value = value - 5;
-    if (value <= -5 ) {
+    if (value <= -5) {
       value = -5;
     }
     QString values = QString::number(value);
@@ -653,7 +655,7 @@ VolumeControl::VolumeControl() : AbstractControl("EON Volume Control(%)", "Adjus
     auto str = QString::fromStdString(params.get("OpkrUIVolumeBoost"));
     int value = str.toInt();
     value = value + 5;
-    if (value >= 100 ) {
+    if (value >= 100) {
       value = 100;
     }
     QString values = QString::number(value);
@@ -674,13 +676,11 @@ void VolumeControl::refresh() {
   } else {
     label.setText(QString::fromStdString(params.get("OpkrUIVolumeBoost")));
   }
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 void VolumeControl::playsound() {
   float value = QUIState::ui_state.scene.nVolumeBoost;
-  if (value > 1 ) {
+  if (value > 1) {
     effect.setVolume(value * 0.01);
     effect.play();
   } else if (value >= 0) {
@@ -713,6 +713,8 @@ BrightnessControl::BrightnessControl() : AbstractControl("EON Brightness Control
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -720,7 +722,7 @@ BrightnessControl::BrightnessControl() : AbstractControl("EON Brightness Control
     auto str = QString::fromStdString(params.get("OpkrUIBrightness"));
     int value = str.toInt();
     value = value - 5;
-    if (value <= 0 ) {
+    if (value <= 0) {
       value = 0;
     }
     QUIState::ui_state.scene.brightness = value;
@@ -733,7 +735,7 @@ BrightnessControl::BrightnessControl() : AbstractControl("EON Brightness Control
     auto str = QString::fromStdString(params.get("OpkrUIBrightness"));
     int value = str.toInt();
     value = value + 5;
-    if (value >= 100 ) {
+    if (value >= 100) {
       value = 100;
     }
     QUIState::ui_state.scene.brightness = value;
@@ -751,8 +753,6 @@ void BrightnessControl::refresh() {
   } else {
     label.setText(QString::fromStdString(params.get("OpkrUIBrightness")));
   }
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 BrightnessOffControl::BrightnessOffControl() : AbstractControl("Brightness at SCR Off(%)", "When using the EON screen off function, the brightness is reduced according to the automatic brightness ratio.", "../assets/offroad/icon_shell.png") {
@@ -779,6 +779,8 @@ BrightnessOffControl::BrightnessOffControl() : AbstractControl("Brightness at SC
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -786,7 +788,7 @@ BrightnessOffControl::BrightnessOffControl() : AbstractControl("Brightness at SC
     auto str = QString::fromStdString(params.get("OpkrUIBrightnessOff"));
     int value = str.toInt();
     value = value - 10;
-    if (value <= 0 ) {
+    if (value <= 0) {
       value = 0;
     }
     QUIState::ui_state.scene.brightness_off = value;
@@ -799,7 +801,7 @@ BrightnessOffControl::BrightnessOffControl() : AbstractControl("Brightness at SC
     auto str = QString::fromStdString(params.get("OpkrUIBrightnessOff"));
     int value = str.toInt();
     value = value + 10;
-    if (value >= 100 ) {
+    if (value >= 100) {
       value = 100;
     }
     QUIState::ui_state.scene.brightness_off = value;
@@ -817,8 +819,6 @@ void BrightnessOffControl::refresh() {
   } else {
     label.setText(QString::fromStdString(params.get("OpkrUIBrightnessOff")));
   }
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 AutoScreenOff::AutoScreenOff() : AbstractControl("EON SCR Off Timer", "Turn off the EON screen or reduce brightness to protect the screen after driving starts. It automatically brightens or turns on when a touch or event occurs.", "../assets/offroad/icon_shell.png") 
@@ -846,6 +846,8 @@ AutoScreenOff::AutoScreenOff() : AbstractControl("EON SCR Off Timer", "Turn off 
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -853,7 +855,7 @@ AutoScreenOff::AutoScreenOff() : AbstractControl("EON SCR Off Timer", "Turn off 
     auto str = QString::fromStdString(params.get("OpkrAutoScreenOff"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -2 ) {
+    if (value <= -2) {
       value = -2;
     }
     QUIState::ui_state.scene.autoScreenOff = value;
@@ -866,7 +868,7 @@ AutoScreenOff::AutoScreenOff() : AbstractControl("EON SCR Off Timer", "Turn off 
     auto str = QString::fromStdString(params.get("OpkrAutoScreenOff"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 10 ) {
+    if (value >= 10) {
       value = 10;
     }
     QUIState::ui_state.scene.autoScreenOff = value;
@@ -889,8 +891,6 @@ void AutoScreenOff::refresh()
   } else {
     label.setText(QString::fromStdString(params.get("OpkrAutoScreenOff")) + "min(s)");
   }
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 ChargingMin::ChargingMin() : AbstractControl("BAT MinCharging Value", "Sets the minimum battery charge value.", "../assets/offroad/icon_shell.png") {
@@ -917,6 +917,8 @@ ChargingMin::ChargingMin() : AbstractControl("BAT MinCharging Value", "Sets the 
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -924,7 +926,7 @@ ChargingMin::ChargingMin() : AbstractControl("BAT MinCharging Value", "Sets the 
     auto str = QString::fromStdString(params.get("OpkrBatteryChargingMin"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 10 ) {
+    if (value <= 10) {
       value = 10;
     }
     QString values = QString::number(value);
@@ -936,7 +938,7 @@ ChargingMin::ChargingMin() : AbstractControl("BAT MinCharging Value", "Sets the 
     auto str = QString::fromStdString(params.get("OpkrBatteryChargingMin"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 90 ) {
+    if (value >= 90) {
       value = 90;
     }
     QString values = QString::number(value);
@@ -948,8 +950,6 @@ ChargingMin::ChargingMin() : AbstractControl("BAT MinCharging Value", "Sets the 
 
 void ChargingMin::refresh() {
   label.setText(QString::fromStdString(params.get("OpkrBatteryChargingMin")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 ChargingMax::ChargingMax() : AbstractControl("BAT MaxCharging Value", "Sets the maximum battery charge value.", "../assets/offroad/icon_shell.png") {
@@ -976,6 +976,8 @@ ChargingMax::ChargingMax() : AbstractControl("BAT MaxCharging Value", "Sets the 
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -983,7 +985,7 @@ ChargingMax::ChargingMax() : AbstractControl("BAT MaxCharging Value", "Sets the 
     auto str = QString::fromStdString(params.get("OpkrBatteryChargingMax"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 10 ) {
+    if (value <= 10) {
       value = 10;
     }
     QString values = QString::number(value);
@@ -995,7 +997,7 @@ ChargingMax::ChargingMax() : AbstractControl("BAT MaxCharging Value", "Sets the 
     auto str = QString::fromStdString(params.get("OpkrBatteryChargingMax"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 90 ) {
+    if (value >= 90) {
       value = 90;
     }
     QString values = QString::number(value);
@@ -1007,8 +1009,6 @@ ChargingMax::ChargingMax() : AbstractControl("BAT MaxCharging Value", "Sets the 
 
 void ChargingMax::refresh() {
   label.setText(QString::fromStdString(params.get("OpkrBatteryChargingMax")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 RecordCount::RecordCount() : AbstractControl("Number of Recorded Files", "Sets the maximum number of recording files.", "../assets/offroad/icon_shell.png") {
@@ -1035,6 +1035,8 @@ RecordCount::RecordCount() : AbstractControl("Number of Recorded Files", "Sets t
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -1042,7 +1044,7 @@ RecordCount::RecordCount() : AbstractControl("Number of Recorded Files", "Sets t
     auto str = QString::fromStdString(params.get("RecordingCount"));
     int value = str.toInt();
     value = value - 5;
-    if (value <= 5 ) {
+    if (value <= 5) {
       value = 5;
     }
     QString values = QString::number(value);
@@ -1054,7 +1056,7 @@ RecordCount::RecordCount() : AbstractControl("Number of Recorded Files", "Sets t
     auto str = QString::fromStdString(params.get("RecordingCount"));
     int value = str.toInt();
     value = value + 5;
-    if (value >= 300 ) {
+    if (value >= 300) {
       value = 300;
     }
     QString values = QString::number(value);
@@ -1066,8 +1068,6 @@ RecordCount::RecordCount() : AbstractControl("Number of Recorded Files", "Sets t
 
 void RecordCount::refresh() {
   label.setText(QString::fromStdString(params.get("RecordingCount")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 RecordQuality::RecordQuality() : AbstractControl("Recording Quality", "Set the recording quality. Low/Mid/high definition/high definition/ultra-high definition.", "../assets/offroad/icon_shell.png") {
@@ -1094,6 +1094,8 @@ RecordQuality::RecordQuality() : AbstractControl("Recording Quality", "Set the r
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("◀");
+  btnplus.setText("▶");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -1101,7 +1103,7 @@ RecordQuality::RecordQuality() : AbstractControl("Recording Quality", "Set the r
     auto str = QString::fromStdString(params.get("RecordingQuality"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -1 ) {
+    if (value <= -1) {
       value = 3;
     }
     QString values = QString::number(value);
@@ -1113,7 +1115,7 @@ RecordQuality::RecordQuality() : AbstractControl("Recording Quality", "Set the r
     auto str = QString::fromStdString(params.get("RecordingQuality"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 4 ) {
+    if (value >= 4) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -1134,8 +1136,6 @@ void RecordQuality::refresh() {
   } else {
     label.setText(QString::fromStdString("U-High"));
   }
-  btnminus.setText("◀");
-  btnplus.setText("▶");
 }
 
 MonitoringMode::MonitoringMode() : AbstractControl("Driver Monitoring Mode", "Set the monitoring mode. In the case of preference/prevention of sleepiness and sleepiness prevention, you can send a warning message faster by adjusting (lowering) the threshold value below.", "../assets/offroad/icon_shell.png") {
@@ -1162,6 +1162,8 @@ MonitoringMode::MonitoringMode() : AbstractControl("Driver Monitoring Mode", "Se
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("◀");
+  btnplus.setText("▶");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -1169,7 +1171,7 @@ MonitoringMode::MonitoringMode() : AbstractControl("Driver Monitoring Mode", "Se
     auto str = QString::fromStdString(params.get("OpkrMonitoringMode"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -1 ) {
+    if (value <= -1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -1181,7 +1183,7 @@ MonitoringMode::MonitoringMode() : AbstractControl("Driver Monitoring Mode", "Se
     auto str = QString::fromStdString(params.get("OpkrMonitoringMode"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 2 ) {
+    if (value >= 2) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -1198,8 +1200,6 @@ void MonitoringMode::refresh() {
   } else if (option == "1") {
     label.setText(QString::fromStdString("UnSleep"));
   }
-  btnminus.setText("◀");
-  btnplus.setText("▶");
 }
 
 MonitorEyesThreshold::MonitorEyesThreshold() : AbstractControl("E2E EYE Threshold", "Adjust the reference value for the eye detection range. Set the reference value for the value that suits you. When you close your eyes, you should set it lower than the distracted Eyes value. Default: 0.75", "../assets/offroad/icon_shell.png") {
@@ -1226,6 +1226,8 @@ MonitorEyesThreshold::MonitorEyesThreshold() : AbstractControl("E2E EYE Threshol
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -1233,7 +1235,7 @@ MonitorEyesThreshold::MonitorEyesThreshold() : AbstractControl("E2E EYE Threshol
     auto str = QString::fromStdString(params.get("OpkrMonitorEyesThreshold"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1 ) {
+    if (value <= 1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -1245,7 +1247,7 @@ MonitorEyesThreshold::MonitorEyesThreshold() : AbstractControl("E2E EYE Threshol
     auto str = QString::fromStdString(params.get("OpkrMonitorEyesThreshold"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 100 ) {
+    if (value >= 100) {
       value = 100;
     }
     QString values = QString::number(value);
@@ -1261,8 +1263,6 @@ void MonitorEyesThreshold::refresh() {
   float valuef = valuei * 0.01;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 NormalEyesThreshold::NormalEyesThreshold() : AbstractControl("Normal EYE Threshold", "Adjust the eye recognition reference value. Lower the value when the recognition rate is low. Default: 0.5", "../assets/offroad/icon_shell.png") {
@@ -1289,6 +1289,8 @@ NormalEyesThreshold::NormalEyesThreshold() : AbstractControl("Normal EYE Thresho
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -1296,7 +1298,7 @@ NormalEyesThreshold::NormalEyesThreshold() : AbstractControl("Normal EYE Thresho
     auto str = QString::fromStdString(params.get("OpkrMonitorNormalEyesThreshold"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1 ) {
+    if (value <= 1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -1308,7 +1310,7 @@ NormalEyesThreshold::NormalEyesThreshold() : AbstractControl("Normal EYE Thresho
     auto str = QString::fromStdString(params.get("OpkrMonitorNormalEyesThreshold"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 100 ) {
+    if (value >= 100) {
       value = 100;
     }
     QString values = QString::number(value);
@@ -1324,8 +1326,6 @@ void NormalEyesThreshold::refresh() {
   float valuef = valuei * 0.01;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 BlinkThreshold::BlinkThreshold() : AbstractControl("Blink Threshold", "Adjust the recognition value for the degree of blinking. When you close your eyes, check BlinkProb and lower the value. Default: 0.5", "../assets/offroad/icon_shell.png") {
@@ -1352,6 +1352,8 @@ BlinkThreshold::BlinkThreshold() : AbstractControl("Blink Threshold", "Adjust th
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -1359,7 +1361,7 @@ BlinkThreshold::BlinkThreshold() : AbstractControl("Blink Threshold", "Adjust th
     auto str = QString::fromStdString(params.get("OpkrMonitorBlinkThreshold"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1 ) {
+    if (value <= 1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -1371,7 +1373,7 @@ BlinkThreshold::BlinkThreshold() : AbstractControl("Blink Threshold", "Adjust th
     auto str = QString::fromStdString(params.get("OpkrMonitorBlinkThreshold"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 100 ) {
+    if (value >= 100) {
       value = 100;
     }
     QString values = QString::number(value);
@@ -1387,8 +1389,6 @@ void BlinkThreshold::refresh() {
   float valuef = valuei * 0.01;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 //Driving
@@ -1416,6 +1416,8 @@ CruisemodeSelInit::CruisemodeSelInit() : AbstractControl("Cruise Start Mode", "S
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("◀");
+  btnplus.setText("▶");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -1423,7 +1425,7 @@ CruisemodeSelInit::CruisemodeSelInit() : AbstractControl("Cruise Start Mode", "S
     auto str = QString::fromStdString(params.get("CruiseStatemodeSelInit"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -1 ) {
+    if (value <= -1) {
       value = 5;
     }
     QString values = QString::number(value);
@@ -1435,7 +1437,7 @@ CruisemodeSelInit::CruisemodeSelInit() : AbstractControl("Cruise Start Mode", "S
     auto str = QString::fromStdString(params.get("CruiseStatemodeSelInit"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 6 ) {
+    if (value >= 6) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -1460,11 +1462,9 @@ void CruisemodeSelInit::refresh() {
   } else {
     label.setText(QString::fromStdString("CamOnly"));
   }
-  btnminus.setText("◀");
-  btnplus.setText("▶");
 }
 
-LaneChangeSpeed::LaneChangeSpeed() : AbstractControl("LaneChange Speed", "Set the lane changeable speed.", "../assets/offroad/icon_shell.png") {
+LaneChangeSpeed::LaneChangeSpeed() : AbstractControl("LaneChange On/Off/Spd", "On/Off lane change(push (-) btn till Off value) and set the lane changeable speed.", "../assets/offroad/icon_shell.png") {
 
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
   label.setStyleSheet("color: #e0e879");
@@ -1488,6 +1488,8 @@ LaneChangeSpeed::LaneChangeSpeed() : AbstractControl("LaneChange Speed", "Set th
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -1495,8 +1497,8 @@ LaneChangeSpeed::LaneChangeSpeed() : AbstractControl("LaneChange Speed", "Set th
     auto str = QString::fromStdString(params.get("OpkrLaneChangeSpeed"));
     int value = str.toInt();
     value = value - 5;
-    if (value <= 20 ) {
-      value = 20;
+    if (value <= 15) {
+      value = 15;
     }
     QString values = QString::number(value);
     params.put("OpkrLaneChangeSpeed", values.toStdString());
@@ -1507,7 +1509,7 @@ LaneChangeSpeed::LaneChangeSpeed() : AbstractControl("LaneChange Speed", "Set th
     auto str = QString::fromStdString(params.get("OpkrLaneChangeSpeed"));
     int value = str.toInt();
     value = value + 5;
-    if (value >= 160 ) {
+    if (value >= 160) {
       value = 160;
     }
     QString values = QString::number(value);
@@ -1518,9 +1520,12 @@ LaneChangeSpeed::LaneChangeSpeed() : AbstractControl("LaneChange Speed", "Set th
 }
 
 void LaneChangeSpeed::refresh() {
-  label.setText(QString::fromStdString(params.get("OpkrLaneChangeSpeed")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
+  QString option = QString::fromStdString(params.get("OpkrLaneChangeSpeed"));
+  if (option == "15") {
+    label.setText(QString::fromStdString("Off"));
+  } else {
+    label.setText(QString::fromStdString(params.get("OpkrLaneChangeSpeed")));
+  }
 }
 
 LaneChangeDelay::LaneChangeDelay() : AbstractControl("LaneChange Delay", "Set the delay time after turn signal operation before lane change.", "../assets/offroad/icon_shell.png") {
@@ -1547,6 +1552,8 @@ LaneChangeDelay::LaneChangeDelay() : AbstractControl("LaneChange Delay", "Set th
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -1554,7 +1561,7 @@ LaneChangeDelay::LaneChangeDelay() : AbstractControl("LaneChange Delay", "Set th
     auto str = QString::fromStdString(params.get("OpkrAutoLaneChangeDelay"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 0 ) {
+    if (value <= 0) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -1566,7 +1573,7 @@ LaneChangeDelay::LaneChangeDelay() : AbstractControl("LaneChange Delay", "Set th
     auto str = QString::fromStdString(params.get("OpkrAutoLaneChangeDelay"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 5 ) {
+    if (value >= 5) {
       value = 5;
     }
     QString values = QString::number(value);
@@ -1591,8 +1598,6 @@ void LaneChangeDelay::refresh() {
   } else {
     label.setText(QString::fromStdString("2secs"));
   }
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 LeftCurvOffset::LeftCurvOffset() : AbstractControl("LeftCurv Offset", "Adjust the position of the vehicle in the curve section. (-value: move the car to the left, +value: move the car to the right)", "../assets/offroad/icon_shell.png") {
@@ -1619,6 +1624,8 @@ LeftCurvOffset::LeftCurvOffset() : AbstractControl("LeftCurv Offset", "Adjust th
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -1626,7 +1633,7 @@ LeftCurvOffset::LeftCurvOffset() : AbstractControl("LeftCurv Offset", "Adjust th
     auto str = QString::fromStdString(params.get("LeftCurvOffsetAdj"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -50 ) {
+    if (value <= -50) {
       value = -50;
     }
     QString values = QString::number(value);
@@ -1638,7 +1645,7 @@ LeftCurvOffset::LeftCurvOffset() : AbstractControl("LeftCurv Offset", "Adjust th
     auto str = QString::fromStdString(params.get("LeftCurvOffsetAdj"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 50 ) {
+    if (value >= 50) {
       value = 50;
     }
     QString values = QString::number(value);
@@ -1650,8 +1657,6 @@ LeftCurvOffset::LeftCurvOffset() : AbstractControl("LeftCurv Offset", "Adjust th
 
 void LeftCurvOffset::refresh() {
   label.setText(QString::fromStdString(params.get("LeftCurvOffsetAdj")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 RightCurvOffset::RightCurvOffset() : AbstractControl("RightCurv Offset", "Adjust the position of the vehicle in the curve section. (-value: move the car to the left, +value: move the car to the right)", "../assets/offroad/icon_shell.png") {
@@ -1678,6 +1683,8 @@ RightCurvOffset::RightCurvOffset() : AbstractControl("RightCurv Offset", "Adjust
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -1685,7 +1692,7 @@ RightCurvOffset::RightCurvOffset() : AbstractControl("RightCurv Offset", "Adjust
     auto str = QString::fromStdString(params.get("RightCurvOffsetAdj"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -50 ) {
+    if (value <= -50) {
       value = -50;
     }
     QString values = QString::number(value);
@@ -1697,7 +1704,7 @@ RightCurvOffset::RightCurvOffset() : AbstractControl("RightCurv Offset", "Adjust
     auto str = QString::fromStdString(params.get("RightCurvOffsetAdj"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 50 ) {
+    if (value >= 50) {
       value = 50;
     }
     QString values = QString::number(value);
@@ -1709,8 +1716,6 @@ RightCurvOffset::RightCurvOffset() : AbstractControl("RightCurv Offset", "Adjust
 
 void RightCurvOffset::refresh() {
   label.setText(QString::fromStdString(params.get("RightCurvOffsetAdj")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 MaxAngleLimit::MaxAngleLimit() : AbstractControl("Max Steering Angle", "Set the maximum steering angle of the handle where the openpilot is possible. Please note that some vehicles may experience errors if the angle is set above 90 degrees.", "../assets/offroad/icon_shell.png") {
@@ -1737,6 +1742,8 @@ MaxAngleLimit::MaxAngleLimit() : AbstractControl("Max Steering Angle", "Set the 
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -1744,7 +1751,7 @@ MaxAngleLimit::MaxAngleLimit() : AbstractControl("Max Steering Angle", "Set the 
     auto str = QString::fromStdString(params.get("OpkrMaxAngleLimit"));
     int value = str.toInt();
     value = value - 10;
-    if (value <= 80 ) {
+    if (value <= 80) {
       value = 80;
     }
     QString values = QString::number(value);
@@ -1756,7 +1763,7 @@ MaxAngleLimit::MaxAngleLimit() : AbstractControl("Max Steering Angle", "Set the 
     auto str = QString::fromStdString(params.get("OpkrMaxAngleLimit"));
     int value = str.toInt();
     value = value + 10;
-    if (value >= 360 ) {
+    if (value >= 360) {
       value = 360;
     }
     QString values = QString::number(value);
@@ -1773,8 +1780,6 @@ void MaxAngleLimit::refresh() {
   } else {
     label.setText(QString::fromStdString(params.get("OpkrMaxAngleLimit")));
   }
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 SteerAngleCorrection::SteerAngleCorrection() : AbstractControl("Str Angle Adjust", "On the straight path, adjust the SteerAngle zero to zero the current steering angle. ex) Set it to 0.5 degrees Celsius for a straight line, and -0.5 degrees Celsius for -0.5 degrees Celsius.", "../assets/offroad/icon_shell.png") {
@@ -1801,6 +1806,8 @@ SteerAngleCorrection::SteerAngleCorrection() : AbstractControl("Str Angle Adjust
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -1808,7 +1815,7 @@ SteerAngleCorrection::SteerAngleCorrection() : AbstractControl("Str Angle Adjust
     auto str = QString::fromStdString(params.get("OpkrSteerAngleCorrection"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -50 ) {
+    if (value <= -50) {
       value = -50;
     }
     QString values = QString::number(value);
@@ -1820,7 +1827,7 @@ SteerAngleCorrection::SteerAngleCorrection() : AbstractControl("Str Angle Adjust
     auto str = QString::fromStdString(params.get("OpkrSteerAngleCorrection"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 50 ) {
+    if (value >= 50) {
       value = 50;
     }
     QString values = QString::number(value);
@@ -1836,8 +1843,6 @@ void SteerAngleCorrection::refresh() {
   float valuef = valuei * 0.1;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 SpeedLimitOffset::SpeedLimitOffset() : AbstractControl("SpeedLimit Offset", "During safetycam deceleration, it decelerates by compensating for the difference between GPS speed and real speed.", "../assets/offroad/icon_shell.png") {
@@ -1873,6 +1878,8 @@ SpeedLimitOffset::SpeedLimitOffset() : AbstractControl("SpeedLimit Offset", "Dur
   btn.setFixedSize(110, 100);
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btn);
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
@@ -1881,7 +1888,7 @@ SpeedLimitOffset::SpeedLimitOffset() : AbstractControl("SpeedLimit Offset", "Dur
     auto str = QString::fromStdString(params.get("OpkrSpeedLimitOffsetOption"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 3 ) {
+    if (value >= 3) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -1893,7 +1900,7 @@ SpeedLimitOffset::SpeedLimitOffset() : AbstractControl("SpeedLimit Offset", "Dur
     auto str = QString::fromStdString(params.get("OpkrSpeedLimitOffset"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -30 ) {
+    if (value <= -30) {
       value = -30;
     }
     QString values = QString::number(value);
@@ -1906,7 +1913,7 @@ SpeedLimitOffset::SpeedLimitOffset() : AbstractControl("SpeedLimit Offset", "Dur
     auto str = QString::fromStdString(params.get("OpkrSpeedLimitOffset"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 30 ) {
+    if (value >= 30) {
       value = 30;
     }
     QString values = QString::number(value);
@@ -1927,8 +1934,6 @@ void SpeedLimitOffset::refresh() {
     btn.setText("C");
   }
   label.setText(QString::fromStdString(params.get("OpkrSpeedLimitOffset")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 RESChoice::RESChoice() : AbstractControl("AutoRES Option", "Sets the auto RES option. 1. Adjust the temporary cruise speed, 2. Adjust the set speed itself according to the presence or absence of a preceding car. 3. Adjust the cruise speed if there is a preceding car, and adjust the set speed if there is no preceding car. Please note that the automatic RES may not work well depending on the conditions.", "../assets/offroad/icon_shell.png") {
@@ -1955,6 +1960,8 @@ RESChoice::RESChoice() : AbstractControl("AutoRES Option", "Sets the auto RES op
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("◀");
+  btnplus.setText("▶");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -1962,7 +1969,7 @@ RESChoice::RESChoice() : AbstractControl("AutoRES Option", "Sets the auto RES op
     auto str = QString::fromStdString(params.get("AutoResOption"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -1 ) {
+    if (value <= -1) {
       value = 2;
     }
     QString values = QString::number(value);
@@ -1974,7 +1981,7 @@ RESChoice::RESChoice() : AbstractControl("AutoRES Option", "Sets the auto RES op
     auto str = QString::fromStdString(params.get("AutoResOption"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 3 ) {
+    if (value >= 3) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -1993,8 +2000,6 @@ void RESChoice::refresh() {
   } else {
     label.setText(QString::fromStdString("AUTO(LeadCar)"));
   }
-  btnminus.setText("◀");
-  btnplus.setText("▶");
 }
 
 AutoResCondition::AutoResCondition() : AbstractControl("AutoRES Condition", "Sets the automatic RES condition. When the brake is released/operated when the accelerator pedal is operated.", "../assets/offroad/icon_shell.png") {
@@ -2021,6 +2026,8 @@ AutoResCondition::AutoResCondition() : AbstractControl("AutoRES Condition", "Set
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("◀");
+  btnplus.setText("▶");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -2028,7 +2035,7 @@ AutoResCondition::AutoResCondition() : AbstractControl("AutoRES Condition", "Set
     auto str = QString::fromStdString(params.get("AutoResCondition"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -1 ) {
+    if (value <= -1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -2040,7 +2047,7 @@ AutoResCondition::AutoResCondition() : AbstractControl("AutoRES Condition", "Set
     auto str = QString::fromStdString(params.get("AutoResCondition"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 2 ) {
+    if (value >= 2) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -2057,8 +2064,6 @@ void AutoResCondition::refresh() {
   } else {
     label.setText(QString::fromStdString("OnGas"));
   }
-  btnminus.setText("◀");
-  btnplus.setText("▶");
 }
 
 AutoResLimitTime::AutoResLimitTime() : AbstractControl("AutoRES Allow(sec)", "Adjust the automatic RES allowance time. Automatic RES operates only within the set time after the cruise is released.", "../assets/offroad/icon_shell.png") {
@@ -2092,7 +2097,7 @@ AutoResLimitTime::AutoResLimitTime() : AbstractControl("AutoRES Allow(sec)", "Ad
     auto str = QString::fromStdString(params.get("AutoResLimitTime"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 0 ) {
+    if (value <= 0) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -2104,7 +2109,7 @@ AutoResLimitTime::AutoResLimitTime() : AbstractControl("AutoRES Allow(sec)", "Ad
     auto str = QString::fromStdString(params.get("AutoResLimitTime"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 60 ) {
+    if (value >= 60) {
       value = 60;
     }
     QString values = QString::number(value);
@@ -2156,7 +2161,7 @@ AutoEnableSpeed::AutoEnableSpeed() : AbstractControl("Auto Engage Speed(km/h)", 
     auto str = QString::fromStdString(params.get("AutoEnableSpeed"));
     int value = str.toInt();
     value = value - 3;
-    if (value <= 0 ) {
+    if (value <= 0) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -2168,7 +2173,7 @@ AutoEnableSpeed::AutoEnableSpeed() : AbstractControl("Auto Engage Speed(km/h)", 
     auto str = QString::fromStdString(params.get("AutoEnableSpeed"));
     int value = str.toInt();
     value = value + 3;
-    if (value >= 30 ) {
+    if (value >= 30) {
       value = 30;
     }
     QString values = QString::number(value);
@@ -2220,7 +2225,7 @@ CamDecelDistAdd::CamDecelDistAdd() : AbstractControl("SafetyCamDist Adj(%)", "Re
     auto str = QString::fromStdString(params.get("SafetyCamDecelDistGain"));
     int value = str.toInt();
     value = value - 5;
-    if (value <= -100 ) {
+    if (value <= -100) {
       value = -100;
     }
     QString values = QString::number(value);
@@ -2232,7 +2237,7 @@ CamDecelDistAdd::CamDecelDistAdd() : AbstractControl("SafetyCamDist Adj(%)", "Re
     auto str = QString::fromStdString(params.get("SafetyCamDecelDistGain"));
     int value = str.toInt();
     value = value + 5;
-    if (value >= 100 ) {
+    if (value >= 100) {
       value = 100;
     }
     QString values = QString::number(value);
@@ -2278,6 +2283,8 @@ MaxSteer::MaxSteer() : AbstractControl("MAX_STEER", "Modify the Panda MAX_STEEER
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -2285,7 +2292,7 @@ MaxSteer::MaxSteer() : AbstractControl("MAX_STEER", "Modify the Panda MAX_STEEER
     auto str = QString::fromStdString(params.get("MaxSteer"));
     int value = str.toInt();
     value = value - 2;
-    if (value <= 384 ) {
+    if (value <= 384) {
       value = 384;
     }
     QString values = QString::number(value);
@@ -2297,7 +2304,7 @@ MaxSteer::MaxSteer() : AbstractControl("MAX_STEER", "Modify the Panda MAX_STEEER
     auto str = QString::fromStdString(params.get("MaxSteer"));
     int value = str.toInt();
     value = value + 2;
-    if (value >= 1024 ) {
+    if (value >= 1024) {
       value = 1024;
     }
     QString values = QString::number(value);
@@ -2309,8 +2316,6 @@ MaxSteer::MaxSteer() : AbstractControl("MAX_STEER", "Modify the Panda MAX_STEEER
 
 void MaxSteer::refresh() {
   label.setText(QString::fromStdString(params.get("MaxSteer")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 MaxRTDelta::MaxRTDelta() : AbstractControl("RT_DELTA", "Modify the panda RT_DELTA value. Press the Run button below to apply. It might be 7(DeltaDown)X16=112?", "../assets/offroad/icon_shell.png") {
@@ -2337,6 +2342,8 @@ MaxRTDelta::MaxRTDelta() : AbstractControl("RT_DELTA", "Modify the panda RT_DELT
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -2344,7 +2351,7 @@ MaxRTDelta::MaxRTDelta() : AbstractControl("RT_DELTA", "Modify the panda RT_DELT
     auto str = QString::fromStdString(params.get("MaxRTDelta"));
     int value = str.toInt();
     value = value - 2;
-    if (value <= 50 ) {
+    if (value <= 50) {
       value = 50;
     }
     QString values = QString::number(value);
@@ -2356,7 +2363,7 @@ MaxRTDelta::MaxRTDelta() : AbstractControl("RT_DELTA", "Modify the panda RT_DELT
     auto str = QString::fromStdString(params.get("MaxRTDelta"));
     int value = str.toInt();
     value = value + 2;
-    if (value >= 500 ) {
+    if (value >= 500) {
       value = 500;
     }
     QString values = QString::number(value);
@@ -2368,8 +2375,6 @@ MaxRTDelta::MaxRTDelta() : AbstractControl("RT_DELTA", "Modify the panda RT_DELT
 
 void MaxRTDelta::refresh() {
   label.setText(QString::fromStdString(params.get("MaxRTDelta")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 MaxRateUp::MaxRateUp() : AbstractControl("MAX_RATE_UP", "Modify the Panda MAX_RATE_UP value. Press the Run button below to apply.", "../assets/offroad/icon_shell.png") {
@@ -2396,6 +2401,8 @@ MaxRateUp::MaxRateUp() : AbstractControl("MAX_RATE_UP", "Modify the Panda MAX_RA
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -2403,7 +2410,7 @@ MaxRateUp::MaxRateUp() : AbstractControl("MAX_RATE_UP", "Modify the Panda MAX_RA
     auto str = QString::fromStdString(params.get("MaxRateUp"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 3 ) {
+    if (value <= 3) {
       value = 3;
     }
     QString values = QString::number(value);
@@ -2415,7 +2422,7 @@ MaxRateUp::MaxRateUp() : AbstractControl("MAX_RATE_UP", "Modify the Panda MAX_RA
     auto str = QString::fromStdString(params.get("MaxRateUp"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 7 ) {
+    if (value >= 7) {
       value = 7;
     }
     QString values = QString::number(value);
@@ -2427,8 +2434,6 @@ MaxRateUp::MaxRateUp() : AbstractControl("MAX_RATE_UP", "Modify the Panda MAX_RA
 
 void MaxRateUp::refresh() {
   label.setText(QString::fromStdString(params.get("MaxRateUp")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 MaxRateDown::MaxRateDown() : AbstractControl("MAX_RATE_DOWN", "Modify the Panda MAX_RATE_DOWN value. Press the Run button below to apply.", "../assets/offroad/icon_shell.png") {
@@ -2455,6 +2460,8 @@ MaxRateDown::MaxRateDown() : AbstractControl("MAX_RATE_DOWN", "Modify the Panda 
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -2462,7 +2469,7 @@ MaxRateDown::MaxRateDown() : AbstractControl("MAX_RATE_DOWN", "Modify the Panda 
     auto str = QString::fromStdString(params.get("MaxRateDown"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 7 ) {
+    if (value <= 7) {
       value = 7;
     }
     QString values = QString::number(value);
@@ -2474,7 +2481,7 @@ MaxRateDown::MaxRateDown() : AbstractControl("MAX_RATE_DOWN", "Modify the Panda 
     auto str = QString::fromStdString(params.get("MaxRateDown"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 15 ) {
+    if (value >= 15) {
       value = 15;
     }
     QString values = QString::number(value);
@@ -2486,8 +2493,6 @@ MaxRateDown::MaxRateDown() : AbstractControl("MAX_RATE_DOWN", "Modify the Panda 
 
 void MaxRateDown::refresh() {
   label.setText(QString::fromStdString(params.get("MaxRateDown")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 //튜닝
@@ -2515,6 +2520,8 @@ CameraOffset::CameraOffset() : AbstractControl("CameraOffset", "Sets the CameraO
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -2522,7 +2529,7 @@ CameraOffset::CameraOffset() : AbstractControl("CameraOffset", "Sets the CameraO
     auto str = QString::fromStdString(params.get("CameraOffsetAdj"));
     int value = str.toInt();
     value = value - 5;
-    if (value <= -1000 ) {
+    if (value <= -1000) {
       value = -1000;
     }
     QString values = QString::number(value);
@@ -2534,7 +2541,7 @@ CameraOffset::CameraOffset() : AbstractControl("CameraOffset", "Sets the CameraO
     auto str = QString::fromStdString(params.get("CameraOffsetAdj"));
     int value = str.toInt();
     value = value + 5;
-    if (value >= 1000 ) {
+    if (value >= 1000) {
       value = 1000;
     }
     QString values = QString::number(value);
@@ -2550,8 +2557,6 @@ void CameraOffset::refresh() {
   float valuef = valuei * 0.001;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 PathOffset::PathOffset() : AbstractControl("PathOffset", "Sets the PathOffset value. (+value:Move left, -value:Move right)", "../assets/offroad/icon_shell.png") {
@@ -2578,6 +2583,8 @@ PathOffset::PathOffset() : AbstractControl("PathOffset", "Sets the PathOffset va
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -2585,7 +2592,7 @@ PathOffset::PathOffset() : AbstractControl("PathOffset", "Sets the PathOffset va
     auto str = QString::fromStdString(params.get("PathOffsetAdj"));
     int value = str.toInt();
     value = value - 5;
-    if (value <= -1000 ) {
+    if (value <= -1000) {
       value = -1000;
     }
     QString values = QString::number(value);
@@ -2597,7 +2604,7 @@ PathOffset::PathOffset() : AbstractControl("PathOffset", "Sets the PathOffset va
     auto str = QString::fromStdString(params.get("PathOffsetAdj"));
     int value = str.toInt();
     value = value + 5;
-    if (value >= 1000 ) {
+    if (value >= 1000) {
       value = 1000;
     }
     QString values = QString::number(value);
@@ -2613,8 +2620,6 @@ void PathOffset::refresh() {
   float valuef = valuei * 0.001;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 SRBaseControl::SRBaseControl() : AbstractControl("SteerRatio", "Sets the SteerRatio default value.", "../assets/offroad/icon_shell.png") {
@@ -2674,7 +2679,7 @@ SRBaseControl::SRBaseControl() : AbstractControl("SteerRatio", "Sets the SteerRa
 
   QObject::connect(&btndigit, &QPushButton::clicked, [=]() {
     digit = digit * 10;
-    if (digit >= 11 ) {
+    if (digit >= 11) {
       digit = 0.01;
     }
     QString level = QString::number(digit);
@@ -2772,7 +2777,7 @@ SRMaxControl::SRMaxControl() : AbstractControl("SteerRatioMax", "Sets the SteerR
 
   QObject::connect(&btndigit, &QPushButton::clicked, [=]() {
     digit = digit * 10;
-    if (digit >= 11 ) {
+    if (digit >= 11) {
       digit = 0.01;
     }
     QString level = QString::number(digit);
@@ -2837,6 +2842,8 @@ SteerActuatorDelay::SteerActuatorDelay() : AbstractControl("SteerActuatorDelay",
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -2844,7 +2851,7 @@ SteerActuatorDelay::SteerActuatorDelay() : AbstractControl("SteerActuatorDelay",
     auto str = QString::fromStdString(params.get("SteerActuatorDelayAdj"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1 ) {
+    if (value <= 1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -2856,7 +2863,7 @@ SteerActuatorDelay::SteerActuatorDelay() : AbstractControl("SteerActuatorDelay",
     auto str = QString::fromStdString(params.get("SteerActuatorDelayAdj"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 100 ) {
+    if (value >= 100) {
       value = 100;
     }
     QString values = QString::number(value);
@@ -2872,8 +2879,6 @@ void SteerActuatorDelay::refresh() {
   float valuef = valuei * 0.01;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 SteerRateCost::SteerRateCost() : AbstractControl("SteerRateCost", "Adjust the SteerRateCost value.", "../assets/offroad/icon_shell.png") {
@@ -2900,6 +2905,8 @@ SteerRateCost::SteerRateCost() : AbstractControl("SteerRateCost", "Adjust the St
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -2907,7 +2914,7 @@ SteerRateCost::SteerRateCost() : AbstractControl("SteerRateCost", "Adjust the St
     auto str = QString::fromStdString(params.get("SteerRateCostAdj"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1 ) {
+    if (value <= 1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -2919,7 +2926,7 @@ SteerRateCost::SteerRateCost() : AbstractControl("SteerRateCost", "Adjust the St
     auto str = QString::fromStdString(params.get("SteerRateCostAdj"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 200 ) {
+    if (value >= 200) {
       value = 200;
     }
     QString values = QString::number(value);
@@ -2935,8 +2942,6 @@ void SteerRateCost::refresh() {
   float valuef = valuei * 0.01;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 SteerLimitTimer::SteerLimitTimer() : AbstractControl("SteerLimitTimer", "Adjust the SteerLimitTimer value.", "../assets/offroad/icon_shell.png") {
@@ -2963,6 +2968,8 @@ SteerLimitTimer::SteerLimitTimer() : AbstractControl("SteerLimitTimer", "Adjust 
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -2970,7 +2977,7 @@ SteerLimitTimer::SteerLimitTimer() : AbstractControl("SteerLimitTimer", "Adjust 
     auto str = QString::fromStdString(params.get("SteerLimitTimerAdj"));
     int value = str.toInt();
     value = value - 5;
-    if (value <= 0 ) {
+    if (value <= 0) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -2982,7 +2989,7 @@ SteerLimitTimer::SteerLimitTimer() : AbstractControl("SteerLimitTimer", "Adjust 
     auto str = QString::fromStdString(params.get("SteerLimitTimerAdj"));
     int value = str.toInt();
     value = value + 5;
-    if (value >= 300 ) {
+    if (value >= 300) {
       value = 300;
     }
     QString values = QString::number(value);
@@ -2998,8 +3005,6 @@ void SteerLimitTimer::refresh() {
   float valuef = valuei * 0.01;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 TireStiffnessFactor::TireStiffnessFactor() : AbstractControl("TireStiffnessFactor", "Adjust the TireStiffnessFactor value.", "../assets/offroad/icon_shell.png") {
@@ -3026,6 +3031,8 @@ TireStiffnessFactor::TireStiffnessFactor() : AbstractControl("TireStiffnessFacto
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -3033,7 +3040,7 @@ TireStiffnessFactor::TireStiffnessFactor() : AbstractControl("TireStiffnessFacto
     auto str = QString::fromStdString(params.get("TireStiffnessFactorAdj"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1 ) {
+    if (value <= 1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -3045,7 +3052,7 @@ TireStiffnessFactor::TireStiffnessFactor() : AbstractControl("TireStiffnessFacto
     auto str = QString::fromStdString(params.get("TireStiffnessFactorAdj"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 200 ) {
+    if (value >= 200) {
       value = 200;
     }
     QString values = QString::number(value);
@@ -3061,8 +3068,6 @@ void TireStiffnessFactor::refresh() {
   float valuef = valuei * 0.01;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 SteerMax::SteerMax() : AbstractControl("", "", "") {
@@ -3479,6 +3484,8 @@ SteerThreshold::SteerThreshold() : AbstractControl("SteerThreshold", "Adjust the
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -3486,7 +3493,7 @@ SteerThreshold::SteerThreshold() : AbstractControl("SteerThreshold", "Adjust the
     auto str = QString::fromStdString(params.get("SteerThreshold"));
     int value = str.toInt();
     value = value - 10;
-    if (value <= 50 ) {
+    if (value <= 50) {
       value = 50;
     }
     QString values = QString::number(value);
@@ -3498,7 +3505,7 @@ SteerThreshold::SteerThreshold() : AbstractControl("SteerThreshold", "Adjust the
     auto str = QString::fromStdString(params.get("SteerThreshold"));
     int value = str.toInt();
     value = value + 10;
-    if (value >= 300 ) {
+    if (value >= 300) {
       value = 300;
     }
     QString values = QString::number(value);
@@ -3510,8 +3517,6 @@ SteerThreshold::SteerThreshold() : AbstractControl("SteerThreshold", "Adjust the
 
 void SteerThreshold::refresh() {
   label.setText(QString::fromStdString(params.get("SteerThreshold")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 //제어
@@ -3539,6 +3544,8 @@ LateralControl::LateralControl() : AbstractControl("LatControl(Reboot)", "Set th
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("◀");
+  btnplus.setText("▶");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -3546,7 +3553,7 @@ LateralControl::LateralControl() : AbstractControl("LatControl(Reboot)", "Set th
     auto str = QString::fromStdString(params.get("LateralControlMethod"));
     int latcontrol = str.toInt();
     latcontrol = latcontrol - 1;
-    if (latcontrol <= -1 ) {
+    if (latcontrol <= -1) {
       latcontrol = 2;
     }
     QString latcontrols = QString::number(latcontrol);
@@ -3558,7 +3565,7 @@ LateralControl::LateralControl() : AbstractControl("LatControl(Reboot)", "Set th
     auto str = QString::fromStdString(params.get("LateralControlMethod"));
     int latcontrol = str.toInt();
     latcontrol = latcontrol + 1;
-    if (latcontrol >= 3 ) {
+    if (latcontrol >= 3) {
       latcontrol = 0;
     }
     QString latcontrols = QString::number(latcontrol);
@@ -3577,8 +3584,6 @@ void LateralControl::refresh() {
   } else if (latcontrol == "2") {
     label.setText(QString::fromStdString("LQR"));
   }
-  btnminus.setText("◀");
-  btnplus.setText("▶");
 }
 
 PidKp::PidKp() : AbstractControl("Kp", "Adjust Kp", "../assets/offroad/icon_shell.png") {
@@ -3605,6 +3610,8 @@ PidKp::PidKp() : AbstractControl("Kp", "Adjust Kp", "../assets/offroad/icon_shel
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -3612,7 +3619,7 @@ PidKp::PidKp() : AbstractControl("Kp", "Adjust Kp", "../assets/offroad/icon_shel
     auto str = QString::fromStdString(params.get("PidKp"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1 ) {
+    if (value <= 1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -3624,7 +3631,7 @@ PidKp::PidKp() : AbstractControl("Kp", "Adjust Kp", "../assets/offroad/icon_shel
     auto str = QString::fromStdString(params.get("PidKp"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 50 ) {
+    if (value >= 50) {
       value = 50;
     }
     QString values = QString::number(value);
@@ -3640,8 +3647,6 @@ void PidKp::refresh() {
   float valuef = valuei * 0.01;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 PidKi::PidKi() : AbstractControl("Ki", "Adjust Ki", "../assets/offroad/icon_shell.png") {
@@ -3668,6 +3673,8 @@ PidKi::PidKi() : AbstractControl("Ki", "Adjust Ki", "../assets/offroad/icon_shel
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -3675,7 +3682,7 @@ PidKi::PidKi() : AbstractControl("Ki", "Adjust Ki", "../assets/offroad/icon_shel
     auto str = QString::fromStdString(params.get("PidKi"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1 ) {
+    if (value <= 1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -3687,7 +3694,7 @@ PidKi::PidKi() : AbstractControl("Ki", "Adjust Ki", "../assets/offroad/icon_shel
     auto str = QString::fromStdString(params.get("PidKi"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 100 ) {
+    if (value >= 100) {
       value = 100;
     }
     QString values = QString::number(value);
@@ -3703,8 +3710,6 @@ void PidKi::refresh() {
   float valuef = valuei * 0.001;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 PidKd::PidKd() : AbstractControl("Kd", "Adjust Kd", "../assets/offroad/icon_shell.png") {
@@ -3731,6 +3736,8 @@ PidKd::PidKd() : AbstractControl("Kd", "Adjust Kd", "../assets/offroad/icon_shel
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -3738,7 +3745,7 @@ PidKd::PidKd() : AbstractControl("Kd", "Adjust Kd", "../assets/offroad/icon_shel
     auto str = QString::fromStdString(params.get("PidKd"));
     int value = str.toInt();
     value = value - 5;
-    if (value <= 0 ) {
+    if (value <= 0) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -3750,7 +3757,7 @@ PidKd::PidKd() : AbstractControl("Kd", "Adjust Kd", "../assets/offroad/icon_shel
     auto str = QString::fromStdString(params.get("PidKd"));
     int value = str.toInt();
     value = value + 5;
-    if (value >= 300 ) {
+    if (value >= 300) {
       value = 300;
     }
     QString values = QString::number(value);
@@ -3766,8 +3773,6 @@ void PidKd::refresh() {
   float valuef = valuei * 0.01;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 PidKf::PidKf() : AbstractControl("Kf", "Adjust Kf", "../assets/offroad/icon_shell.png") {
@@ -3794,6 +3799,8 @@ PidKf::PidKf() : AbstractControl("Kf", "Adjust Kf", "../assets/offroad/icon_shel
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -3801,7 +3808,7 @@ PidKf::PidKf() : AbstractControl("Kf", "Adjust Kf", "../assets/offroad/icon_shel
     auto str = QString::fromStdString(params.get("PidKf"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1 ) {
+    if (value <= 1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -3813,7 +3820,7 @@ PidKf::PidKf() : AbstractControl("Kf", "Adjust Kf", "../assets/offroad/icon_shel
     auto str = QString::fromStdString(params.get("PidKf"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 50 ) {
+    if (value >= 50) {
       value = 50;
     }
     QString values = QString::number(value);
@@ -3829,8 +3836,6 @@ void PidKf::refresh() {
   float valuef = valuei * 0.00001;
   QString valuefs = QString::number(valuef, 'f', 5);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 OuterLoopGain::OuterLoopGain() : AbstractControl("OuterLoopGain", "Adjust OuterLoopGain", "../assets/offroad/icon_shell.png") {
@@ -3857,6 +3862,8 @@ OuterLoopGain::OuterLoopGain() : AbstractControl("OuterLoopGain", "Adjust OuterL
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -3864,7 +3871,7 @@ OuterLoopGain::OuterLoopGain() : AbstractControl("OuterLoopGain", "Adjust OuterL
     auto str = QString::fromStdString(params.get("OuterLoopGain"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1 ) {
+    if (value <= 1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -3876,7 +3883,7 @@ OuterLoopGain::OuterLoopGain() : AbstractControl("OuterLoopGain", "Adjust OuterL
     auto str = QString::fromStdString(params.get("OuterLoopGain"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 200 ) {
+    if (value >= 200) {
       value = 200;
     }
     QString values = QString::number(value);
@@ -3892,8 +3899,6 @@ void OuterLoopGain::refresh() {
   float valuef = valuei * 0.1;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 InnerLoopGain::InnerLoopGain() : AbstractControl("InnerLoopGain", "Adjust InnerLoopGain", "../assets/offroad/icon_shell.png") {
@@ -3920,6 +3925,8 @@ InnerLoopGain::InnerLoopGain() : AbstractControl("InnerLoopGain", "Adjust InnerL
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -3927,7 +3934,7 @@ InnerLoopGain::InnerLoopGain() : AbstractControl("InnerLoopGain", "Adjust InnerL
     auto str = QString::fromStdString(params.get("InnerLoopGain"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1 ) {
+    if (value <= 1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -3939,7 +3946,7 @@ InnerLoopGain::InnerLoopGain() : AbstractControl("InnerLoopGain", "Adjust InnerL
     auto str = QString::fromStdString(params.get("InnerLoopGain"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 200 ) {
+    if (value >= 200) {
       value = 200;
     }
     QString values = QString::number(value);
@@ -3955,8 +3962,6 @@ void InnerLoopGain::refresh() {
   float valuef = valuei * 0.1;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 TimeConstant::TimeConstant() : AbstractControl("TimeConstant", "Adjust TimeConstant", "../assets/offroad/icon_shell.png") {
@@ -3983,6 +3988,8 @@ TimeConstant::TimeConstant() : AbstractControl("TimeConstant", "Adjust TimeConst
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -3990,7 +3997,7 @@ TimeConstant::TimeConstant() : AbstractControl("TimeConstant", "Adjust TimeConst
     auto str = QString::fromStdString(params.get("TimeConstant"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1 ) {
+    if (value <= 1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -4002,7 +4009,7 @@ TimeConstant::TimeConstant() : AbstractControl("TimeConstant", "Adjust TimeConst
     auto str = QString::fromStdString(params.get("TimeConstant"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 200 ) {
+    if (value >= 200) {
       value = 200;
     }
     QString values = QString::number(value);
@@ -4018,8 +4025,6 @@ void TimeConstant::refresh() {
   float valuef = valuei * 0.1;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 ActuatorEffectiveness::ActuatorEffectiveness() : AbstractControl("ActuatorEffectiveness", "Adjust ActuatorEffectiveness", "../assets/offroad/icon_shell.png") {
@@ -4046,6 +4051,8 @@ ActuatorEffectiveness::ActuatorEffectiveness() : AbstractControl("ActuatorEffect
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -4053,7 +4060,7 @@ ActuatorEffectiveness::ActuatorEffectiveness() : AbstractControl("ActuatorEffect
     auto str = QString::fromStdString(params.get("ActuatorEffectiveness"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1 ) {
+    if (value <= 1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -4065,7 +4072,7 @@ ActuatorEffectiveness::ActuatorEffectiveness() : AbstractControl("ActuatorEffect
     auto str = QString::fromStdString(params.get("ActuatorEffectiveness"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 200 ) {
+    if (value >= 200) {
       value = 200;
     }
     QString values = QString::number(value);
@@ -4081,8 +4088,6 @@ void ActuatorEffectiveness::refresh() {
   float valuef = valuei * 0.1;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 Scale::Scale() : AbstractControl("Scale", "Adjust Scale", "../assets/offroad/icon_shell.png") {
@@ -4109,6 +4114,8 @@ Scale::Scale() : AbstractControl("Scale", "Adjust Scale", "../assets/offroad/ico
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -4116,7 +4123,7 @@ Scale::Scale() : AbstractControl("Scale", "Adjust Scale", "../assets/offroad/ico
     auto str = QString::fromStdString(params.get("Scale"));
     int value = str.toInt();
     value = value - 50;
-    if (value <= 50 ) {
+    if (value <= 50) {
       value = 50;
     }
     QString values = QString::number(value);
@@ -4128,7 +4135,7 @@ Scale::Scale() : AbstractControl("Scale", "Adjust Scale", "../assets/offroad/ico
     auto str = QString::fromStdString(params.get("Scale"));
     int value = str.toInt();
     value = value + 50;
-    if (value >= 5000 ) {
+    if (value >= 5000) {
       value = 5000;
     }
     QString values = QString::number(value);
@@ -4140,8 +4147,6 @@ Scale::Scale() : AbstractControl("Scale", "Adjust Scale", "../assets/offroad/ico
 
 void Scale::refresh() {
   label.setText(QString::fromStdString(params.get("Scale")));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 LqrKi::LqrKi() : AbstractControl("LqrKi", "Adjust ki", "../assets/offroad/icon_shell.png") {
@@ -4168,6 +4173,8 @@ LqrKi::LqrKi() : AbstractControl("LqrKi", "Adjust ki", "../assets/offroad/icon_s
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -4175,7 +4182,7 @@ LqrKi::LqrKi() : AbstractControl("LqrKi", "Adjust ki", "../assets/offroad/icon_s
     auto str = QString::fromStdString(params.get("LqrKi"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1 ) {
+    if (value <= 1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -4187,7 +4194,7 @@ LqrKi::LqrKi() : AbstractControl("LqrKi", "Adjust ki", "../assets/offroad/icon_s
     auto str = QString::fromStdString(params.get("LqrKi"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 100 ) {
+    if (value >= 100) {
       value = 100;
     }
     QString values = QString::number(value);
@@ -4203,8 +4210,6 @@ void LqrKi::refresh() {
   float valuef = valuei * 0.001;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 DcGain::DcGain() : AbstractControl("DcGain", "Adjust DcGain", "../assets/offroad/icon_shell.png") {
@@ -4231,6 +4236,8 @@ DcGain::DcGain() : AbstractControl("DcGain", "Adjust DcGain", "../assets/offroad
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -4238,7 +4245,7 @@ DcGain::DcGain() : AbstractControl("DcGain", "Adjust DcGain", "../assets/offroad
     auto str = QString::fromStdString(params.get("DcGain"));
     int value = str.toInt();
     value = value - 5;
-    if (value <= 5 ) {
+    if (value <= 5) {
       value = 5;
     }
     QString values = QString::number(value);
@@ -4250,7 +4257,7 @@ DcGain::DcGain() : AbstractControl("DcGain", "Adjust DcGain", "../assets/offroad
     auto str = QString::fromStdString(params.get("DcGain"));
     int value = str.toInt();
     value = value + 5;
-    if (value >= 500 ) {
+    if (value >= 500) {
       value = 500;
     }
     QString values = QString::number(value);
@@ -4266,8 +4273,6 @@ void DcGain::refresh() {
   float valuef = valuei * 0.00001;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 CruiseGapTR::CruiseGapTR() : AbstractControl("CruiseGap", "Adjust the inter-vehicle distance (TR) according to the cruise gap. TR refers to the time in seconds of collision with the car in front, and the larger it becomes, the farther it is from the car in front.", "") {
@@ -4405,7 +4410,7 @@ CruiseGapTR::CruiseGapTR() : AbstractControl("CruiseGap", "Adjust the inter-vehi
     auto str = QString::fromStdString(params.get("CruiseGap1"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 13 ) {
+    if (value >= 13) {
       value = 7;
     }
     QString values = QString::number(value);
@@ -4417,7 +4422,7 @@ CruiseGapTR::CruiseGapTR() : AbstractControl("CruiseGap", "Adjust the inter-vehi
     auto str = QString::fromStdString(params.get("CruiseGap2"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 16 ) {
+    if (value >= 16) {
       value = 8;
     }
     QString values = QString::number(value);
@@ -4429,7 +4434,7 @@ CruiseGapTR::CruiseGapTR() : AbstractControl("CruiseGap", "Adjust the inter-vehi
     auto str = QString::fromStdString(params.get("CruiseGap3"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 20 ) {
+    if (value >= 20) {
       value = 10;
     }
     QString values = QString::number(value);
@@ -4441,7 +4446,7 @@ CruiseGapTR::CruiseGapTR() : AbstractControl("CruiseGap", "Adjust the inter-vehi
     auto str = QString::fromStdString(params.get("CruiseGap4"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 30 ) {
+    if (value >= 30) {
       value = 12;
     }
     QString values = QString::number(value);
@@ -4512,6 +4517,8 @@ DynamicTRGap::DynamicTRGap() : AbstractControl("Use DynamicTR", "Use DynamicTR a
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("◀");
+  btnplus.setText("▶");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -4519,7 +4526,7 @@ DynamicTRGap::DynamicTRGap() : AbstractControl("Use DynamicTR", "Use DynamicTR a
     auto str = QString::fromStdString(params.get("DynamicTRGap"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -1 ) {
+    if (value <= -1) {
       value = 4;
     }
     QString values = QString::number(value);
@@ -4531,7 +4538,7 @@ DynamicTRGap::DynamicTRGap() : AbstractControl("Use DynamicTR", "Use DynamicTR a
     auto str = QString::fromStdString(params.get("DynamicTRGap"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 5 ) {
+    if (value >= 5) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -4554,8 +4561,6 @@ void DynamicTRGap::refresh() {
   } else {
     label.setText(QString::fromStdString("■■■■"));
   }
-  btnminus.setText("◀");
-  btnplus.setText("▶");
 }
 
 LCTimingFactor::LCTimingFactor() : AbstractControl("", "", "") {
@@ -4637,9 +4642,9 @@ LCTimingFactor::LCTimingFactor() : AbstractControl("", "", "") {
     } else {
       value = value - 5;
     }
-    if (value >= value2 ) {
+    if (value >= value2) {
       value = value2;
-    } else if (value <= 5 ) {
+    } else if (value <= 5) {
       value = 5;
     }
     QString values = QString::number(value);
@@ -4660,9 +4665,9 @@ LCTimingFactor::LCTimingFactor() : AbstractControl("", "", "") {
     } else {
       value = value - 5;
     }
-    if (value >= value2 ) {
+    if (value >= value2) {
       value = value2;
-    } else if (value <= value0 ) {
+    } else if (value <= value0) {
       value = value0;
     }
     QString values = QString::number(value);
@@ -4683,9 +4688,9 @@ LCTimingFactor::LCTimingFactor() : AbstractControl("", "", "") {
     } else {
       value = value - 5;
     }
-    if (value >= value2 ) {
+    if (value >= value2) {
       value = value2;
-    } else if (value <= value0 ) {
+    } else if (value <= value0) {
       value = value0;
     }
     QString values = QString::number(value);
@@ -4704,9 +4709,9 @@ LCTimingFactor::LCTimingFactor() : AbstractControl("", "", "") {
     } else {
       value = value - 5;
     }
-    if (value <= value0 ) {
+    if (value <= value0) {
       value = value0;
-    } else if (value >= 300 ) {
+    } else if (value >= 300) {
       value = 300;
     }
     QString values = QString::number(value);
@@ -4790,7 +4795,7 @@ LCTimingFactorUD::LCTimingFactorUD() : AbstractControl("LaneChange Time (km/h: v
     auto str = QString::fromStdString(params.get("LCTimingFactorUD"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 2 ) {
+    if (value >= 2) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -4866,7 +4871,7 @@ LiveSRPercent::LiveSRPercent() : AbstractControl("LiveSR Adjust(%)", "When using
     auto str = QString::fromStdString(params.get("LiveSteerRatioPercent"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -50 ) {
+    if (value <= -50) {
       value = -50;
     }
     QString values = QString::number(value);
@@ -4878,7 +4883,7 @@ LiveSRPercent::LiveSRPercent() : AbstractControl("LiveSR Adjust(%)", "When using
     auto str = QString::fromStdString(params.get("LiveSteerRatioPercent"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 50 ) {
+    if (value >= 50) {
       value = 50;
     }
     QString values = QString::number(value);
@@ -5063,6 +5068,8 @@ GetOffAlert::GetOffAlert() : AbstractControl("EON Detach Alert Sound", "Device a
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("◀");
+  btnplus.setText("▶");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -5070,7 +5077,7 @@ GetOffAlert::GetOffAlert() : AbstractControl("EON Detach Alert Sound", "Device a
     auto str = QString::fromStdString(params.get("OpkrEnableGetoffAlert"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -1 ) {
+    if (value <= -1) {
       value = 2;
     }
     QString values = QString::number(value);
@@ -5082,7 +5089,7 @@ GetOffAlert::GetOffAlert() : AbstractControl("EON Detach Alert Sound", "Device a
     auto str = QString::fromStdString(params.get("OpkrEnableGetoffAlert"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 3 ) {
+    if (value >= 3) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -5101,8 +5108,6 @@ void GetOffAlert::refresh() {
   } else {
     label.setText(QString::fromStdString("ENG"));
   }
-  btnminus.setText("◀");
-  btnplus.setText("▶");
 }
 
 OPKRNaviSelect::OPKRNaviSelect() : AbstractControl("Navigation Select", "Select the navigation you want to use.(Mappy/Waze/None)", "../assets/offroad/icon_shell.png") {
@@ -5129,6 +5134,8 @@ OPKRNaviSelect::OPKRNaviSelect() : AbstractControl("Navigation Select", "Select 
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("◀");
+  btnplus.setText("▶");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -5136,7 +5143,7 @@ OPKRNaviSelect::OPKRNaviSelect() : AbstractControl("Navigation Select", "Select 
     auto str = QString::fromStdString(params.get("OPKRNaviSelect"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -1 ) {
+    if (value <= -1) {
       value = 2;
     }
     QString values = QString::number(value);
@@ -5148,7 +5155,7 @@ OPKRNaviSelect::OPKRNaviSelect() : AbstractControl("Navigation Select", "Select 
     auto str = QString::fromStdString(params.get("OPKRNaviSelect"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 3 ) {
+    if (value >= 3) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -5167,8 +5174,6 @@ void OPKRNaviSelect::refresh() {
   } else {
     label.setText(QString::fromStdString("None"));
   }
-  btnminus.setText("◀");
-  btnplus.setText("▶");
 }
 
 OPKRServerSelect::OPKRServerSelect() : AbstractControl("API Server", "Set API server to Retropilot/Comma/User's", "../assets/offroad/icon_shell.png") {
@@ -5518,7 +5523,7 @@ RESCountatStandstill::RESCountatStandstill() : AbstractControl("RES Count at Sta
     auto str = QString::fromStdString(params.get("RESCountatStandstill"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1 ) {
+    if (value <= 1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -5530,7 +5535,7 @@ RESCountatStandstill::RESCountatStandstill() : AbstractControl("RES Count at Sta
     auto str = QString::fromStdString(params.get("RESCountatStandstill"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 50 ) {
+    if (value >= 50) {
       value = 50;
     }
     QString values = QString::number(value);
@@ -5570,6 +5575,8 @@ SpeedLimitSignType::SpeedLimitSignType() : AbstractControl("SafetyCam SignType",
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("◀");
+  btnplus.setText("▶");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -5577,7 +5584,7 @@ SpeedLimitSignType::SpeedLimitSignType() : AbstractControl("SafetyCam SignType",
     auto str = QString::fromStdString(params.get("OpkrSpeedLimitSignType"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -1 ) {
+    if (value <= -1) {
       value = 1;
     }
     QString values = QString::number(value);
@@ -5589,7 +5596,7 @@ SpeedLimitSignType::SpeedLimitSignType() : AbstractControl("SafetyCam SignType",
     auto str = QString::fromStdString(params.get("OpkrSpeedLimitSignType"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 2 ) {
+    if (value >= 2) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -5606,8 +5613,6 @@ void SpeedLimitSignType::refresh() {
   } else {
     label.setText(QString::fromStdString("Rectangle"));
   }
-  btnminus.setText("◀");
-  btnplus.setText("▶");
 }
 
 RadarLongHelperOption::RadarLongHelperOption() : AbstractControl("Radar Long Assist", "Vision Only, Vision+Radar, Radar Only, OPKR Custom", "../assets/offroad/icon_shell.png") {
@@ -5634,6 +5639,8 @@ RadarLongHelperOption::RadarLongHelperOption() : AbstractControl("Radar Long Ass
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("◀");
+  btnplus.setText("▶");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -5641,7 +5648,7 @@ RadarLongHelperOption::RadarLongHelperOption() : AbstractControl("Radar Long Ass
     auto str = QString::fromStdString(params.get("RadarLongHelper"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -1 ) {
+    if (value <= -1) {
       value = 3;
     }
     QString values = QString::number(value);
@@ -5653,7 +5660,7 @@ RadarLongHelperOption::RadarLongHelperOption() : AbstractControl("Radar Long Ass
     auto str = QString::fromStdString(params.get("RadarLongHelper"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 4 ) {
+    if (value >= 4) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -5674,8 +5681,6 @@ void RadarLongHelperOption::refresh() {
   } else {
     label.setText(QString::fromStdString("OPKR Custom"));
   }
-  btnminus.setText("◀");
-  btnplus.setText("▶");
 }
 
 CurvDecelSelect::CurvDecelSelect() : AbstractControl("Curv Decel Option", "None, Vision+OSM, Vision Only, OSM Only", "../assets/offroad/icon_shell.png") {
@@ -5702,6 +5707,8 @@ CurvDecelSelect::CurvDecelSelect() : AbstractControl("Curv Decel Option", "None,
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("◀");
+  btnplus.setText("▶");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -5709,7 +5716,7 @@ CurvDecelSelect::CurvDecelSelect() : AbstractControl("Curv Decel Option", "None,
     auto str = QString::fromStdString(params.get("CurvDecelOption"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -1 ) {
+    if (value <= -1) {
       value = 3;
     }
     QString values = QString::number(value);
@@ -5721,7 +5728,7 @@ CurvDecelSelect::CurvDecelSelect() : AbstractControl("Curv Decel Option", "None,
     auto str = QString::fromStdString(params.get("CurvDecelOption"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 4 ) {
+    if (value >= 4) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -5742,8 +5749,6 @@ void CurvDecelSelect::refresh() {
   } else {
     label.setText(QString::fromStdString("OSM Only"));
   }
-  btnminus.setText("◀");
-  btnplus.setText("▶");
 }
 
 AutoRESDelay::AutoRESDelay() : AbstractControl("AutoRES Delay(sec)", "Give delay time to trigger for AutoRES while driving.", "../assets/offroad/icon_shell.png") {
@@ -5777,7 +5782,7 @@ AutoRESDelay::AutoRESDelay() : AbstractControl("AutoRES Delay(sec)", "Give delay
     auto str = QString::fromStdString(params.get("AutoRESDelay"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 0 ) {
+    if (value <= 0) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -5789,7 +5794,7 @@ AutoRESDelay::AutoRESDelay() : AbstractControl("AutoRES Delay(sec)", "Give delay
     auto str = QString::fromStdString(params.get("AutoRESDelay"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 10 ) {
+    if (value >= 10) {
       value = 10;
     }
     QString values = QString::number(value);
@@ -5937,7 +5942,7 @@ DesiredCurvatureLimit::DesiredCurvatureLimit() : AbstractControl("DesiredCurvatu
 
   QObject::connect(&btndigit, &QPushButton::clicked, [=]() {
     digit = digit * 10;
-    if (digit >= 2 ) {
+    if (digit >= 2) {
       digit = 0.01;
     }
     QString level = QString::number(digit);
@@ -6072,6 +6077,8 @@ LaneWidth::LaneWidth() : AbstractControl("Set LaneWidth", "Set LaneWidth (defaul
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -6079,7 +6086,7 @@ LaneWidth::LaneWidth() : AbstractControl("Set LaneWidth", "Set LaneWidth (defaul
     auto str = QString::fromStdString(params.get("LaneWidth"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 23 ) {
+    if (value <= 23) {
       value = 23;
     }
     QString values = QString::number(value);
@@ -6091,7 +6098,7 @@ LaneWidth::LaneWidth() : AbstractControl("Set LaneWidth", "Set LaneWidth (defaul
     auto str = QString::fromStdString(params.get("LaneWidth"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 40 ) {
+    if (value >= 40) {
       value = 40;
     }
     QString values = QString::number(value);
@@ -6107,8 +6114,6 @@ void LaneWidth::refresh() {
   float valuef = valuei * 0.1;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
-  btnminus.setText("－");
-  btnplus.setText("＋");
 }
 
 SpeedLaneWidthUD::SpeedLaneWidthUD() : AbstractControl("Speed LaneWidth: [Spd(m/s)] [LaneWidth]", "Set LaneWidths by speed. Speed is m/s values not kph or mph. (Mid range is interpolation values)", "../assets/offroad/icon_shell.png") {
@@ -6205,6 +6210,8 @@ OPKRTopTextView::OPKRTopTextView() : AbstractControl("Top Text View", "Date/Time
   )");
   btnminus.setFixedSize(150, 100);
   btnplus.setFixedSize(150, 100);
+  btnminus.setText("◀");
+  btnplus.setText("▶");
   hlayout->addWidget(&btnminus);
   hlayout->addWidget(&btnplus);
 
@@ -6212,7 +6219,7 @@ OPKRTopTextView::OPKRTopTextView() : AbstractControl("Top Text View", "Date/Time
     auto str = QString::fromStdString(params.get("TopTextView"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -1 ) {
+    if (value <= -1) {
       value = 7;
     }
     QString values = QString::number(value);
@@ -6224,7 +6231,7 @@ OPKRTopTextView::OPKRTopTextView() : AbstractControl("Top Text View", "Date/Time
     auto str = QString::fromStdString(params.get("TopTextView"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 8 ) {
+    if (value >= 8) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -6261,8 +6268,6 @@ void OPKRTopTextView::refresh() {
     label.setText(QString::fromStdString("OSM"));
     QUIState::ui_state.scene.top_text_view = 7;
   }
-  btnminus.setText("◀");
-  btnplus.setText("▶");
 }
 
 OPKREdgeOffset::OPKREdgeOffset() : AbstractControl("", "+ value to move car to left, - value to move car to right on each lane.", "") {
@@ -6330,7 +6335,7 @@ OPKREdgeOffset::OPKREdgeOffset() : AbstractControl("", "+ value to move car to l
     auto str = QString::fromStdString(params.get("LeftEdgeOffset"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -50 ) {
+    if (value <= -50) {
       value = -50;
     }
     QString values = QString::number(value);
@@ -6342,7 +6347,7 @@ OPKREdgeOffset::OPKREdgeOffset() : AbstractControl("", "+ value to move car to l
     auto str = QString::fromStdString(params.get("LeftEdgeOffset"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 50 ) {
+    if (value >= 50) {
       value = 50;
     }
     QString values = QString::number(value);
@@ -6353,7 +6358,7 @@ OPKREdgeOffset::OPKREdgeOffset() : AbstractControl("", "+ value to move car to l
     auto str = QString::fromStdString(params.get("RightEdgeOffset"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= -50 ) {
+    if (value <= -50) {
       value = -50;
     }
     QString values = QString::number(value);
@@ -6365,7 +6370,7 @@ OPKREdgeOffset::OPKREdgeOffset() : AbstractControl("", "+ value to move car to l
     auto str = QString::fromStdString(params.get("RightEdgeOffset"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 50 ) {
+    if (value >= 50) {
       value = 50;
     }
     QString values = QString::number(value);
@@ -6457,7 +6462,7 @@ ToAvoidLKASFault::ToAvoidLKASFault() : AbstractControl("", "", "") {
     auto str = QString::fromStdString(params.get("AvoidLKASFaultMaxAngle"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 45 ) {
+    if (value <= 45) {
       value = 45;
     }
     QString values = QString::number(value);
@@ -6469,7 +6474,7 @@ ToAvoidLKASFault::ToAvoidLKASFault() : AbstractControl("", "", "") {
     auto str = QString::fromStdString(params.get("AvoidLKASFaultMaxAngle"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 99 ) {
+    if (value >= 99) {
       value = 99;
     }
     QString values = QString::number(value);
@@ -6481,7 +6486,7 @@ ToAvoidLKASFault::ToAvoidLKASFault() : AbstractControl("", "", "") {
     auto str = QString::fromStdString(params.get("AvoidLKASFaultMaxFrame"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 10 ) {
+    if (value <= 10) {
       value = 10;
     }
     QString values = QString::number(value);
@@ -6493,7 +6498,7 @@ ToAvoidLKASFault::ToAvoidLKASFault() : AbstractControl("", "", "") {
     auto str = QString::fromStdString(params.get("AvoidLKASFaultMaxFrame"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 150 ) {
+    if (value >= 150) {
       value = 150;
     }
     QString values = QString::number(value);
