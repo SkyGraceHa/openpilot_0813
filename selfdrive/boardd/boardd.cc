@@ -425,8 +425,7 @@ void hardware_control_thread() {
     cnt++;
     sm.update(1000); // TODO: what happens if EINTR is sent while in sm.update?
 
-#if defined(QCOM) || defined(QCOM2)
-    if (sm.updated("deviceState")) {
+    if (!Hardware::PC() && sm.updated("deviceState")) {
       // Fan speed
       uint16_t fan_speed = sm["deviceState"].getDeviceState().getFanSpeedPercentDesired();
       if (fan_speed != prev_fan_speed || cnt % 100 == 0){
@@ -446,7 +445,6 @@ void hardware_control_thread() {
         prev_charging_disabled = charging_disabled;
       }
     }
-#endif
 
     if (sm.updated("driverCameraState")) {
       auto event = sm["driverCameraState"];

@@ -157,6 +157,7 @@ class CarController():
     self.variable_steer_delta = self.params.get_bool("OpkrVariableSteerDelta")
     self.osm_spdlimit_enabled = self.params.get_bool("OSMSpeedLimitEnable")
     self.stock_safety_decel_enabled = self.params.get_bool("UseStockDecelOnSS")
+    self.joystick_debug_mode = self.params.get_bool("JoystickDebugMode")
 
     self.cc_timer = 0
     self.on_speed_control = False
@@ -667,7 +668,9 @@ class CarController():
         accel = actuators.oaccel if c.active and not CS.out.gasPressed else 0
         stopping = (actuators.longControlState == LongCtrlState.stopping)
         radar_recog = (0 < CS.lead_distance <= 149)
-        if 0 < CS.lead_distance <= 149 and self.radar_helper_option == 1:
+        if self.joystick_debug_mode:
+          accel = actuators.accel
+        elif 0 < CS.lead_distance <= 149 and self.radar_helper_option == 1:
           # neokii's logic, opkr mod
           stock_weight = 0.0
           if aReqValue > 0.0:
