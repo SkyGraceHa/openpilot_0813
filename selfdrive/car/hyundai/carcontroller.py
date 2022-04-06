@@ -261,8 +261,10 @@ class CarController():
         self.angle_limit_counter = 0
         self.cut_steer_frames += 1
     else:
+      if self.joystick_debug_mode:
+        lkas_active = c.active
       # disable when temp fault is active, or below LKA minimum speed
-      if self.opkr_maxanglelimit == 90:
+      elif self.opkr_maxanglelimit == 90:
         lkas_active = c.active and abs(CS.out.steeringAngleDeg) < self.opkr_maxanglelimit and CS.out.gearShifter == GearShifter.drive
       elif self.opkr_maxanglelimit > 90:
         str_angle_limit = interp(CS.out.vEgo * CV.MS_TO_KPH, [0, 20], [self.opkr_maxanglelimit+60, self.opkr_maxanglelimit])
