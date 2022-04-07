@@ -1045,6 +1045,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
   if (!scene.batt_less) {
     //char val_str[16];
     std::string bat_temp_val = std::to_string(int(scene.batTemp)) + "°C";
+    std::string bat_level_val = "";
     NVGcolor val_color = COLOR_WHITE_ALPHA(200);
     if (scene.batTemp > 40) {
       val_color = nvgRGBA(255, 188, 3, 200);
@@ -1053,9 +1054,9 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
       val_color = nvgRGBA(255, 0, 0, 200);
     }
     if (scene.deviceState.getBatteryStatus() == "Charging") {
-      std::string bat_level_val = std::to_string(int(scene.batPercent)) + "%++";
+      bat_level_val = std::to_string(int(scene.batPercent)) + "%++";
     } else {
-      std::string bat_level_val = std::to_string(int(scene.batPercent)) + "%--";
+      bat_level_val = std::to_string(int(scene.batPercent)) + "%--";
     }
     NVGcolor uom_color2 = COLOR_WHITE_ALPHA(200);
     if ((scene.fanSpeed/1000) > 64) {
