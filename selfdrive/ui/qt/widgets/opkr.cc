@@ -3134,7 +3134,7 @@ SteerMax::SteerMax() : AbstractControl("", "", "") {
   QObject::connect(&btnminusl, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("SteerMaxBaseAdj"));
     int value = str.toInt();
-    value = value - 1;
+    value = value - 2;
     if (value <= 200) {
       value = 200;
     }
@@ -3148,7 +3148,7 @@ SteerMax::SteerMax() : AbstractControl("", "", "") {
     int value1 = str1.toInt();
     auto str = QString::fromStdString(params.get("SteerMaxBaseAdj"));
     int value = str.toInt();
-    value = value + 1;
+    value = value + 2;
     if (value > value1) {
       value = value1;
       ConfirmationDialog::alert("The value cannot exceed SteerMax(" + str1 + ")", this);
@@ -3165,7 +3165,7 @@ SteerMax::SteerMax() : AbstractControl("", "", "") {
     int value1 = str1.toInt();
     auto str = QString::fromStdString(params.get("SteerMaxAdj"));
     int value = str.toInt();
-    value = value - 1;
+    value = value - 2;
     if (value < value1) {
       value = value1;
       ConfirmationDialog::alert("The value cannot be less than SteerMaxBase(" + str1 + ")", this);
@@ -3180,7 +3180,7 @@ SteerMax::SteerMax() : AbstractControl("", "", "") {
   QObject::connect(&btnplusr, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("SteerMaxAdj"));
     int value = str.toInt();
-    value = value + 1;
+    value = value + 2;
     if (value >= 1024) {
       value = 1024;
     }
