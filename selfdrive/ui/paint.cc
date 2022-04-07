@@ -1041,36 +1041,35 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize, false);
   }
-  //BAT TEMP
+  //BAT STAT
   if (!scene.batt_less) {
     //char val_str[16];
-    char uom_str[6];
     std::string bat_temp_val = std::to_string(int(scene.batTemp)) + "°C";
     NVGcolor val_color = COLOR_WHITE_ALPHA(200);
-    if(scene.batTemp > 40) {
+    if (scene.batTemp > 40) {
       val_color = nvgRGBA(255, 188, 3, 200);
     }
-    if(scene.batTemp > 50) {
+    if (scene.batTemp > 50) {
       val_color = nvgRGBA(255, 0, 0, 200);
+    }
+    if (scene.deviceState.getBatteryStatus() == "Charging") {
+      std::string bat_level_val = std::to_string(int(scene.batPercent)) + "%++";
+    } else {
+      std::string bat_level_val = std::to_string(int(scene.batPercent)) + "%--";
+    }
+    NVGcolor uom_color2 = COLOR_WHITE_ALPHA(200);
+    if ((scene.fanSpeed/1000) > 64) {
+      uom_color2 = nvgRGBA(255, 0, 0, 200);
+    } else if ((scene.fanSpeed/1000) > 31) {
+      uom_color2 = nvgRGBA(0, 0, 255, 200);
+    } else if ((scene.fanSpeed/1000) > 15) {
+      uom_color2 = nvgRGBA(0, 255, 0, 200);
     }
     // temp is alway in C * 1000
     //snprintf(val_str, sizeof(val_str), "%.0fC", batteryTemp);
-    snprintf(uom_str, sizeof(uom_str), "%d", (scene.fanSpeed)/1000);
-    bb_ry +=bb_ui_draw_measure(s, bat_temp_val.c_str(), uom_str, "BAT TEMP",
+    bb_ry +=bb_ui_draw_measure(s, bat_temp_val.c_str(), bat_level_val.c_str(), "BAT STAT",
         bb_rx, bb_ry, bb_uom_dx,
-        val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize, false);
-  }
-  //BAT LEVEL
-  if(!scene.batt_less) {
-    //char val_str[16];
-    char uom_str[6];
-    std::string bat_level_val = std::to_string(int(scene.batPercent)) + "%";
-    NVGcolor val_color = COLOR_WHITE_ALPHA(200);
-    snprintf(uom_str, sizeof(uom_str), "%s", scene.deviceState.getBatteryStatus() == "Charging" ? "++" : "--");
-    bb_ry +=bb_ui_draw_measure(s, bat_level_val.c_str(), uom_str, "BAT LVL",
-        bb_rx, bb_ry, bb_uom_dx,
-        val_color, lab_color, uom_color,
+        val_color, lab_color, uom_color2,
         value_fontSize, label_fontSize, uom_fontSize, false);
   }
   //add Ublox GPS accuracy
@@ -1113,7 +1112,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
         value_fontSize, label_fontSize, uom_fontSize, false);
   }
   //engine rpm
-  if (scene.engine_rpm > 1) {
+  if (scene.engine_rpm < 9998) {
     //char val_str[16];
     char uom_str[6];
     std::string engine_rpm_val = std::to_string(int(scene.engine_rpm));
