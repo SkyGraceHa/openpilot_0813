@@ -8,7 +8,9 @@ from decimal import Decimal
 LaneChangeState = log.LateralPlan.LaneChangeState
 LaneChangeDirection = log.LateralPlan.LaneChangeDirection
 
-if Params().get_bool("IsMetric"):
+if int(Params().get("OpkrLaneChangeSpeed", encoding="utf8")) < 19:
+  LANE_CHANGE_SPEED_MIN = -1
+elif Params().get_bool("IsMetric"):
   LANE_CHANGE_SPEED_MIN = float(int(Params().get("OpkrLaneChangeSpeed", encoding="utf8")) * CV.KPH_TO_MS)
 else:
   LANE_CHANGE_SPEED_MIN = float(int(Params().get("OpkrLaneChangeSpeed", encoding="utf8")) * CV.MPH_TO_MS)

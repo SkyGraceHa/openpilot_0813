@@ -146,6 +146,7 @@ class CarController():
     self.steerDeltaUp_Max = int(self.params.get("SteerDeltaUpAdj", encoding="utf8"))
     self.steerDeltaDown_Max = int(self.params.get("SteerDeltaDownAdj", encoding="utf8"))
     self.model_speed_range = [30, 100, 255]
+    self.angle_range = [100, 20, 0]
     self.steerMax_range = [self.steerMax_Max, self.steerMax_base, self.steerMax_base]
     self.steerDeltaUp_range = [self.steerDeltaUp_Max, self.steerDeltaUp_base, self.steerDeltaUp_base]
     self.steerDeltaDown_range = [self.steerDeltaDown_Max, self.steerDeltaDown_base, self.steerDeltaDown_base]
@@ -156,6 +157,8 @@ class CarController():
     self.variable_steer_max = self.params.get_bool("OpkrVariableSteerMax")
     self.variable_steer_delta = self.params.get_bool("OpkrVariableSteerDelta")
     self.osm_spdlimit_enabled = self.params.get_bool("OSMSpeedLimitEnable")
+    self.stock_safety_decel_enabled = self.params.get_bool("UseStockDecelOnSS")
+    self.joystick_debug_mode = self.params.get_bool("JoystickDebugMode")
 
     self.cc_timer = 0
     self.on_speed_control = False
@@ -204,14 +207,14 @@ class CarController():
     self.vRel = self.sm['radarState'].leadOne.vRel #EON Lead
     self.yRel = self.sm['radarState'].leadOne.yRel #EON Lead
 
-    if self.enable_steer_more and self.to_avoid_lkas_fault_enabled and abs(CS.out.steeringAngleDeg) > self.to_avoid_lkas_fault_max_angle*0.6 and \
+    if self.enable_steer_more and self.to_avoid_lkas_fault_enabled and abs(CS.out.steeringAngleDeg) > self.to_avoid_lkas_fault_max_angle*0.5 and \
      CS.out.vEgo <= 12.5 and not (0 <= self.driver_steering_torque_above_timer < 100): # 45km/h 
       self.steerMax = self.steerMax_Max
       self.steerDeltaUp = self.steerDeltaUp_Max
       self.steerDeltaDown = self.steerDeltaDown_Max
     elif CS.out.vEgo > 4.16: # 15km/h 8.3:
       if self.variable_steer_max:
-        self.steerMax = interp(int(abs(self.model_speed)), self.model_speed_range, self.steerMax_range)
+        self.steerMax = interp(int(abs(CS.out.steeringAngleDeg)), self.angle_range, self.steerMax_range) #interp(int(abs(self.model_speed)), self.model_speed_range, self.steerMax_range)
       else:
         self.steerMax = self.steerMax_base
       if self.variable_steer_delta:
@@ -258,15 +261,26 @@ class CarController():
         self.angle_limit_counter = 0
         self.cut_steer_frames += 1
     else:
+      if self.joystick_debug_mode:
+        lkas_active = c.active
       # disable when temp fault is active, or below LKA minimum speed
-      if self.opkr_maxanglelimit == 90:
+      elif self.opkr_maxanglelimit == 90:
         lkas_active = c.active and abs(CS.out.steeringAngleDeg) < self.opkr_maxanglelimit and CS.out.gearShifter == GearShifter.drive
       elif self.opkr_maxanglelimit > 90:
         str_angle_limit = interp(CS.out.vEgo * CV.MS_TO_KPH, [0, 20], [self.opkr_maxanglelimit+60, self.opkr_maxanglelimit])
         lkas_active = c.active and abs(CS.out.steeringAngleDeg) < str_angle_limit and CS.out.gearShifter == GearShifter.drive
       else:
-        lkas_active = c.active and not CS.out.steerFaultTemporary and CS.out.gearShifter == GearShifter.drive
+        lkas_active = c.active and CS.out.gearShifter == GearShifter.drive
+      if CS.mdps_error_cnt > self.to_avoid_lkas_fault_max_frame:
+        self.cut_steer = True
+      elif self.cut_steer_frames > 1:
+        self.cut_steer_frames = 0
+        self.cut_steer = False
+
       cut_steer_temp = False
+      if self.cut_steer:
+        cut_steer_temp = True
+        self.cut_steer_frames += 1
 
     if (( CS.out.leftBlinker and not CS.out.rightBlinker) or ( CS.out.rightBlinker and not CS.out.leftBlinker)) and CS.out.vEgo < LANE_CHANGE_SPEED_MIN and self.opkr_turnsteeringdisable:
       self.lanechange_manual_timer = 50
@@ -666,7 +680,9 @@ class CarController():
         accel = actuators.oaccel if c.active and not CS.out.gasPressed else 0
         stopping = (actuators.longControlState == LongCtrlState.stopping)
         radar_recog = (0 < CS.lead_distance <= 149)
-        if 0 < CS.lead_distance <= 149 and self.radar_helper_option == 1:
+        if self.joystick_debug_mode:
+          accel = actuators.accel
+        elif 0 < CS.lead_distance <= 149 and self.radar_helper_option == 1:
           # neokii's logic, opkr mod
           stock_weight = 0.0
           if aReqValue > 0.0:
@@ -756,6 +772,10 @@ class CarController():
         else:
           self.stopped = False
           stock_weight = 0.
+
+        if self.stock_safety_decel_enabled:
+          if CS.scc11["Navi_SCC_Camera_Act"] == 2 and accel > aReqValue:
+            accel = aReqValue
         accel = clip(accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX)
         self.aq_value = accel
         self.aq_value_raw = aReqValue
