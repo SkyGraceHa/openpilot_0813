@@ -1112,7 +1112,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "ENG RPM",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize, true);
+        value_fontSize, label_fontSize, uom_fontSize, scene.animated_rpm);
   }
 
   //finally draw the frame

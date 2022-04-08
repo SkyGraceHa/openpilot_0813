@@ -198,6 +198,7 @@ def manager_init() -> None:
     ("AvoidLKASFaultMaxFrame", "90"),
     ("AvoidLKASFaultBeyond", "0"),
     ("UseStockDecelOnSS", "0"),
+    ("AnimatedRPM", "1"),
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))
