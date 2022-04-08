@@ -928,62 +928,33 @@ static int bb_ui_draw_measure(UIState *s, const char* bb_value, const char* bb_u
     NVGpaint rpm_gradient = nvgLinearGradient(s->vg, bb_x-80, bb_y+90, bb_x+80, bb_y+32, COLOR_GREEN_ALPHA(80), COLOR_RED_ALPHA(255));
     nvgFillPaint(s->vg, rpm_gradient);
     nvgFill(s->vg);
-
-    //print value
-    int dx = 0;
-    if (strlen(bb_uom) > 0) {
-      dx = (int)(bb_uomFontSize*2.5/2);
-    }
-    nvgFontFace(s->vg, "sans-semibold");
-    nvgFontSize(s->vg, bb_valueFontSize*0.6);
-    nvgFillColor(s->vg, bb_valueColor);
-    nvgText(s->vg, bb_x-dx/2-15, bb_y+ (int)(bb_valueFontSize*2.5)+5-20, bb_value, NULL);
-    //print label
+  }
+  int dx = 0;
+  if (strlen(bb_uom) > 0) {
+    dx = (int)(bb_uomFontSize*2.5/2);
+  }
+  //print value
+  nvgFontFace(s->vg, "sans-semibold");
+  nvgFontSize(s->vg, bb_valueFontSize*2.5);
+  nvgFillColor(s->vg, bb_valueColor);
+  nvgText(s->vg, bb_x-dx/2, bb_y+ (int)(bb_valueFontSize*2.5)+5, bb_value, NULL);
+  //print label
+  nvgFontFace(s->vg, "sans-regular");
+  nvgFontSize(s->vg, bb_labelFontSize*2.5);
+  nvgFillColor(s->vg, bb_labelColor);
+  nvgText(s->vg, bb_x, bb_y + (int)(bb_valueFontSize*2.5)+5 + (int)(bb_labelFontSize*2.5)+5, bb_label, NULL);
+  //print uom
+  if (strlen(bb_uom) > 0) {
+      nvgSave(s->vg);
+    int rx =bb_x + bb_uom_dx + bb_valueFontSize -3;
+    int ry = bb_y + (int)(bb_valueFontSize*2.5/2)+25;
+    nvgTranslate(s->vg,rx,ry);
+    nvgRotate(s->vg, -1.5708); //-90deg in radians
     nvgFontFace(s->vg, "sans-regular");
-    nvgFontSize(s->vg, bb_labelFontSize*2.5);
-    nvgFillColor(s->vg, bb_labelColor);
-    nvgText(s->vg, bb_x, bb_y + (int)(bb_valueFontSize*2.5)+5 + (int)(bb_labelFontSize*2.5)+5, bb_label, NULL);
-    //print uom
-    if (strlen(bb_uom) > 0) {
-        nvgSave(s->vg);
-      int rx =bb_x + bb_uom_dx + bb_valueFontSize -3;
-      int ry = bb_y + (int)(bb_valueFontSize*2.5/2)+25;
-      nvgTranslate(s->vg,rx,ry);
-      nvgRotate(s->vg, -1.5708); //-90deg in radians
-      nvgFontFace(s->vg, "sans-regular");
-      nvgFontSize(s->vg, (int)(bb_uomFontSize*2.5));
-      nvgFillColor(s->vg, bb_uomColor);
-      nvgText(s->vg, 0, 0, bb_uom, NULL);
-      nvgRestore(s->vg);
-    }
-  } else {
-    int dx = 0;
-    if (strlen(bb_uom) > 0) {
-      dx = (int)(bb_uomFontSize*2.5/2);
-    }
-    //print value
-    nvgFontFace(s->vg, "sans-semibold");
-    nvgFontSize(s->vg, bb_valueFontSize*2.5);
-    nvgFillColor(s->vg, bb_valueColor);
-    nvgText(s->vg, bb_x-dx/2, bb_y+ (int)(bb_valueFontSize*2.5)+5, bb_value, NULL);
-    //print label
-    nvgFontFace(s->vg, "sans-regular");
-    nvgFontSize(s->vg, bb_labelFontSize*2.5);
-    nvgFillColor(s->vg, bb_labelColor);
-    nvgText(s->vg, bb_x, bb_y + (int)(bb_valueFontSize*2.5)+5 + (int)(bb_labelFontSize*2.5)+5, bb_label, NULL);
-    //print uom
-    if (strlen(bb_uom) > 0) {
-        nvgSave(s->vg);
-      int rx =bb_x + bb_uom_dx + bb_valueFontSize -3;
-      int ry = bb_y + (int)(bb_valueFontSize*2.5/2)+25;
-      nvgTranslate(s->vg,rx,ry);
-      nvgRotate(s->vg, -1.5708); //-90deg in radians
-      nvgFontFace(s->vg, "sans-regular");
-      nvgFontSize(s->vg, (int)(bb_uomFontSize*2.5));
-      nvgFillColor(s->vg, bb_uomColor);
-      nvgText(s->vg, 0, 0, bb_uom, NULL);
-      nvgRestore(s->vg);
-    }
+    nvgFontSize(s->vg, (int)(bb_uomFontSize*2.5));
+    nvgFillColor(s->vg, bb_uomColor);
+    nvgText(s->vg, 0, 0, bb_uom, NULL);
+    nvgRestore(s->vg);
   }
   return (int)((bb_valueFontSize + bb_labelFontSize)*2) + 5;
 }
