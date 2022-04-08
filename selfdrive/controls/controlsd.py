@@ -337,7 +337,7 @@ class Controls:
       self.events.add(EventName.radarFault)
     elif not self.sm.valid["pandaState"]:
       self.events.add(EventName.usbError)
-    elif not self.sm.all_alive_and_valid() and not self.commIssue_ignored and not self.map_enabled:
+    elif not self.sm.all_checks() and not self.commIssue_ignored and not self.map_enabled:
       self.events.add(EventName.commIssue)
       if not self.logged_comm_issue:
         invalid = [s for s, valid in self.sm.valid.items() if not valid]
@@ -436,7 +436,7 @@ class Controls:
     self.sm.update(0)
 
     if not self.initialized:
-      all_valid = CS.canValid and self.sm.all_alive_and_valid()
+      all_valid = CS.canValid and self.sm.all_checks()
       if all_valid or self.sm.frame * DT_CTRL > 3.5 or SIMULATION:
         if not self.read_only:
           self.CI.init(self.CP, self.can_sock, self.pm.sock['sendcan'])
