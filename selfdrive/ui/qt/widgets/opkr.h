@@ -714,6 +714,18 @@ public:
   }
 };
 
+class RPMAnimatedToggle : public ToggleControl {
+  Q_OBJECT
+
+public:
+  RPMAnimatedToggle() : ToggleControl("RPM Animated", "Animated RPM", "../assets/offroad/icon_shell.png", Params().getBool("AnimatedRPM")) {
+    QObject::connect(this, &RPMAnimatedToggle::toggleFlipped, [=](int state) {
+      bool status = state ? true : false;
+      Params().putBool("AnimatedRPM", status);
+    });
+  }
+};
+
 // openpilot preview
 class OpenpilotView : public AbstractControl {
   Q_OBJECT

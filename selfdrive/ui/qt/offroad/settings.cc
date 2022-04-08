@@ -556,6 +556,7 @@ UIPanel::UIPanel(QWidget *parent) : QFrame(parent) {
   layout->addWidget(new OPKRMapboxStyle());
   layout->addWidget(new GoogleMapEnabledToggle());
   layout->addWidget(new OPKRTopTextView());
+  layout->addWidget(new RPMAnimatedToggle());
 }
 
 DrivingPanel::DrivingPanel(QWidget *parent) : QFrame(parent) {

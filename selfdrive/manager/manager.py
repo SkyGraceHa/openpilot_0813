@@ -60,7 +60,7 @@ def manager_init() -> None:
     ("OpkrSteerAngleCorrection", "0"),
     ("PutPrebuiltOn", "1"),
     ("LdwsCarFix", "0"),
-    ("LateralControlMethod", "0"),
+    ("LateralControlMethod", "2"),
     ("CruiseStatemodeSelInit", "1"),
     ("InnerLoopGain", "35"),
     ("OuterLoopGain", "20"),
@@ -112,7 +112,7 @@ def manager_init() -> None:
     ("JustDoGearD", "0"),
     ("LanelessMode", "2"),
     ("ComIssueGone", "1"),
-    ("MaxSteer", "408"),
+    ("MaxSteer", "384"),
     ("MaxRTDelta", "112"),
     ("MaxRateUp", "3"),
     ("MaxRateDown", "7"),
@@ -198,6 +198,7 @@ def manager_init() -> None:
     ("AvoidLKASFaultMaxFrame", "90"),
     ("AvoidLKASFaultBeyond", "0"),
     ("UseStockDecelOnSS", "0"),
+    ("AnimatedRPM", "1"),
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

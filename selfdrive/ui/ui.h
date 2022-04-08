@@ -250,6 +250,7 @@ typedef struct UIScene {
   bool cal_view = false;
   float ctrl_speed;
   float accel;
+  bool animated_rpm;
 
   cereal::DeviceState::Reader deviceState;
   cereal::CarState::Reader car_state;

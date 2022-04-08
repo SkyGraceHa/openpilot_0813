@@ -127,3 +127,4 @@ AvoidLKASFaultMaxAngle:85
 AvoidLKASFaultMaxFrame:90
 AvoidLKASFaultBeyond:0
 UseStockDecelOnSS:0
+AnimatedRPM:1

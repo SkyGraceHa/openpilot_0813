@@ -42,7 +42,7 @@ static int hyundai_community_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
                             hyundai_get_counter);
 
   if (!valid){
-    puts("  CAN RX invalid: "); puth(addr); puts("\n");
+    puth(addr);
   }
   if (bus == 1 && HKG_LCAN_on_bus1) {valid = false;}
   // check if we have a LCAN on Bus1
@@ -51,37 +51,34 @@ static int hyundai_community_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     if (HKG_forward_bus1 || !HKG_LCAN_on_bus1) {
       HKG_LCAN_on_bus1 = true;
       HKG_forward_bus1 = false;
-      puts("  LCAN on bus1: forwarding disabled\n");
     }
   }
   // check if LKAS on Bus0
   if (addr == 832) {
-    if (bus == 0 && HKG_forward_bus2) {HKG_forward_bus2 = false; HKG_LKAS_bus0_cnt = 20; puts("  LKAS on bus0: forwarding disabled\n");}
+    if (bus == 0 && HKG_forward_bus2) {HKG_forward_bus2 = false; HKG_LKAS_bus0_cnt = 20;}
     if (bus == 2) {
-      if (HKG_LKAS_bus0_cnt > 0) {HKG_LKAS_bus0_cnt--;} else if (!HKG_forward_bus2) {HKG_forward_bus2 = true; puts("  LKAS on bus2 & not on bus0: forwarding enabled\n");}
-      if (HKG_Lcan_bus1_cnt > 0) {HKG_Lcan_bus1_cnt--;} else if (HKG_LCAN_on_bus1) {HKG_LCAN_on_bus1 = false; puts("  Lcan not on bus1\n");}
+      if (HKG_LKAS_bus0_cnt > 0) {HKG_LKAS_bus0_cnt--;} else if (!HKG_forward_bus2) {HKG_forward_bus2 = true;}
+      if (HKG_Lcan_bus1_cnt > 0) {HKG_Lcan_bus1_cnt--;} else if (HKG_LCAN_on_bus1) {HKG_LCAN_on_bus1 = false;}
     }
   }
   // check MDPS on Bus
   if ((addr == 593 || addr == 897) && HKG_mdps_bus != bus) {
     if (bus != 1 || (!HKG_LCAN_on_bus1 || HKG_forward_obd)) {
       HKG_mdps_bus = bus;
-      if (bus == 1 && !HKG_forward_obd) { puts("  MDPS on bus1\n"); if (!HKG_forward_bus1 && !HKG_LCAN_on_bus1) {HKG_forward_bus1 = true; puts("  bus1 forwarding enabled\n");}}
-      else if (bus == 1) {puts("  MDPS on obd bus\n");}
+      if (bus == 1 && !HKG_forward_obd) {if (!HKG_forward_bus1 && !HKG_LCAN_on_bus1) {HKG_forward_bus1 = true;}}
     }
   }
   // check SCC on Bus
   if ((addr == 1056 || addr == 1057) && HKG_scc_bus != bus) {
     if (bus != 1 || !HKG_LCAN_on_bus1) {
       HKG_scc_bus = bus;
-      if (bus == 1) { puts("  SCC on bus1\n"); if (!HKG_forward_bus1) {HKG_forward_bus1 = true;puts("  bus1 forwarding enabled\n");}}
-      if (bus == 2) { puts("  SCC bus = bus2\n");}
+      if (bus == 1) {if (!HKG_forward_bus1) {HKG_forward_bus1 = true;}}
     }
   }
 
   if (valid) {
     if (addr == 593 && bus == HKG_mdps_bus) {
-      int torque_driver_new = ((GET_BYTES_04(to_push) & 0x7ff) * 0.79) - 808; // scale down new driver torque signal to match previous one
+      int torque_driver_new = ((GET_BYTES_04(to_push) & 0x7ffU) * 0.79) - 808U; // scale down new driver torque signal to match previous one
       // update array of samples
       update_sample(&torque_driver, torque_driver_new);
     }
@@ -91,10 +88,8 @@ static int hyundai_community_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       int cruise_engaged = GET_BYTES_04(to_push) & 0x1; // ACC main_on signal
       if (cruise_engaged && !cruise_engaged_prev) {
         controls_allowed = 1;
-        puts("  SCC w/o long control: controls allowed"); puts("\n");
       }
       if (!cruise_engaged) {
-        if (controls_allowed) {puts("  SCC w/o long control: controls not allowed"); puts("\n");}
         controls_allowed = 0;
       }
       cruise_engaged_prev = cruise_engaged;
@@ -116,8 +111,8 @@ static int hyundai_community_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
   
     // sample wheel speed, averaging opposite corners
     if (addr == 902 && bus == 0) {
-      int hyundai_speed = GET_BYTES_04(to_push) & 0x3FFF;  // FL
-      hyundai_speed += (GET_BYTES_48(to_push) >> 16) & 0x3FFF;  // RL
+      int hyundai_speed = GET_BYTES_04(to_push) & 0x3FFFU;  // FL
+      hyundai_speed += (GET_BYTES_48(to_push) >> 16) & 0x3FFFU;  // RL
       hyundai_speed /= 2;
       vehicle_moving = hyundai_speed > HYUNDAI_STANDSTILL_THRSLD;
     }
@@ -134,18 +129,18 @@ static int hyundai_community_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
 
   if (!msg_allowed(to_send, HYUNDAI_COMMUNITY_TX_MSGS, sizeof(HYUNDAI_COMMUNITY_TX_MSGS)/sizeof(HYUNDAI_COMMUNITY_TX_MSGS[0]))) {
     tx = 0;
-    puts("  CAN TX not allowed: "); puth(addr); puts(", "); puth(bus); puts("\n");
+    puth(addr);
+	puth(bus);
   }
 
   if (relay_malfunction) {
     tx = 0;
-    puts("  CAN TX not allowed LKAS on bus0"); puts("\n");
   }
 
   // LKA STEER: safety check
   if (addr == 832) {
     OP_LKAS_live = 20;
-    int desired_torque = ((GET_BYTES_04(to_send) >> 16) & 0x7ff) - 1024;
+    int desired_torque = ((GET_BYTES_04(to_send) >> 16) & 0x7ffU) - 1024U;
     uint32_t ts = microsecond_timer_get();
     bool violation = 0;
 
@@ -154,14 +149,12 @@ static int hyundai_community_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
       // *** global torque limit check ***
       bool torque_check = 0;
       violation |= torque_check = max_limit_check(desired_torque, HYUNDAI_MAX_STEER, -HYUNDAI_MAX_STEER);
-      if (torque_check) {puts("  LKAS TX not allowed: torque limit check failed!"); puts("\n");}
 
       // *** torque rate limit check ***
       bool torque_rate_check = 0;
       violation |= torque_rate_check = driver_limit_check(desired_torque, desired_torque_last, &torque_driver,
         HYUNDAI_MAX_STEER, HYUNDAI_MAX_RATE_UP, HYUNDAI_MAX_RATE_DOWN,
         HYUNDAI_DRIVER_TORQUE_ALLOWANCE, HYUNDAI_DRIVER_TORQUE_FACTOR);
-      if (torque_rate_check) {puts("  LKAS TX not allowed: torque rate limit check failed!"); puts("\n");}
 
       // used next time
       desired_torque_last = desired_torque;
@@ -169,7 +162,6 @@ static int hyundai_community_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
       // *** torque real time rate limit check ***
       bool torque_rt_check = 0;
       violation |= torque_rt_check = rt_rate_limit_check(desired_torque, rt_torque_last, HYUNDAI_MAX_RT_DELTA);
-      if (torque_rt_check) {puts("  LKAS TX not allowed: torque real time rate limit check failed!"); puts("\n");}
 
       // every RT_INTERVAL set the new limits
       uint32_t ts_elapsed = get_ts_elapsed(ts, ts_last);
@@ -182,7 +174,6 @@ static int hyundai_community_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
     // no torque if controls is not allowed
     if (!controls_allowed && (desired_torque != 0)) {
       violation = 1;
-      puts("  LKAS torque not allowed: controls not allowed!"); puts("\n");
     }
 
     // reset to 0 if either controls is not allowed or there's a violation
@@ -202,7 +193,7 @@ static int hyundai_community_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
   // This avoids unintended engagements while still allowing resume spam
   //allow clu11 to be sent to MDPS if MDPS is not on bus0
   if (addr == 1265 && !controls_allowed && (bus != HKG_mdps_bus && HKG_mdps_bus == 1)) {
-    if ((GET_BYTES_04(to_send) & 0x7) != 4) {
+    if ((GET_BYTES_04(to_send) & 0x7U) != 4U) {
       tx = 0;
     }
   }
@@ -289,7 +280,6 @@ static void hyundai_community_init(int16_t param) {
 
   if (current_board->has_obd && HKG_forward_obd) {
     current_board->set_can_mode(CAN_MODE_OBD_CAN2);
-    puts("  MDPS or SCC on OBD2 CAN: setting can mode obd\n");
   }
 }
 

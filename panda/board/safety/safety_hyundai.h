@@ -1,4 +1,4 @@
-const int HYUNDAI_MAX_STEER = 409;             // like stock
+const int HYUNDAI_MAX_STEER = 384;             // like stock
 const int HYUNDAI_MAX_RT_DELTA = 112;          // max delta torque allowed for real time checks
 const uint32_t HYUNDAI_RT_INTERVAL = 250000;   // 250ms between real time checks
 const int HYUNDAI_MAX_RATE_UP = 3;
@@ -10,11 +10,6 @@ const CanMsg HYUNDAI_TX_MSGS[] = {
   {832, 0, 8},  // LKAS11 Bus 0
   {1265, 0, 4}, // CLU11 Bus 0
   {1157, 0, 4}, // LFAHDA_MFC Bus 0
-  // {1056, 0, 8}, //   SCC11,  Bus 0
-  // {1057, 0, 8}, //   SCC12,  Bus 0
-  // {1290, 0, 8}, //   SCC13,  Bus 0
-  // {905, 0, 8},  //   SCC14,  Bus 0
-  // {1186, 0, 8}  //   4a2SCC, Bus 0
  };
 
 AddrCheckStruct hyundai_rx_checks[] = {
@@ -24,7 +19,7 @@ AddrCheckStruct hyundai_rx_checks[] = {
   {.msg = {{916, 0, 8, .check_checksum = true, .max_counter = 7U, .expected_timestep = 10000U}, { 0 }, { 0 }}},
   {.msg = {{1057, 0, 8, .check_checksum = true, .max_counter = 15U, .expected_timestep = 20000U}, { 0 }, { 0 }}},
 };
-const int HYUNDAI_RX_CHECK_LEN = sizeof(hyundai_rx_checks) / sizeof(hyundai_rx_checks[0]);
+#define HYUNDAI_RX_CHECK_LEN (sizeof(hyundai_rx_checks) / sizeof(hyundai_rx_checks[0]))
 
 // older hyundai models have less checks due to missing counters and checksums
 AddrCheckStruct hyundai_legacy_rx_checks[] = {
@@ -34,7 +29,7 @@ AddrCheckStruct hyundai_legacy_rx_checks[] = {
   {.msg = {{916, 0, 8, .expected_timestep = 10000U}, { 0 }, { 0 }}},
   {.msg = {{1057, 0, 8, .check_checksum = true, .max_counter = 15U, .expected_timestep = 20000U}, { 0 }, { 0 }}},
 };
-const int HYUNDAI_LEGACY_RX_CHECK_LEN = sizeof(hyundai_legacy_rx_checks) / sizeof(hyundai_legacy_rx_checks[0]);
+#define HYUNDAI_LEGACY_RX_CHECK_LEN (sizeof(hyundai_legacy_rx_checks) / sizeof(hyundai_legacy_rx_checks[0]))
 
 const int HYUNDAI_PARAM_EV_GAS = 1;
 const int HYUNDAI_PARAM_HYBRID_GAS = 2;
@@ -48,13 +43,15 @@ static uint8_t hyundai_get_counter(CAN_FIFOMailBox_TypeDef *to_push) {
 
   uint8_t cnt;
   if (addr == 608) {
-    cnt = (GET_BYTE(to_push, 7) >> 4) & 0x3;
+    cnt = (GET_BYTE(to_push, 7) >> 4) & 0x3U;
   } else if (addr == 902) {
     cnt = ((GET_BYTE(to_push, 3) >> 6) << 2) | (GET_BYTE(to_push, 1) >> 6);
   } else if (addr == 916) {
-    cnt = (GET_BYTE(to_push, 1) >> 5) & 0x7;
+    cnt = (GET_BYTE(to_push, 1) >> 5) & 0x7U;
   } else if (addr == 1057) {
-    cnt = GET_BYTE(to_push, 7) & 0xF;
+    cnt = GET_BYTE(to_push, 7) & 0xFU;
+  } else if (addr == 1265) {
+    cnt = (GET_BYTE(to_push, 3) >> 4) & 0xFU;
   } else {
     cnt = 0;
   }
@@ -66,11 +63,11 @@ static uint8_t hyundai_get_checksum(CAN_FIFOMailBox_TypeDef *to_push) {
 
   uint8_t chksum;
   if (addr == 608) {
-    chksum = GET_BYTE(to_push, 7) & 0xF;
+    chksum = GET_BYTE(to_push, 7) & 0xFU;
   } else if (addr == 902) {
     chksum = ((GET_BYTE(to_push, 7) >> 6) << 2) | (GET_BYTE(to_push, 5) >> 6);
   } else if (addr == 916) {
-    chksum = GET_BYTE(to_push, 6) & 0xF;
+    chksum = GET_BYTE(to_push, 6) & 0xFU;
   } else if (addr == 1057) {
     chksum = GET_BYTE(to_push, 7) >> 4;
   } else {
@@ -129,11 +126,11 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
                               hyundai_get_counter);
   }
 
-  if (valid && (GET_BUS(to_push) == 0)) {
+  if (valid && (GET_BUS(to_push) == 0U)) {
     int addr = GET_ADDR(to_push);
 
     if (addr == 593) {
-      int torque_driver_new = ((GET_BYTES_04(to_push) & 0x7ff) * 0.79) - 808; // scale down new driver torque signal to match previous one
+      int torque_driver_new = ((GET_BYTES_04(to_push) & 0x7ffU) * 0.79) - 808U; // scale down new driver torque signal to match previous one
       // update array of samples
       update_sample(&torque_driver, torque_driver_new);
     }
@@ -141,7 +138,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     // enter controls on rising edge of ACC, exit controls on ACC off
     if (addr == 1057) {
       // 2 bits: 13-14
-      int cruise_engaged = (GET_BYTES_04(to_push) >> 13) & 0x3;
+      int cruise_engaged = (GET_BYTES_04(to_push) >> 13) & 0x3U;
       if (cruise_engaged && !cruise_engaged_prev) {
         controls_allowed = 1;
       }
@@ -153,24 +150,23 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
 
     // read gas pressed signal
     if ((addr == 881) && hyundai_ev_gas_signal) {
-      gas_pressed = (((GET_BYTE(to_push, 4) & 0x7F) << 1) | GET_BYTE(to_push, 3) >> 7) != 0;
+      gas_pressed = (((GET_BYTE(to_push, 4) & 0x7FU) << 1) | GET_BYTE(to_push, 3) >> 7) != 0U;
     } else if ((addr == 881) && hyundai_hybrid_gas_signal) {
-      gas_pressed = GET_BYTE(to_push, 7) != 0;
+      gas_pressed = GET_BYTE(to_push, 7) != 0U;
     } else if (addr == 608) {  // ICE
-      gas_pressed = (GET_BYTE(to_push, 7) >> 6) != 0;
+      gas_pressed = (GET_BYTE(to_push, 7) >> 6) != 0U;
     } else {
     }
 
     // sample wheel speed, averaging opposite corners
     if (addr == 902) {
-      int hyundai_speed = GET_BYTES_04(to_push) & 0x3FFF;  // FL
-      hyundai_speed += (GET_BYTES_48(to_push) >> 16) & 0x3FFF;  // RL
+      int hyundai_speed = (GET_BYTES_04(to_push) & 0x3FFFU) + ((GET_BYTES_48(to_push) >> 16) & 0x3FFFU);  // FL + RR
       hyundai_speed /= 2;
       vehicle_moving = hyundai_speed > HYUNDAI_STANDSTILL_THRSLD;
     }
 
     if (addr == 916) {
-      brake_pressed = (GET_BYTE(to_push, 6) >> 7) != 0;
+      brake_pressed = (GET_BYTE(to_push, 6) >> 7) != 0U;
     }
 
     generic_rx_checks((addr == 832));
@@ -193,7 +189,7 @@ static int hyundai_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
 
   // LKA STEER: safety check
   if (addr == 832) {
-    int desired_torque = ((GET_BYTES_04(to_send) >> 16) & 0x7ff) - 1024;
+    int desired_torque = ((GET_BYTES_04(to_send) >> 16) & 0x7ffU) - 1024U;
     uint32_t ts = microsecond_timer_get();
     bool violation = 0;
 
@@ -242,7 +238,7 @@ static int hyundai_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
   // ensuring that only the cancel button press is sent (VAL 4) when controls are off.
   // This avoids unintended engagements while still allowing resume spam
   if ((addr == 1265) && !controls_allowed) {
-    if ((GET_BYTES_04(to_send) & 0x7) != 4) {
+    if ((GET_BYTES_04(to_send) & 0x7U) != 4U) {
       tx = 0;
     }
   }

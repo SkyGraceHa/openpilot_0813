@@ -928,62 +928,33 @@ static int bb_ui_draw_measure(UIState *s, const char* bb_value, const char* bb_u
     NVGpaint rpm_gradient = nvgLinearGradient(s->vg, bb_x-80, bb_y+90, bb_x+80, bb_y+32, COLOR_GREEN_ALPHA(80), COLOR_RED_ALPHA(255));
     nvgFillPaint(s->vg, rpm_gradient);
     nvgFill(s->vg);
-
-    //print value
-    int dx = 0;
-    if (strlen(bb_uom) > 0) {
-      dx = (int)(bb_uomFontSize*2.5/2);
-    }
-    nvgFontFace(s->vg, "sans-semibold");
-    nvgFontSize(s->vg, bb_valueFontSize*0.6);
-    nvgFillColor(s->vg, bb_valueColor);
-    nvgText(s->vg, bb_x-dx/2-15, bb_y+ (int)(bb_valueFontSize*2.5)+5-20, bb_value, NULL);
-    //print label
+  }
+  int dx = 0;
+  if (strlen(bb_uom) > 0) {
+    dx = (int)(bb_uomFontSize*2.5/2);
+  }
+  //print value
+  nvgFontFace(s->vg, "sans-semibold");
+  nvgFontSize(s->vg, bb_valueFontSize*2.5);
+  nvgFillColor(s->vg, bb_valueColor);
+  nvgText(s->vg, bb_x-dx/2, bb_y+ (int)(bb_valueFontSize*2.5)+5, bb_value, NULL);
+  //print label
+  nvgFontFace(s->vg, "sans-regular");
+  nvgFontSize(s->vg, bb_labelFontSize*2.5);
+  nvgFillColor(s->vg, bb_labelColor);
+  nvgText(s->vg, bb_x, bb_y + (int)(bb_valueFontSize*2.5)+5 + (int)(bb_labelFontSize*2.5)+5, bb_label, NULL);
+  //print uom
+  if (strlen(bb_uom) > 0) {
+      nvgSave(s->vg);
+    int rx =bb_x + bb_uom_dx + bb_valueFontSize -3;
+    int ry = bb_y + (int)(bb_valueFontSize*2.5/2)+25;
+    nvgTranslate(s->vg,rx,ry);
+    nvgRotate(s->vg, -1.5708); //-90deg in radians
     nvgFontFace(s->vg, "sans-regular");
-    nvgFontSize(s->vg, bb_labelFontSize*2.5);
-    nvgFillColor(s->vg, bb_labelColor);
-    nvgText(s->vg, bb_x, bb_y + (int)(bb_valueFontSize*2.5)+5 + (int)(bb_labelFontSize*2.5)+5, bb_label, NULL);
-    //print uom
-    if (strlen(bb_uom) > 0) {
-        nvgSave(s->vg);
-      int rx =bb_x + bb_uom_dx + bb_valueFontSize -3;
-      int ry = bb_y + (int)(bb_valueFontSize*2.5/2)+25;
-      nvgTranslate(s->vg,rx,ry);
-      nvgRotate(s->vg, -1.5708); //-90deg in radians
-      nvgFontFace(s->vg, "sans-regular");
-      nvgFontSize(s->vg, (int)(bb_uomFontSize*2.5));
-      nvgFillColor(s->vg, bb_uomColor);
-      nvgText(s->vg, 0, 0, bb_uom, NULL);
-      nvgRestore(s->vg);
-    }
-  } else {
-    int dx = 0;
-    if (strlen(bb_uom) > 0) {
-      dx = (int)(bb_uomFontSize*2.5/2);
-    }
-    //print value
-    nvgFontFace(s->vg, "sans-semibold");
-    nvgFontSize(s->vg, bb_valueFontSize*2.5);
-    nvgFillColor(s->vg, bb_valueColor);
-    nvgText(s->vg, bb_x-dx/2, bb_y+ (int)(bb_valueFontSize*2.5)+5, bb_value, NULL);
-    //print label
-    nvgFontFace(s->vg, "sans-regular");
-    nvgFontSize(s->vg, bb_labelFontSize*2.5);
-    nvgFillColor(s->vg, bb_labelColor);
-    nvgText(s->vg, bb_x, bb_y + (int)(bb_valueFontSize*2.5)+5 + (int)(bb_labelFontSize*2.5)+5, bb_label, NULL);
-    //print uom
-    if (strlen(bb_uom) > 0) {
-        nvgSave(s->vg);
-      int rx =bb_x + bb_uom_dx + bb_valueFontSize -3;
-      int ry = bb_y + (int)(bb_valueFontSize*2.5/2)+25;
-      nvgTranslate(s->vg,rx,ry);
-      nvgRotate(s->vg, -1.5708); //-90deg in radians
-      nvgFontFace(s->vg, "sans-regular");
-      nvgFontSize(s->vg, (int)(bb_uomFontSize*2.5));
-      nvgFillColor(s->vg, bb_uomColor);
-      nvgText(s->vg, 0, 0, bb_uom, NULL);
-      nvgRestore(s->vg);
-    }
+    nvgFontSize(s->vg, (int)(bb_uomFontSize*2.5));
+    nvgFillColor(s->vg, bb_uomColor);
+    nvgText(s->vg, 0, 0, bb_uom, NULL);
+    nvgRestore(s->vg);
   }
   return (int)((bb_valueFontSize + bb_labelFontSize)*2) + 5;
 }
@@ -1041,36 +1012,36 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize, false);
   }
-  //BAT TEMP
+  //BAT STAT
   if (!scene.batt_less) {
     //char val_str[16];
-    char uom_str[6];
     std::string bat_temp_val = std::to_string(int(scene.batTemp)) + "°C";
+    std::string bat_level_val = "";
     NVGcolor val_color = COLOR_WHITE_ALPHA(200);
-    if(scene.batTemp > 40) {
+    if (scene.batTemp > 40) {
       val_color = nvgRGBA(255, 188, 3, 200);
     }
-    if(scene.batTemp > 50) {
+    if (scene.batTemp > 50) {
       val_color = nvgRGBA(255, 0, 0, 200);
+    }
+    if (scene.deviceState.getBatteryStatus() == "Charging") {
+      bat_level_val = std::to_string(int(scene.batPercent)) + "%++";
+    } else {
+      bat_level_val = std::to_string(int(scene.batPercent)) + "%--";
+    }
+    NVGcolor uom_color2 = COLOR_WHITE_ALPHA(200);
+    if ((scene.fanSpeed/1000) > 64) {
+      uom_color2 = nvgRGBA(255, 0, 0, 200);
+    } else if ((scene.fanSpeed/1000) > 31) {
+      uom_color2 = nvgRGBA(0, 0, 255, 200);
+    } else if ((scene.fanSpeed/1000) > 15) {
+      uom_color2 = nvgRGBA(0, 255, 0, 200);
     }
     // temp is alway in C * 1000
     //snprintf(val_str, sizeof(val_str), "%.0fC", batteryTemp);
-    snprintf(uom_str, sizeof(uom_str), "%d", (scene.fanSpeed)/1000);
-    bb_ry +=bb_ui_draw_measure(s, bat_temp_val.c_str(), uom_str, "BAT TEMP",
+    bb_ry +=bb_ui_draw_measure(s, bat_temp_val.c_str(), bat_level_val.c_str(), "BAT STAT",
         bb_rx, bb_ry, bb_uom_dx,
-        val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize, false);
-  }
-  //BAT LEVEL
-  if(!scene.batt_less) {
-    //char val_str[16];
-    char uom_str[6];
-    std::string bat_level_val = std::to_string(int(scene.batPercent)) + "%";
-    NVGcolor val_color = COLOR_WHITE_ALPHA(200);
-    snprintf(uom_str, sizeof(uom_str), "%s", scene.deviceState.getBatteryStatus() == "Charging" ? "++" : "--");
-    bb_ry +=bb_ui_draw_measure(s, bat_level_val.c_str(), uom_str, "BAT LVL",
-        bb_rx, bb_ry, bb_uom_dx,
-        val_color, lab_color, uom_color,
+        val_color, lab_color, uom_color2,
         value_fontSize, label_fontSize, uom_fontSize, false);
   }
   //add Ublox GPS accuracy
@@ -1113,22 +1084,29 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
         value_fontSize, label_fontSize, uom_fontSize, false);
   }
   //engine rpm
-  if (scene.engine_rpm > 1) {
-    //char val_str[16];
+  if (scene.engine_rpm < 9998) {
+    char val_str[16];
     char uom_str[6];
-    std::string engine_rpm_val = std::to_string(int(scene.engine_rpm));
+    // std::string engine_rpm_val = std::to_string(int(scene.engine_rpm));
     NVGcolor val_color = COLOR_WHITE_ALPHA(200);
-    if(scene.engine_rpm > 2500) {
-      val_color = nvgRGBA(255, 188, 3, 200);
-    }
-    if(scene.engine_rpm > 3500) {
-      val_color = nvgRGBA(255, 0, 0, 200);
-    }
+    if(scene.engine_rpm == 0) {
+       snprintf(val_str, sizeof(val_str), "Off");
+    } else {
+      if(scene.engine_rpm > 3500) {
+        val_color = nvgRGBA(255, 0, 0, 200);
+      } else if(scene.engine_rpm > 2500) {
+        val_color = nvgRGBA(255, 188, 3, 200);
+      } else {
+        val_color = nvgRGBA(0, 200, 0, 200);
+      }
+      snprintf(val_str, sizeof(val_str), "%.0f", (scene.engine_rpm));
+    }    
     snprintf(uom_str, sizeof(uom_str), "rpm");
-    bb_ry +=bb_ui_draw_measure(s, engine_rpm_val.c_str(), uom_str, "ENG RPM",
+    // bb_ry +=bb_ui_draw_measure(s, engine_rpm_val.c_str(), uom_str, "ENG RPM",
+    bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "ENG RPM",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize, true);
+        value_fontSize, label_fontSize, uom_fontSize, scene.animated_rpm);
   }
 
   //finally draw the frame
