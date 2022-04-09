@@ -1085,7 +1085,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     char val_str[16];
     char uom_str[6];
     // std::string engine_rpm_val = std::to_string(int(scene.engine_rpm));
-    NVGcolor val_color = COLOR_BLUE_ALPHA(200);
+    NVGcolor val_color = COLOR_WHITE_ALPHA(200);
     if(scene.engine_rpm == 0) {
        snprintf(val_str, sizeof(val_str), "Off");
     } else {
