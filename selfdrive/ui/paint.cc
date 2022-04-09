@@ -974,12 +974,11 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     //char val_str[16];
     char uom_str[6];
     std::string cpu_temp_val = std::to_string(int(scene.cpuTemp)) + "°C";
-    NVGcolor val_color = COLOR_WHITE_ALPHA(200);
-    if(scene.cpuTemp > 75) {
-      val_color = nvgRGBA(255, 188, 3, 200);
-    }
+    NVGcolor val_color = COLOR_GREEN_ALPHA(200);
     if(scene.cpuTemp > 85) {
-      val_color = nvgRGBA(255, 0, 0, 200);
+      val_color = COLOR_RED_ALPHA(200);
+    } else if(scene.cpuTemp > 75) {
+      val_color = COLOR_ORANGE_ALPHA(200);
     }
     //snprintf(val_str, sizeof(val_str), "%.0fC", (round(scene.cpuTemp)));
     if (!scene.batt_less) {
@@ -998,11 +997,10 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     char uom_str[6];
     std::string cpu_usage_val = std::to_string(int(scene.cpuPerc)) + "%";
     NVGcolor val_color = COLOR_GREEN_ALPHA(200);
-    if(scene.cpuPerc > 60) {
-      val_color = nvgRGBA(255, 188, 3, 200);
-    }
     if(scene.cpuPerc > 80) {
-      val_color = nvgRGBA(255, 0, 0, 200);
+      val_color = COLOR_RED_ALPHA(200);
+    } else if(scene.cpuPerc > 60) {
+      val_color = COLOR_ORANGE_ALPHA(200);
     }
     // temp is alway in C * 1000
     //snprintf(val_str, sizeof(val_str), "%.0fC", batteryTemp);
@@ -1018,11 +1016,10 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     std::string bat_temp_val = std::to_string(int(scene.batTemp)) + "°C";
     std::string bat_level_val = "";
     NVGcolor val_color = COLOR_WHITE_ALPHA(200);
-    if (scene.batTemp > 40) {
-      val_color = nvgRGBA(255, 188, 3, 200);
-    }
     if (scene.batTemp > 50) {
-      val_color = nvgRGBA(255, 0, 0, 200);
+      val_color = COLOR_RED_ALPHA(200);
+    } else if (scene.batTemp > 40) {
+      val_color = COLOR_ORANGE_ALPHA(200);
     }
     if (scene.deviceState.getBatteryStatus() == "Charging") {
       bat_level_val = std::to_string(int(scene.batPercent)) + "%++";
@@ -1031,11 +1028,11 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     }
     NVGcolor uom_color2 = COLOR_WHITE_ALPHA(200);
     if ((scene.fanSpeed/1000) > 64) {
-      uom_color2 = nvgRGBA(255, 0, 0, 200);
+      uom_color2 = COLOR_RED_ALPHA(200);
     } else if ((scene.fanSpeed/1000) > 31) {
-      uom_color2 = nvgRGBA(0, 0, 255, 200);
+      uom_color2 = COLOR_ORANGE_ALPHA(200);
     } else if ((scene.fanSpeed/1000) > 15) {
-      uom_color2 = nvgRGBA(0, 255, 0, 200);
+      uom_color2 = COLOR_GREEN_ALPHA(200);
     }
     // temp is alway in C * 1000
     //snprintf(val_str, sizeof(val_str), "%.0fC", batteryTemp);
@@ -1092,12 +1089,12 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     if(scene.engine_rpm == 0) {
        snprintf(val_str, sizeof(val_str), "Off");
     } else {
-      if(scene.engine_rpm > 3500) {
-        val_color = nvgRGBA(255, 0, 0, 200);
-      } else if(scene.engine_rpm > 2500) {
-        val_color = nvgRGBA(255, 188, 3, 200);
+      if(scene.engine_rpm > 3000) {
+        val_color = COLOR_RED_ALPHA(200);
+      } else if(scene.engine_rpm > 2000) {
+        val_color = COLOR_ORANGE_ALPHA(200);
       } else {
-        val_color = nvgRGBA(0, 200, 0, 200);
+        val_color = COLOR_GREEN_ALPHA(200);
       }
       snprintf(val_str, sizeof(val_str), "%.0f", (scene.engine_rpm));
     }    
