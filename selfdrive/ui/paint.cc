@@ -974,12 +974,11 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     //char val_str[16];
     char uom_str[6];
     std::string cpu_temp_val = std::to_string(int(scene.cpuTemp)) + "°C";
-    NVGcolor val_color = COLOR_WHITE_ALPHA(200);
-    if(scene.cpuTemp > 75) {
-      val_color = nvgRGBA(255, 188, 3, 200);
-    }
+    NVGcolor val_color = COLOR_GREEN_ALPHA(200);
     if(scene.cpuTemp > 85) {
-      val_color = nvgRGBA(255, 0, 0, 200);
+      val_color = COLOR_RED_ALPHA(200);
+    } else if(scene.cpuTemp > 75) {
+      val_color = COLOR_ORANGE_ALPHA(200);
     }
     //snprintf(val_str, sizeof(val_str), "%.0fC", (round(scene.cpuTemp)));
     if (!scene.batt_less) {
@@ -993,16 +992,15 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
         value_fontSize, label_fontSize, uom_fontSize, false);
   }
   //CPU LOAD
-  if (scene.batt_less) {
+  if (true) {
     //char val_str[16];
     char uom_str[6];
     std::string cpu_usage_val = std::to_string(int(scene.cpuPerc)) + "%";
     NVGcolor val_color = COLOR_GREEN_ALPHA(200);
-    if(scene.cpuPerc > 60) {
-      val_color = nvgRGBA(255, 188, 3, 200);
-    }
     if(scene.cpuPerc > 80) {
-      val_color = nvgRGBA(255, 0, 0, 200);
+      val_color = COLOR_RED_ALPHA(200);
+    } else if(scene.cpuPerc > 60) {
+      val_color = COLOR_ORANGE_ALPHA(200);
     }
     // temp is alway in C * 1000
     //snprintf(val_str, sizeof(val_str), "%.0fC", batteryTemp);
@@ -1018,11 +1016,10 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     std::string bat_temp_val = std::to_string(int(scene.batTemp)) + "°C";
     std::string bat_level_val = "";
     NVGcolor val_color = COLOR_WHITE_ALPHA(200);
-    if (scene.batTemp > 40) {
-      val_color = nvgRGBA(255, 188, 3, 200);
-    }
     if (scene.batTemp > 50) {
-      val_color = nvgRGBA(255, 0, 0, 200);
+      val_color = COLOR_RED_ALPHA(200);
+    } else if (scene.batTemp > 40) {
+      val_color = COLOR_ORANGE_ALPHA(200);
     }
     if (scene.deviceState.getBatteryStatus() == "Charging") {
       bat_level_val = std::to_string(int(scene.batPercent)) + "%++";
@@ -1031,11 +1028,11 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     }
     NVGcolor uom_color2 = COLOR_WHITE_ALPHA(200);
     if ((scene.fanSpeed/1000) > 64) {
-      uom_color2 = nvgRGBA(255, 0, 0, 200);
+      uom_color2 = COLOR_RED_ALPHA(200);
     } else if ((scene.fanSpeed/1000) > 31) {
-      uom_color2 = nvgRGBA(0, 0, 255, 200);
+      uom_color2 = COLOR_ORANGE_ALPHA(200);
     } else if ((scene.fanSpeed/1000) > 15) {
-      uom_color2 = nvgRGBA(0, 255, 0, 200);
+      uom_color2 = COLOR_GREEN_ALPHA(200);
     }
     // temp is alway in C * 1000
     //snprintf(val_str, sizeof(val_str), "%.0fC", batteryTemp);
@@ -1092,12 +1089,12 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     if(scene.engine_rpm == 0) {
        snprintf(val_str, sizeof(val_str), "Off");
     } else {
-      if(scene.engine_rpm > 3500) {
-        val_color = nvgRGBA(255, 0, 0, 200);
-      } else if(scene.engine_rpm > 2500) {
-        val_color = nvgRGBA(255, 188, 3, 200);
+      if(scene.engine_rpm > 3000) {
+        val_color = COLOR_RED_ALPHA(200);
+      } else if(scene.engine_rpm > 2000) {
+        val_color = COLOR_ORANGE_ALPHA(200);
       } else {
-        val_color = nvgRGBA(0, 200, 0, 200);
+        val_color = COLOR_GREEN_ALPHA(200);
       }
       snprintf(val_str, sizeof(val_str), "%.0f", (scene.engine_rpm));
     }    
@@ -1716,47 +1713,47 @@ static void ui_draw_live_tune_panel(UIState *s) {
   } else if (s->scene.live_tune_panel_list == (s->scene.list_count+0) && s->scene.lateralControlMethod == 0) {
     ui_print(s, s->fb_w/2, y_pos + height/2, "%0.2f", s->scene.pidKp*0.01);
     nvgFontSize(s->vg, 120);
-    ui_print(s, s->fb_w/2, y_pos - 95, "Pid: Kp");
+    ui_print(s, s->fb_w/2, y_pos - 95, "PID:1.Kp");
   } else if (s->scene.live_tune_panel_list == (s->scene.list_count+1) && s->scene.lateralControlMethod == 0) {
     ui_print(s, s->fb_w/2, y_pos + height/2, "%0.3f", s->scene.pidKi*0.001);
     nvgFontSize(s->vg, 120);
-    ui_print(s, s->fb_w/2, y_pos - 95, "Pid: Ki");
+    ui_print(s, s->fb_w/2, y_pos - 95, "PID:2.Ki");
   } else if (s->scene.live_tune_panel_list == (s->scene.list_count+2) && s->scene.lateralControlMethod == 0) {
     ui_print(s, s->fb_w/2, y_pos + height/2, "%0.2f", s->scene.pidKd*0.01);
     nvgFontSize(s->vg, 120);
-    ui_print(s, s->fb_w/2, y_pos - 95, "Pid: Kd");
+    ui_print(s, s->fb_w/2, y_pos - 95, "PID:3.Kd");
   } else if (s->scene.live_tune_panel_list == (s->scene.list_count+3) && s->scene.lateralControlMethod == 0) {
     ui_print(s, s->fb_w/2, y_pos + height/2, "%0.5f", s->scene.pidKf*0.00001);
     nvgFontSize(s->vg, 120);
-    ui_print(s, s->fb_w/2, y_pos - 95, "Pid: Kf");
+    ui_print(s, s->fb_w/2, y_pos - 95, "PID:4.Kf");
   } else if (s->scene.live_tune_panel_list == (s->scene.list_count+0) && s->scene.lateralControlMethod == 1) {
-    ui_print(s, s->fb_w/2, y_pos + height/2, "%0.1f", s->scene.indiInnerLoopGain*0.1);
-    nvgFontSize(s->vg, 120);
-    ui_print(s, s->fb_w/2, y_pos - 95, "INDI: ILGain");
-  } else if (s->scene.live_tune_panel_list == (s->scene.list_count+1) && s->scene.lateralControlMethod == 1) {
-    ui_print(s, s->fb_w/2, y_pos + height/2, "%0.1f", s->scene.indiOuterLoopGain*0.1);
-    nvgFontSize(s->vg, 120);
-    ui_print(s, s->fb_w/2, y_pos - 95, "INDI: OLGain");
-  } else if (s->scene.live_tune_panel_list == (s->scene.list_count+2) && s->scene.lateralControlMethod == 1) {
-    ui_print(s, s->fb_w/2, y_pos + height/2, "%0.1f", s->scene.indiTimeConstant*0.1);
-    nvgFontSize(s->vg, 120);
-    ui_print(s, s->fb_w/2, y_pos - 95, "INDI: TConst");
-  } else if (s->scene.live_tune_panel_list == (s->scene.list_count+3) && s->scene.lateralControlMethod == 1) {
     ui_print(s, s->fb_w/2, y_pos + height/2, "%0.1f", s->scene.indiActuatorEffectiveness*0.1);
     nvgFontSize(s->vg, 120);
-    ui_print(s, s->fb_w/2, y_pos - 95, "INDI: ActEffct");
+    ui_print(s, s->fb_w/2, y_pos - 95, "INDI:1.ActEffct");
+  } else if (s->scene.live_tune_panel_list == (s->scene.list_count+1) && s->scene.lateralControlMethod == 1) {
+    ui_print(s, s->fb_w/2, y_pos + height/2, "%0.1f", s->scene.indiTimeConstant*0.1);
+    nvgFontSize(s->vg, 120);
+    ui_print(s, s->fb_w/2, y_pos - 95, "INDI:2.TConst");
+  } else if (s->scene.live_tune_panel_list == (s->scene.list_count+2) && s->scene.lateralControlMethod == 1) {
+    ui_print(s, s->fb_w/2, y_pos + height/2, "%0.1f", s->scene.indiInnerLoopGain*0.1);
+    nvgFontSize(s->vg, 120);
+    ui_print(s, s->fb_w/2, y_pos - 95, "INDI:3.ILGain");
+  } else if (s->scene.live_tune_panel_list == (s->scene.list_count+3) && s->scene.lateralControlMethod == 1) {
+    ui_print(s, s->fb_w/2, y_pos + height/2, "%0.1f", s->scene.indiOuterLoopGain*0.1);
+    nvgFontSize(s->vg, 120);
+    ui_print(s, s->fb_w/2, y_pos - 95, "INDI:4.OLGain");
   } else if (s->scene.live_tune_panel_list == (s->scene.list_count+0) && s->scene.lateralControlMethod == 2) {
     ui_print(s, s->fb_w/2, y_pos + height/2, "%0.0f", s->scene.lqrScale*1.0);
     nvgFontSize(s->vg, 120);
-    ui_print(s, s->fb_w/2, y_pos - 95, "LQR: Scale");
+    ui_print(s, s->fb_w/2, y_pos - 95, "LQR:1.Scale");
   } else if (s->scene.live_tune_panel_list == (s->scene.list_count+1) && s->scene.lateralControlMethod == 2) {
     ui_print(s, s->fb_w/2, y_pos + height/2, "%0.3f", s->scene.lqrKi*0.001);
     nvgFontSize(s->vg, 120);
-    ui_print(s, s->fb_w/2, y_pos - 95, "LQR: Ki");
+    ui_print(s, s->fb_w/2, y_pos - 95, "LQR:2.Ki");
   } else if (s->scene.live_tune_panel_list == (s->scene.list_count+2) && s->scene.lateralControlMethod == 2) {
     ui_print(s, s->fb_w/2, y_pos + height/2, "%0.5f", s->scene.lqrDcGain*0.00001);
     nvgFontSize(s->vg, 120);
-    ui_print(s, s->fb_w/2, y_pos - 95, "LQR: DcGain");
+    ui_print(s, s->fb_w/2, y_pos - 95, "LQR:3.DcGain");
   }
   nvgFillColor(s->vg, nvgRGBA(171,242,0,150));
   nvgFill(s->vg);
