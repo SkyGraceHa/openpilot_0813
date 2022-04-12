@@ -4310,8 +4310,8 @@ TorqKp::TorqKp() : AbstractControl("TorqKp", "Adjust kp", "../assets/offroad/ico
     auto str = QString::fromStdString(params.get("TorqKp"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1) {
-      value = 1;
+    if (value <= 0) {
+      value = 0;
     }
     QString values = QString::number(value);
     params.put("TorqKp", values.toStdString());
@@ -4373,8 +4373,8 @@ TorqKi::TorqKi() : AbstractControl("TorqKi", "Adjust ki", "../assets/offroad/ico
     auto str = QString::fromStdString(params.get("TorqKi"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1) {
-      value = 1;
+    if (value <= 0) {
+      value = 0;
     }
     QString values = QString::number(value);
     params.put("TorqKi", values.toStdString());
@@ -4436,8 +4436,8 @@ TorqKf::TorqKf() : AbstractControl("TorqKf", "Adjust kf", "../assets/offroad/ico
     auto str = QString::fromStdString(params.get("TorqKf"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1) {
-      value = 1;
+    if (value <= 0) {
+      value = 0;
     }
     QString values = QString::number(value);
     params.put("TorqKf", values.toStdString());
@@ -4499,8 +4499,8 @@ friction::friction() : AbstractControl("friction", "Adjust friction", "../assets
     auto str = QString::fromStdString(params.get("friction"));
     int value = str.toInt();
     value = value - 1;
-    if (value <= 1) {
-      value = 1;
+    if (value <= 0) {
+      value = 0;
     }
     QString values = QString::number(value);
     params.put("friction", values.toStdString());
