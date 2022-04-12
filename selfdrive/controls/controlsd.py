@@ -888,7 +888,7 @@ class Controls:
       controlsState.lateralControlState.lqrState = lac_log
     elif lat_tuning == 'indi':
       controlsState.lateralControlState.indiState = lac_log
-    elif lat_tuning == 'Torque':
+    elif lat_tuning == 'torque':
       controlsState.lateralControlState.torqueState = lac_log      
     controlsState.steeringAngleDesiredDeg = self.desired_angle_deg
 

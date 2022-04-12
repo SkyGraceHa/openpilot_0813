@@ -22,6 +22,7 @@ Scale:1500
 LqrKi:15
 DcGain:270
 TorqKp:14
+TorKi:10
 TorqKf:80
 friction:60
 IgnoreZone:0

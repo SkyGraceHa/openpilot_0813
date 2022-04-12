@@ -41,8 +41,9 @@ class LatControlTorque(LatControl):
     self.mpc_frame += 1
     if self.mpc_frame % 300 == 0:
       self.kp = float(Decimal(self.params.get("TorqKp", encoding="utf8")) * Decimal('0.1'))
+      self.ki = float(Decimal(self.params.get("TorqKi", encoding="utf8")) * Decimal('0.001'))
       self.kf = float(Decimal(self.params.get("TorqKf", encoding="utf8")) * Decimal('0.001'))
-      self.pid = PIController(self.kp, CP.lateralTuning.torque.ki, k_f=self.kf, pos_limit=1.0, neg_limit=-1.0)
+      self.pid = PIController(self.kp, self.ki, k_f=self.kf, pos_limit=1.0, neg_limit=-1.0)
       
       self.friction = float(Decimal(self.params.get("friction", encoding="utf8")) * Decimal('0.001'))
         

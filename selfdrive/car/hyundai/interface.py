@@ -98,6 +98,7 @@ class CarInterface(CarInterfaceBase):
     LqrKi = float(Decimal(params.get("LqrKi", encoding="utf8")) * Decimal('0.001'))
     DcGain = float(Decimal(params.get("DcGain", encoding="utf8")) * Decimal('0.00001'))
     TorqKp = float(Decimal(params.get("TorqKp", encoding="utf8")) * Decimal('0.1'))
+    TorqKi = float(Decimal(params.get("TorqKi", encoding="utf8")) * Decimal('0.001'))
     TorqKf = float(Decimal(params.get("TorqKf", encoding="utf8")) * Decimal('0.001'))
     friction = float(Decimal(params.get("friction", encoding="utf8")) * Decimal('0.001'))
 
@@ -160,7 +161,7 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.init('torque')
       ret.lateralTuning.torque.useSteeringAngle = True
       ret.lateralTuning.torque.kp = TorqKp #1.4
-      ret.lateralTuning.torque.ki = 0.0
+      ret.lateralTuning.torque.ki = TorqKi #0.01
       ret.lateralTuning.torque.kf = TorqKf #0.08
       ret.lateralTuning.torque.friction = friction #0.06
 

@@ -331,6 +331,12 @@ void HomeWindow::mousePressEvent(QMouseEvent* e) {
         Params().put("TorqKp", value.toStdString());
         return;
       } else if (QUIState::ui_state.scene.live_tune_panel_list == (QUIState::ui_state.scene.list_count+1) && QUIState::ui_state.scene.lateralControlMethod == 3) {
+        QUIState::ui_state.scene.torqKi = QUIState::ui_state.scene.torqKi - 1;
+        if (QUIState::ui_state.scene.torqKi <= 1) QUIState::ui_state.scene.torqKi = 1;
+        QString value = QString::number(QUIState::ui_state.scene.torqKi);
+        Params().put("TorqKi", value.toStdString());
+        return;
+      } else if (QUIState::ui_state.scene.live_tune_panel_list == (QUIState::ui_state.scene.list_count+1) && QUIState::ui_state.scene.lateralControlMethod == 3) {
         QUIState::ui_state.scene.torqKf = QUIState::ui_state.scene.torqKf - 1;
         if (QUIState::ui_state.scene.torqKf <= 1) QUIState::ui_state.scene.torqKf = 1;
         QString value = QString::number(QUIState::ui_state.scene.torqKf);

@@ -435,6 +435,7 @@ static void update_status(UIState *s) {
     s->scene.lqrKi = std::stoi(params.get("LqrKi"));
     s->scene.lqrDcGain = std::stoi(params.get("DcGain"));
     s->scene.torqKp = std::stoi(params.get("TorqKp"));
+    s->scene.torqKi = std::stoi(params.get("TorqKi"));
     s->scene.torqKf = std::stoi(params.get("TorqKf"));
     s->scene.torqFriction = std::stoi(params.get("friction"));
     s->scene.navi_select = std::stoi(params.get("OPKRNaviSelect"));

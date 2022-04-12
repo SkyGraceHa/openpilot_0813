@@ -211,6 +211,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"PidKd", PERSISTENT},
     {"PidKf", PERSISTENT},
     {"TorqKp", PERSISTENT},
+    {"TorqKi", PERSISTENT},
     {"TorqKf", PERSISTENT},
     {"friction", PERSISTENT},
     {"CameraOffsetAdj", PERSISTENT},

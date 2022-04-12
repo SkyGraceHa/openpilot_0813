@@ -596,8 +596,9 @@ struct CarParams {
 
   struct LateralTORQUETuning {
     kp @0 :Float32;
-    kf @1 :Float32;
-    friction @2 :Float32;
+    ki @1 :Float32;
+    kf @2 :Float32;
+    friction @3 :Float32;
   }
 
   enum SafetyModel {

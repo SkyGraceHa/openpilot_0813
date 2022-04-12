@@ -4340,6 +4340,69 @@ void TorqKp::refresh() {
   label.setText(QString::fromStdString(valuefs.toStdString()));
 }
 
+TorqKi::TorqKi() : AbstractControl("TorqKi", "Adjust ki", "../assets/offroad/icon_shell.png") {
+
+  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+  label.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&label);
+
+  btnminus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminus.setFixedSize(150, 100);
+  btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
+  hlayout->addWidget(&btnminus);
+  hlayout->addWidget(&btnplus);
+
+  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("TorqKi"));
+    int value = str.toInt();
+    value = value - 1;
+    if (value <= 1) {
+      value = 1;
+    }
+    QString values = QString::number(value);
+    params.put("TorqKi", values.toStdString());
+    refresh();
+  });
+  
+  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("TorqKi"));
+    int value = str.toInt();
+    value = value + 2;
+    if (value >= 100) {
+      value = 100;
+    }
+    QString values = QString::number(value);
+    params.put("TorqKi", values.toStdString());
+    refresh();
+  });
+  refresh();
+}
+
+void TorqKp::refresh() {
+  auto strs = QString::fromStdString(params.get("TorqKi"));
+  int valuei = strs.toInt();
+  float valuef = valuei * 0.1;
+  QString valuefs = QString::number(valuef);
+  label.setText(QString::fromStdString(valuefs.toStdString()));
+}
+
 TorqKf::TorqKf() : AbstractControl("TorqKf", "Adjust kf", "../assets/offroad/icon_shell.png") {
 
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
@@ -4384,7 +4447,7 @@ TorqKf::TorqKf() : AbstractControl("TorqKf", "Adjust kf", "../assets/offroad/ico
   QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("TorqKf"));
     int value = str.toInt();
-    value = value + 1;
+    value = value + 2;
     if (value >= 100) {
       value = 100;
     }
@@ -4447,7 +4510,7 @@ friction::friction() : AbstractControl("friction", "Adjust friction", "../assets
   QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("friction"));
     int value = str.toInt();
-    value = value + 1;
+    value = value + 2;
     if (value >= 100) {
       value = 100;
     }

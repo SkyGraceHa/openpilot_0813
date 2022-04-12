@@ -74,6 +74,7 @@ def manager_init() -> None:
     ("PidKd", "150"),
     ("PidKf", "7"),
     ("TorqKp", "14"),
+    ("TorqKi", "10"),
     ("TorqKf", "80"),
     ("friction", "60"),
     ("CameraOffsetAdj", "60"),

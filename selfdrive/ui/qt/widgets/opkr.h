@@ -1428,6 +1428,21 @@ private:
   void refresh();
 };
 
+class TorqKi : public AbstractControl {
+  Q_OBJECT
+
+public:
+  TorqKi();
+
+private:
+  QPushButton btnplus;
+  QPushButton btnminus;
+  QLabel label;
+  Params params;
+  
+  void refresh();
+};
+
 class TorqKf : public AbstractControl {
   Q_OBJECT
 
