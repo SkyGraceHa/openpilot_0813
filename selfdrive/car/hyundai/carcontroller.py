@@ -752,7 +752,7 @@ class CarController():
                 self.change_accel_fast = False
               else:
                 accel = (aReqValue + accel) / 2
-            elif aReqValue < 0 and accel > 0 and accel - aReqValue > 0.3:
+            elif aReqValue < 0 and accel > 0 and accel - aReqValue > 0.3 and lead_objspd > 0:
               self.change_accel_fast = True
             elif CS.lead_distance < 30.0 and aReqValue > 0.8 and lead_objspd > 0 and aReqValue - accel > 0.8:
               accel = (aReqValue + accel) / 3
@@ -763,7 +763,7 @@ class CarController():
               self.change_accel_fast = False
               pass
             elif aReqValue > 0.0:
-              accel = interp(CS.lead_distance, [3.5, 15.0], [max(accel, aReqValue), aReqValue])
+              accel = interp(CS.lead_distance, [3.5, 15.0], [max(accel, aReqValue, faccel), aReqValue])
             elif aReqValue < 0.0 and CS.lead_distance <= 4.2 and accel >= aReqValue and lead_objspd <= 0 and self.stopping_dist_adj_enabled:
               accel = self.accel - (DT_CTRL * interp(CS.out.vEgo, [0.9, 3.0], [1.0, 3.0]))
             elif aReqValue < 0.0 and lead_objspd <= -15:
@@ -790,7 +790,7 @@ class CarController():
               self.stopped = False
           elif 0.1 < self.dRel:
             self.stopped = False
-            accel = interp(self.dRel, [13, 18, 30], [accel, (accel+faccel)/2, faccel])
+            pass
           else:
             self.stopped = False
             accel = aReqValue
