@@ -10,6 +10,7 @@ from common.profiler import Profiler
 from common.params import Params, put_nonblocking
 import cereal.messaging as messaging
 from common.conversions import Conversions as CV
+from selfdrive.controls.lib.latcontrol_torque import LatControlTorque
 from selfdrive.swaglog import cloudlog
 from selfdrive.boardd.boardd import can_list_to_can_capnp
 from selfdrive.car.car_helpers import get_car, get_startup_event, get_one_can
@@ -138,7 +139,7 @@ class Controls:
     self.lateral_control_method = 0
     if self.CP.steerControlType == car.CarParams.SteerControlType.angle:
       self.LaC = LatControlAngle(self.CP, self.CI)
-      self.lateral_control_method = 3
+      self.lateral_control_method = 4
     elif self.CP.lateralTuning.which() == 'pid':
       self.LaC = LatControlPID(self.CP, self.CI)
       self.lateral_control_method = 0
@@ -148,6 +149,9 @@ class Controls:
     elif self.CP.lateralTuning.which() == 'lqr':
       self.LaC = LatControlLQR(self.CP, self.CI)
       self.lateral_control_method = 2
+    elif self.CP.lateralTuning.which() == 'torque':
+      self.LaC = LatControlTorque(self.CP, self.CI)
+      self.lateral_control_method = 3
 
     self.controlsAllowed = False
 
@@ -650,7 +654,7 @@ class Controls:
                                                                              lat_plan.curvatures,
                                                                              lat_plan.curvatureRates)
       actuators.steer, actuators.steeringAngleDeg, lac_log = self.LaC.update(lat_active, CS, self.CP, self.VM, params, self.last_actuators,
-                                                                             desired_curvature, desired_curvature_rate)
+                                                                             desired_curvature, desired_curvature_rate, self.sm['liveLocationKalman'])
       self.desired_angle_deg = actuators.steeringAngleDeg
     else:
       lac_log = log.ControlsState.LateralDebugState.new_message()
@@ -884,6 +888,8 @@ class Controls:
       controlsState.lateralControlState.lqrState = lac_log
     elif lat_tuning == 'indi':
       controlsState.lateralControlState.indiState = lac_log
+    elif lat_tuning == 'Torque':
+      controlsState.lateralControlState.torqueState = lac_log      
     controlsState.steeringAngleDesiredDeg = self.desired_angle_deg
 
     self.pm.send('controlsState', dat)

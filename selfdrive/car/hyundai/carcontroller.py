@@ -191,6 +191,8 @@ class CarController():
        CP.lateralTuning.indi.timeConstantV[0], CP.lateralTuning.indi.actuatorEffectivenessV[0])
     elif CP.lateralTuning.which() == 'lqr':
       self.str_log2 = 'T={:04.0f}/{:05.3f}/{:07.5f}'.format(CP.lateralTuning.lqr.scale, CP.lateralTuning.lqr.ki, CP.lateralTuning.lqr.dcGain)
+    elif CP.lateralTuning.which() == 'torque':
+      self.str_log2 = 'T={:03.1f}/{:0.3f}/{:0.3f}'.format(CP.lateralTuning.torque.kp, CP.lateralTuning.torque.kf, CP.lateralTuning.torque.friction)
 
     self.sm = messaging.SubMaster(['controlsState', 'radarState'])
 
@@ -865,6 +867,9 @@ class CarController():
         elif CS.CP.lateralTuning.which() == 'lqr':
           self.str_log2 = 'T={:04.0f}/{:05.3f}/{:07.5f}'.format(float(Decimal(self.params.get("Scale", encoding="utf8"))*Decimal('1.0')), \
            float(Decimal(self.params.get("LqrKi", encoding="utf8"))*Decimal('0.001')), float(Decimal(self.params.get("DcGain", encoding="utf8"))*Decimal('0.00001')))
+        elif CS.CP.lateralTuning.which() == 'torque':
+          self.str_log2 = 'T={:03.1f}/{:0.3f}/{:0.3f}'.format(float(Decimal(self.params.get("TorqKp", encoding="utf8"))*Decimal('0.1')), \
+           float(Decimal(self.params.get("TorqKf", encoding="utf8"))*Decimal('0.001')), float(Decimal(self.params.get("friction", encoding="utf8"))*Decimal('0.001')))
 
     trace1.printf1('{}  {}'.format(str_log1, self.str_log2))
 
