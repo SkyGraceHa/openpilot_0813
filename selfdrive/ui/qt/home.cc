@@ -462,7 +462,6 @@ void HomeWindow::mousePressEvent(QMouseEvent* e) {
         QString value = QString::number(QUIState::ui_state.scene.torqFriction);
         Params().put("friction", value.toStdString());
         return;
-      }        
       }
     }
     if (QUIState::ui_state.scene.started && !sidebar->isVisible() && !QUIState::ui_state.scene.map_on_top && livetunepanel_left_above_btn.ptInRect(e->x(), e->y())) {
