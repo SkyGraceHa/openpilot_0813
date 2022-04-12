@@ -12,7 +12,6 @@ JERK_THRESHOLD = 0.2
 class LatControlTorque(LatControl):
   def __init__(self, CP, CI):
     super().__init__(CP, CI)
-    self.mpc_frame = 0    
     self.pid = PIDController(CP.lateralTuning.torque.kp, CP.lateralTuning.torque.ki,
                             k_f=CP.lateralTuning.torque.kf, pos_limit=1.0, neg_limit=-1.0)
     self.get_steer_feedforward = CI.get_steer_feedforward_function()
@@ -23,36 +22,11 @@ class LatControlTorque(LatControl):
     self.friction = CP.lateralTuning.torque.friction
     self.errors = []
 
-    self.live_tune_enabled = False
-
-    self.reset()
-
-    self.ll_timer = 0    
-
   def reset(self):
     super().reset()
     self.pid.reset()
 
-  def live_tune(self, CP):
-    self.mpc_frame += 1
-    if self.mpc_frame % 300 == 0:
-      self.scale_ = float(Decimal(self.params.get("Scale", encoding="utf8")) * Decimal('1.0'))
-      self.ki_ = float(Decimal(self.params.get("LqrKi", encoding="utf8")) * Decimal('0.001'))
-      self.dc_gain_ = float(Decimal(self.params.get("DcGain", encoding="utf8")) * Decimal('0.00001'))
-      self.scale = self.scale_
-      self.ki = self.ki_
-      self.dc_gain = self.dc_gain_
-        
-      self.mpc_frame = 0
-
-  def update(self, active, CS, CP,s VM, params, last_actuators, desired_curvature, desired_curvature_rate, llk):
-    self.ll_timer += 1
-    if self.ll_timer > 100:
-      self.ll_timer = 0
-      self.live_tune_enabled = self.params.get_bool("OpkrLiveTunePanelEnable")
-    if self.live_tune_enabled:
-      self.live_tune(CP)
-
+  def update(self, active, CS, CP, VM, params, last_actuators, desired_curvature, desired_curvature_rate, llk):
     pid_log = log.ControlsState.LateralTorqueState.new_message()
 
     if CS.vEgo < MIN_STEER_SPEED or not active:
