@@ -3565,7 +3565,7 @@ LateralControl::LateralControl() : AbstractControl("LatControl(Reboot)", "Set th
     auto str = QString::fromStdString(params.get("LateralControlMethod"));
     int latcontrol = str.toInt();
     latcontrol = latcontrol + 1;
-    if (latcontrol >= 3) {
+    if (latcontrol >= 4) {
       latcontrol = 0;
     }
     QString latcontrols = QString::number(latcontrol);
