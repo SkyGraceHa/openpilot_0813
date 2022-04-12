@@ -659,16 +659,6 @@ struct ControlsState @0x97ff69c53601abf1 {
     steeringAngleDesiredDeg @6 :Float32;
   }
 
-  struct LateralTORQUEState {
-    active @0 :Bool;
-    error @1 :Float32;
-    p @2 :Float32;
-    i @3 :Float32;
-    f @4 :Float32;
-    output @5 :Float32;
-    saturated @6 :Bool;
-  }
-
   struct LateralAngleState {
     active @0 :Bool;
     steeringAngleDeg @1 :Float32;
