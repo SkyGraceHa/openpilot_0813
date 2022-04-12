@@ -594,11 +594,12 @@ struct CarParams {
     l @7 :List(Float32);  # Kalman gain
   }
 
-  struct LateralTORQUETuning {
-    kp @0 :Float32;
-    ki @1 :Float32;
-    kf @2 :Float32;
-    friction @3 :Float32;
+  struct LateralTorqueTuning {
+    useSteeringAngle @0 :Bool;    
+    kp @1 :Float32;
+    ki @2 :Float32;
+    kf @3 :Float32;
+    friction @4 :Float32;
   }
 
   enum SafetyModel {

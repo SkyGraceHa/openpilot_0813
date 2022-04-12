@@ -595,7 +595,7 @@ struct ControlsState @0x97ff69c53601abf1 {
     indiState @52 :LateralINDIState;
     pidState @53 :LateralPIDState;
     lqrState @55 :LateralLQRState;
-    torqueState @74 :LateralTORQUEState;
+    torqueState @74 :LateralTorqueState;
     angleState @58 :LateralAngleState;
     debugState @59 :LateralDebugState;
   }
@@ -659,14 +659,16 @@ struct ControlsState @0x97ff69c53601abf1 {
     steeringAngleDesiredDeg @6 :Float32;
   }
 
-  struct LateralTORQUEState {
+  struct LateralTorqueState {
     active @0 :Bool;
     error @1 :Float32;
+    errorRate @8 :Float32;
     p @2 :Float32;
     i @3 :Float32;
-    f @4 :Float32;
-    output @5 :Float32;
-    saturated @6 :Bool;
+    d @4 :Float32;
+    f @5 :Float32;
+    output @6 :Float32;
+    saturated @7 :Bool;    
   }
 
   struct LateralAngleState {
