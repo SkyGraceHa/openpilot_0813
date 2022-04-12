@@ -1,7 +1,7 @@
 import math
 from common.numpy_fast import interp
 from selfdrive.controls.lib.latcontrol_pid import ERROR_RATE_FRAME
-from selfdrive.controls.lib.pid import PIDController
+from selfdrive.controls.lib.pid import PIController
 from selfdrive.controls.lib.latcontrol import LatControl, MIN_STEER_SPEED
 from cereal import log
 from common.params import Params
@@ -15,7 +15,7 @@ class LatControlTorque(LatControl):
   def __init__(self, CP, CI):
     super().__init__(CP, CI)
     self.mpc_frame = 0    
-    self.pid = PIDController(CP.lateralTuning.torque.kp, CP.lateralTuning.torque.ki,
+    self.pid = PIController(CP.lateralTuning.torque.kp, CP.lateralTuning.torque.ki,
                             k_f=CP.lateralTuning.torque.kf, pos_limit=1.0, neg_limit=-1.0)
     self.get_steer_feedforward = CI.get_steer_feedforward_function()
     self.steer_max = 1.0
@@ -40,12 +40,11 @@ class LatControlTorque(LatControl):
   def live_tune(self, CP):
     self.mpc_frame += 1
     if self.mpc_frame % 300 == 0:
-      self.scale_ = float(Decimal(self.params.get("Scale", encoding="utf8")) * Decimal('1.0'))
-      self.ki_ = float(Decimal(self.params.get("LqrKi", encoding="utf8")) * Decimal('0.001'))
-      self.dc_gain_ = float(Decimal(self.params.get("DcGain", encoding="utf8")) * Decimal('0.00001'))
-      self.scale = self.scale_
-      self.ki = self.ki_
-      self.dc_gain = self.dc_gain_
+      self.kp = float(Decimal(self.params.get("TorqKp", encoding="utf8")) * Decimal('0.1'))
+      self.kf = float(Decimal(self.params.get("TorqKf", encoding="utf8")) * Decimal('0.001'))
+      self.pid = PIController(self.kp, CP.lateralTuning.torque.ki, k_f=self.kf, pos_limit=1.0, neg_limit=-1.0)
+      
+      self.friction = float(Decimal(self.params.get("friction", encoding="utf8")) * Decimal('0.001'))
         
       self.mpc_frame = 0
 
