@@ -4335,7 +4335,7 @@ TorqKp::TorqKp() : AbstractControl("TorqKp", "Adjust kp", "../assets/offroad/ico
 void TorqKp::refresh() {
   auto strs = QString::fromStdString(params.get("TorqKp"));
   int valuei = strs.toInt();
-  float valuef = valuei * 0.001;
+  float valuef = valuei * 0.1;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
 }
