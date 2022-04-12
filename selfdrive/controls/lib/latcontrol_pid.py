@@ -7,7 +7,6 @@ from cereal import log
 from common.params import Params
 from decimal import Decimal
 
-ERROR_RATE_FRAME = 5
 
 class LatControlPID(LatControl):
   def __init__(self, CP, CI):
@@ -24,8 +23,6 @@ class LatControlPID(LatControl):
     self.live_tune_enabled = False
 
     self.lp_timer = 0
-
-    self.errors = []    
 
   def reset(self):
     super().reset()
@@ -45,7 +42,7 @@ class LatControlPID(LatControl):
                           k_f=self.steerKf, pos_limit=1.0)
       self.mpc_frame = 0
 
-  def update(self, active, CS, CP, VM, params, last_actuators, desired_curvature, desired_curvature_rate, llk):
+  def update(self, active, CS, CP, VM, params, last_actuators, desired_curvature, desired_curvature_rate):
     self.lp_timer += 1
     if self.lp_timer > 100:
       self.lp_timer = 0
@@ -59,10 +56,9 @@ class LatControlPID(LatControl):
 
     angle_steers_des_no_offset = math.degrees(VM.get_steer_from_curvature(-desired_curvature, CS.vEgo, params.roll))
     angle_steers_des = angle_steers_des_no_offset + params.angleOffsetDeg
-    error = angle_steers_des - CS.steeringAngleDeg    
 
     pid_log.steeringAngleDesiredDeg = angle_steers_des
-    pid_log.angleError = error
+    pid_log.angleError = angle_steers_des - CS.steeringAngleDeg
     if CS.vEgo < MIN_STEER_SPEED or not active:
       output_steer = 0.0
       pid_log.active = False
@@ -74,16 +70,9 @@ class LatControlPID(LatControl):
       # offset does not contribute to resistive torque
       steer_feedforward = self.get_steer_feedforward(angle_steers_des_no_offset, CS.vEgo)
 
-      error_rate = 0
-      if len(self.errors) >= ERROR_RATE_FRAME:
-        error_rate = (error - self.errors[-ERROR_RATE_FRAME]) / ERROR_RATE_FRAME
-
-      self.errors.append(float(error))
-      while len(self.errors) > ERROR_RATE_FRAME:
-        self.errors.pop(0)
       deadzone = 0.0
 
-      output_steer = self.pid.update(error, error_rate, angle_steers_des, CS.steeringAngleDeg, override=CS.steeringPressed,
+      output_steer = self.pid.update(angle_steers_des, CS.steeringAngleDeg, override=CS.steeringPressed,
                                      feedforward=steer_feedforward, speed=CS.vEgo, deadzone=deadzone)
       pid_log.active = True
       pid_log.p = self.pid.p

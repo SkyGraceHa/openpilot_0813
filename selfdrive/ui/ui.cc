@@ -126,8 +126,6 @@ static void update_state(UIState *s) {
       scene.output_scale = scene.controls_state.getLateralControlState().getIndiState().getOutput();
     } else if (scene.lateralControlMethod == 2) {
       scene.output_scale = scene.controls_state.getLateralControlState().getLqrState().getOutput();
-    } else if (scene.lateralControlMethod == 3) {
-      scene.output_scale = scene.controls_state.getLateralControlState().getTorqueState().getOutput();
     }
 
     scene.alertTextMsg1 = scene.controls_state.getAlertTextMsg1(); //debug1
@@ -434,9 +432,6 @@ static void update_status(UIState *s) {
     s->scene.lqrScale = std::stoi(params.get("Scale"));
     s->scene.lqrKi = std::stoi(params.get("LqrKi"));
     s->scene.lqrDcGain = std::stoi(params.get("DcGain"));
-    s->scene.torqKp = std::stoi(params.get("TorqKp"));
-    s->scene.torqKf = std::stoi(params.get("TorqKf"));
-    s->scene.torqFriction = std::stoi(params.get("friction"));
     s->scene.navi_select = std::stoi(params.get("OPKRNaviSelect"));
     s->scene.radar_long_helper = std::stoi(params.get("RadarLongHelper"));
     s->scene.live_tune_panel_enable = params.getBool("OpkrLiveTunePanelEnable");

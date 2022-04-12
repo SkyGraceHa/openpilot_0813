@@ -217,7 +217,6 @@ typedef struct UIScene {
   int pidKp, pidKi, pidKd, pidKf;
   int indiInnerLoopGain, indiOuterLoopGain, indiTimeConstant, indiActuatorEffectiveness;
   int lqrScale, lqrKi, lqrDcGain;
-  int torqKp, torqKf, torqFriction;
   bool live_tune_panel_enable;
   int top_text_view;
   int live_tune_panel_list = 0;

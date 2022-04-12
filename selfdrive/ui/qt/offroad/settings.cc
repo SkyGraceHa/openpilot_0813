@@ -716,10 +716,6 @@ TuningPanel::TuningPanel(QWidget *parent) : QFrame(parent) {
     layout->addWidget(new Scale());
     layout->addWidget(new LqrKi());
     layout->addWidget(new DcGain());
-  } else if (lat_control == "3") {
-    layout->addWidget(new TorqKp());
-    layout->addWidget(new TorqKf());
-    layout->addWidget(new friction());
   }
 
   layout->addWidget(horizontal_line());

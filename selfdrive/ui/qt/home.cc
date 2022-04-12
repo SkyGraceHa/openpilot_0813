@@ -324,24 +324,6 @@ void HomeWindow::mousePressEvent(QMouseEvent* e) {
         QString value = QString::number(QUIState::ui_state.scene.lqrDcGain);
         Params().put("DcGain", value.toStdString());
         return;
-      } else if (QUIState::ui_state.scene.live_tune_panel_list == (QUIState::ui_state.scene.list_count+0) && QUIState::ui_state.scene.lateralControlMethod == 3) {
-        QUIState::ui_state.scene.torqueKp = QUIState::ui_state.scene.torqueKp - 1;
-        if (QUIState::ui_state.scene.torqueKp <= 1) QUIState::ui_state.scene.torqKp = 1;
-        QString value = QString::number(QUIState::ui_state.scene.torqueKp);
-        Params().put("TorqKp", value.toStdString());
-        return;
-      } else if (QUIState::ui_state.scene.live_tune_panel_list == (QUIState::ui_state.scene.list_count+1) && QUIState::ui_state.scene.lateralControlMethod == 3) {
-        QUIState::ui_state.scene.torqueKf = QUIState::ui_state.scene.torqueKf - 1;
-        if (QUIState::ui_state.scene.torqueKf <= 1) QUIState::ui_state.scene.torqKf = 1;
-        QString value = QString::number(QUIState::ui_state.scene.torqueKf);
-        Params().put("TorqKf", value.toStdString());
-        return;
-      } else if (QUIState::ui_state.scene.live_tune_panel_list == (QUIState::ui_state.scene.list_count+2) && QUIState::ui_state.scene.lateralControlMethod == 3) {
-        QUIState::ui_state.scene.torqueFriction = QUIState::ui_state.scene.torqueFriction - 1;
-        if (QUIState::ui_state.scene.torqueFriction <= 1) QUIState::ui_state.scene.torqFriction = 1;
-        QString value = QString::number(QUIState::ui_state.scene.torqFriction);
-        Params().put("friction", value.toStdString());
-        return;
       }
     }
     if (QUIState::ui_state.scene.started && !sidebar->isVisible() && !QUIState::ui_state.scene.map_on_top && livetunepanel_right_btn.ptInRect(e->x(), e->y())) {

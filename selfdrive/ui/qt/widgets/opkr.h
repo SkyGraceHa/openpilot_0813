@@ -1413,51 +1413,6 @@ private:
   void refresh();
 };
 
-class TorqKp : public AbstractControl {
-  Q_OBJECT
-
-public:
-  TorqKp();
-
-private:
-  QPushButton btnplus;
-  QPushButton btnminus;
-  QLabel label;
-  Params params;
-  
-  void refresh();
-};
-
-class TorqKf : public AbstractControl {
-  Q_OBJECT
-
-public:
-  TorqKf();
-
-private:
-  QPushButton btnplus;
-  QPushButton btnminus;
-  QLabel label;
-  Params params;
-  
-  void refresh();
-};
-
-class friction : public AbstractControl {
-  Q_OBJECT
-
-public:
-  friction();
-
-private:
-  QPushButton btnplus;
-  QPushButton btnminus;
-  QLabel label;
-  Params params;
-  
-  void refresh();
-};
-
 class SteerAngleCorrection : public AbstractControl {
   Q_OBJECT
 
