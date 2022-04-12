@@ -4447,7 +4447,11 @@ TorqKf::TorqKf() : AbstractControl("TorqKf", "Adjust kf", "../assets/offroad/ico
   QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("TorqKf"));
     int value = str.toInt();
+    value = value + 2;
     if (value >= 100) {
+      value = 100;
+    }
+    QString values = QString::number(value);
     params.put("TorqKf", values.toStdString());
     refresh();
   });
