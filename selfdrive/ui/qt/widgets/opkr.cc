@@ -4277,7 +4277,7 @@ void DcGain::refresh() {
   label.setText(QString::fromStdString(valuefs.toStdString()));
 }
 
-TorqKp::TorqKp() : AbstractControl("TorqKp", "Adjust kp", "../assets/offroad/icon_shell.png") {
+TorqKp::TorqKp() : AbstractControl("TorqKp", "Adjust kp : Comma 1.4 - Neokii 1.4", "../assets/offroad/icon_shell.png") {
 
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
   label.setStyleSheet("color: #e0e879");
@@ -4340,7 +4340,7 @@ void TorqKp::refresh() {
   label.setText(QString::fromStdString(valuefs.toStdString()));
 }
 
-TorqKi::TorqKi() : AbstractControl("TorqKi", "Adjust ki", "../assets/offroad/icon_shell.png") {
+TorqKi::TorqKi() : AbstractControl("TorqKi", "Adjust ki : Comma 0.2 - Neokii 0.01", "../assets/offroad/icon_shell.png") {
 
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
   label.setStyleSheet("color: #e0e879");
@@ -4403,7 +4403,7 @@ void TorqKi::refresh() {
   label.setText(QString::fromStdString(valuefs.toStdString()));
 }
 
-TorqKf::TorqKf() : AbstractControl("TorqKf", "Adjust kf", "../assets/offroad/icon_shell.png") {
+TorqKf::TorqKf() : AbstractControl("TorqKf", "Adjust kf : Comma 0.4 - Neokii 0.08", "../assets/offroad/icon_shell.png") {
 
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
   label.setStyleSheet("color: #e0e879");
@@ -4466,7 +4466,7 @@ void TorqKf::refresh() {
   label.setText(QString::fromStdString(valuefs.toStdString()));
 }
 
-friction::friction() : AbstractControl("friction", "Adjust friction", "../assets/offroad/icon_shell.png") {
+friction::friction() : AbstractControl("friction", "Adjust friction : Comma 0.1 - Neokii 0.06", "../assets/offroad/icon_shell.png") {
 
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
   label.setStyleSheet("color: #e0e879");
