@@ -351,9 +351,9 @@ class NaviControl():
       if CS.out.vEgo * CV.MS_TO_KPH > 40 and modelSpeed < self.vision_curv_speed_c[-1] and path_plan.laneChangeState == LaneChangeState.off and \
        not (CS.out.leftBlinker or CS.out.rightBlinker):
         if CS.is_set_speed_in_mph:
-          v_curv_speed = int(interp(modelSpeed, self.vision_curv_speed_c, self.vision_curv_speed_t)/3)*3
+          v_curv_speed = int(interp(modelSpeed, self.vision_curv_speed_c, self.vision_curv_speed_t)/2)*2
         else:
-          v_curv_speed = int(interp(modelSpeed, self.vision_curv_speed_c, self.vision_curv_speed_t)/5)*5
+          v_curv_speed = int(interp(modelSpeed, self.vision_curv_speed_c, self.vision_curv_speed_t)/3)*3
         v_curv_speed = min(var_speed, v_curv_speed) # curve speed ratio
       else:
         v_curv_speed = 255
