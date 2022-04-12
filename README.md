@@ -143,7 +143,7 @@ Developer Menu
    - SteerDeltaDownMax: max value if you use variable steerdelta
    - Use variable SteerDelta: use variable steerdelta by road curvature. it works above 30km/h.
    - SteerThreshold: driver steering torque threshold
-   - LatControl(Reboot): PID/INDI/LQR
+   - LatControl(Reboot): PID/INDI/LQR/Torque
    - Use LiveTune and Show UI: this will show button on the screen, you can up/down the values of tune. it will be applied in realtime. you can also touch top-right corner(comma wheel icon) to show tune panel on the screen.
    - Tune Values: change and find appropriate values.
    - LONG CONTROL MENU(RadarHareness required)

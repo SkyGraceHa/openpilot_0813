@@ -3520,7 +3520,7 @@ void SteerThreshold::refresh() {
 }
 
 //제어
-LateralControl::LateralControl() : AbstractControl("LatControl(Reboot)", "Set the steering control method(PID/INDI/LQR). Reboot Required.", "../assets/offroad/icon_shell.png") {
+LateralControl::LateralControl() : AbstractControl("LatControl(Reboot)", "Set the steering control method(PID/INDI/LQR/Torque). Reboot Required.", "../assets/offroad/icon_shell.png") {
 
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
   label.setStyleSheet("color: #e0e879");
@@ -3554,7 +3554,7 @@ LateralControl::LateralControl() : AbstractControl("LatControl(Reboot)", "Set th
     int latcontrol = str.toInt();
     latcontrol = latcontrol - 1;
     if (latcontrol <= -1) {
-      latcontrol = 2;
+      latcontrol = 3;
     }
     QString latcontrols = QString::number(latcontrol);
     params.put("LateralControlMethod", latcontrols.toStdString());
@@ -3565,7 +3565,7 @@ LateralControl::LateralControl() : AbstractControl("LatControl(Reboot)", "Set th
     auto str = QString::fromStdString(params.get("LateralControlMethod"));
     int latcontrol = str.toInt();
     latcontrol = latcontrol + 1;
-    if (latcontrol >= 3) {
+    if (latcontrol >= 4) {
       latcontrol = 0;
     }
     QString latcontrols = QString::number(latcontrol);
@@ -3583,7 +3583,9 @@ void LateralControl::refresh() {
     label.setText(QString::fromStdString("INDI"));
   } else if (latcontrol == "2") {
     label.setText(QString::fromStdString("LQR"));
-  }
+  } else if (latcontrol == "3") {
+    label.setText(QString::fromStdString("Torque"));
+  }  
 }
 
 PidKp::PidKp() : AbstractControl("Kp", "Adjust Kp", "../assets/offroad/icon_shell.png") {
@@ -4026,60 +4028,6 @@ void InnerLoopGain::refresh() {
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
 }
-Scale::Scale() : AbstractControl("Scale", "Adjust Scale", "../assets/offroad/icon_shell.png") {
-
-  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
-  label.setStyleSheet("color: #e0e879");
-  hlayout->addWidget(&label);
-
-  btnminus.setStyleSheet(R"(
-    padding: 0;
-    border-radius: 50px;
-    font-size: 35px;
-    font-weight: 500;
-    color: #E4E4E4;
-    background-color: #393939;
-  )");
-  btnplus.setStyleSheet(R"(
-    padding: 0;
-    border-radius: 50px;
-    font-size: 35px;
-    font-weight: 500;
-    color: #E4E4E4;
-    background-color: #393939;
-  )");
-  btnminus.setFixedSize(150, 100);
-  btnplus.setFixedSize(150, 100);
-  btnminus.setText("－");
-  btnplus.setText("＋");
-  hlayout->addWidget(&btnminus);
-  hlayout->addWidget(&btnplus);
-
-  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
-    auto str = QString::fromStdString(params.get("Scale"));
-    int value = str.toInt();
-    value = value - 50;
-    if (value <= 50) {
-      value = 50;
-    }
-    QString values = QString::number(value);
-    params.put("Scale", values.toStdString());
-    refresh();
-  });
-  
-  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
-    auto str = QString::fromStdString(params.get("Scale"));
-    int value = str.toInt();
-    value = value + 50;
-    if (value >= 5000) {
-      value = 5000;
-    }
-    QString values = QString::number(value);
-    params.put("Scale", values.toStdString());
-    refresh();
-  });
-  refresh();
-}
 
 OuterLoopGain::OuterLoopGain() : AbstractControl("OuterLoopGain", "4.Highest value that still gives smooth control. Effects lane centering.", "../assets/offroad/icon_shell.png") {
 
@@ -4142,6 +4090,61 @@ void OuterLoopGain::refresh() {
   float valuef = valuei * 0.1;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
+}
+
+Scale::Scale() : AbstractControl("Scale", "Adjust Scale", "../assets/offroad/icon_shell.png") {
+
+  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+  label.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&label);
+
+  btnminus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminus.setFixedSize(150, 100);
+  btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
+  hlayout->addWidget(&btnminus);
+  hlayout->addWidget(&btnplus);
+
+  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("Scale"));
+    int value = str.toInt();
+    value = value - 50;
+    if (value <= 50) {
+      value = 50;
+    }
+    QString values = QString::number(value);
+    params.put("Scale", values.toStdString());
+    refresh();
+  });
+  
+  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("Scale"));
+    int value = str.toInt();
+    value = value + 50;
+    if (value >= 5000) {
+      value = 5000;
+    }
+    QString values = QString::number(value);
+    params.put("Scale", values.toStdString());
+    refresh();
+  });
+  refresh();
 }
 
 void Scale::refresh() {
@@ -4273,6 +4276,196 @@ void DcGain::refresh() {
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
 }
+
+TorqKp::TorqKp() : AbstractControl("TorqKp", "Adjust kp", "../assets/offroad/icon_shell.png") {
+
+  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+  label.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&label);
+
+  btnminus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminus.setFixedSize(150, 100);
+  btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
+  hlayout->addWidget(&btnminus);
+  hlayout->addWidget(&btnplus);
+
+  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("TorqKp"));
+    int value = str.toInt();
+    value = value - 1;
+    if (value <= 1) {
+      value = 1;
+    }
+    QString values = QString::number(value);
+    params.put("TorqKp", values.toStdString());
+    refresh();
+  });
+  
+  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("TorqKp"));
+    int value = str.toInt();
+    value = value + 1;
+    if (value >= 30) {
+      value = 30;
+    }
+    QString values = QString::number(value);
+    params.put("TorqKp", values.toStdString());
+    refresh();
+  });
+  refresh();
+}
+
+void TorqKp::refresh() {
+  auto strs = QString::fromStdString(params.get("TorqKp"));
+  int valuei = strs.toInt();
+  float valuef = valuei * 0.1;
+  QString valuefs = QString::number(valuef);
+  label.setText(QString::fromStdString(valuefs.toStdString()));
+}
+
+TorqKf::TorqKf() : AbstractControl("TorqKf", "Adjust kf", "../assets/offroad/icon_shell.png") {
+
+  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+  label.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&label);
+
+  btnminus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminus.setFixedSize(150, 100);
+  btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
+  hlayout->addWidget(&btnminus);
+  hlayout->addWidget(&btnplus);
+
+  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("TorqKf"));
+    int value = str.toInt();
+    value = value - 1;
+    if (value <= 1) {
+      value = 1;
+    }
+    QString values = QString::number(value);
+    params.put("TorqKf", values.toStdString());
+    refresh();
+  });
+  
+  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("TorqKf"));
+    int value = str.toInt();
+    value = value + 1;
+    if (value >= 100) {
+      value = 100;
+    }
+    QString values = QString::number(value);
+    params.put("TorqKf", values.toStdString());
+    refresh();
+  });
+  refresh();
+}
+
+void TorqKf::refresh() {
+  auto strs = QString::fromStdString(params.get("TorqKf"));
+  int valuei = strs.toInt();
+  float valuef = valuei * 0.001;
+  QString valuefs = QString::number(valuef);
+  label.setText(QString::fromStdString(valuefs.toStdString()));
+}
+
+friction::friction() : AbstractControl("friction", "Adjust friction", "../assets/offroad/icon_shell.png") {
+
+  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+  label.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&label);
+
+  btnminus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminus.setFixedSize(150, 100);
+  btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
+  hlayout->addWidget(&btnminus);
+  hlayout->addWidget(&btnplus);
+
+  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("friction"));
+    int value = str.toInt();
+    value = value - 1;
+    if (value <= 1) {
+      value = 1;
+    }
+    QString values = QString::number(value);
+    params.put("friction", values.toStdString());
+    refresh();
+  });
+  
+  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("friction"));
+    int value = str.toInt();
+    value = value + 1;
+    if (value >= 100) {
+      value = 100;
+    }
+    QString values = QString::number(value);
+    params.put("friction", values.toStdString());
+    refresh();
+  });
+  refresh();
+}
+
+void friction::refresh() {
+  auto strs = QString::fromStdString(params.get("friction"));
+  int valuei = strs.toInt();
+  float valuef = valuei * 0.001;
+  QString valuefs = QString::number(valuef);
+  label.setText(QString::fromStdString(valuefs.toStdString()));
+}
+
 
 CruiseGapTR::CruiseGapTR() : AbstractControl("CruiseGap", "Adjust the inter-vehicle distance (TR) according to the cruise gap. TR refers to the time in seconds of collision with the car in front, and the larger it becomes, the farther it is from the car in front.", "") {
   QString dtr = QString::fromStdString(params.get("DynamicTRGap"));
