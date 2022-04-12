@@ -4398,7 +4398,7 @@ TorqKi::TorqKi() : AbstractControl("TorqKi", "Adjust ki", "../assets/offroad/ico
 void TorqKi::refresh() {
   auto strs = QString::fromStdString(params.get("TorqKi"));
   int valuei = strs.toInt();
-  float valuef = valuei * 0.1;
+  float valuef = valuei * 0.001;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
 }
