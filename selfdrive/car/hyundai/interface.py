@@ -158,13 +158,14 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.lqr.l = [0.33, 0.318]
       ret.lateralTuning.lqr.dcGain = DcGain
     elif lat_control_method == 3:      
+      MAX_TORQUE = 2.5
+      FRICTION = .1
       ret.lateralTuning.init('torque')
       ret.lateralTuning.torque.useSteeringAngle = True
-      ret.lateralTuning.torque.kp = TorqKp #1.4
-      ret.lateralTuning.torque.ki = TorqKi #0.01
-      ret.lateralTuning.torque.kf = TorqKf #0.08
-      ret.lateralTuning.torque.friction = friction #0.06
-
+      ret.lateralTuning.torque.kp = TorqKp # 3.5 / MAX_TORQUE = 1.4 # Neokii 1.4
+      ret.lateralTuning.torque.ki = TorqKi # 0.5 / MAX_TORQUE = 0.2 # Neokii 0.01
+      ret.lateralTuning.torque.kf = TorqKf # 1.0 / MAX_TORQUE = 0.4 # Neokii 0.08
+      ret.lateralTuning.torque.friction = friction # FRICTION = 0.1 # Neokii 0.06
 
     # genesis
     if candidate == CAR.GENESIS:
