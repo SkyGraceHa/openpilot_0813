@@ -4372,7 +4372,7 @@ TorqKi::TorqKi() : AbstractControl("TorqKi", "Adjust ki", "../assets/offroad/ico
   QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("TorqKi"));
     int value = str.toInt();
-    value = value - 1;
+    value = value - 5;
     if (value <= 0) {
       value = 0;
     }
@@ -4435,7 +4435,7 @@ TorqKf::TorqKf() : AbstractControl("TorqKf", "Adjust kf", "../assets/offroad/ico
   QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("TorqKf"));
     int value = str.toInt();
-    value = value - 1;
+    value = value - 5;
     if (value <= 0) {
       value = 0;
     }
@@ -4498,7 +4498,7 @@ friction::friction() : AbstractControl("friction", "Adjust friction", "../assets
   QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("friction"));
     int value = str.toInt();
-    value = value - 1;
+    value = value - 5;
     if (value <= 0) {
       value = 0;
     }
