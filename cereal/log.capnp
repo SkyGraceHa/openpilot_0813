@@ -595,7 +595,6 @@ struct ControlsState @0x97ff69c53601abf1 {
     indiState @52 :LateralINDIState;
     pidState @53 :LateralPIDState;
     lqrState @55 :LateralLQRState;
-    torqueState @54 :LateralTORQUEState;
     angleState @58 :LateralAngleState;
     debugState @59 :LateralDebugState;
   }
