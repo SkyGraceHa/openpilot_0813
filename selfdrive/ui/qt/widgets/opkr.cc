@@ -3520,7 +3520,7 @@ void SteerThreshold::refresh() {
 }
 
 //제어
-LateralControl::LateralControl() : AbstractControl("LatControl(Reboot)", "Set the steering control method(PID/INDI/LQR). Reboot Required.", "../assets/offroad/icon_shell.png") {
+LateralControl::LateralControl() : AbstractControl("LatControl(Reboot)", "Set the steering control method(PID/INDI/LQR/Torque). Reboot Required.", "../assets/offroad/icon_shell.png") {
 
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
   label.setStyleSheet("color: #e0e879");
@@ -3554,7 +3554,7 @@ LateralControl::LateralControl() : AbstractControl("LatControl(Reboot)", "Set th
     int latcontrol = str.toInt();
     latcontrol = latcontrol - 1;
     if (latcontrol <= -1) {
-      latcontrol = 2;
+      latcontrol = 3;
     }
     QString latcontrols = QString::number(latcontrol);
     params.put("LateralControlMethod", latcontrols.toStdString());
@@ -3583,7 +3583,9 @@ void LateralControl::refresh() {
     label.setText(QString::fromStdString("INDI"));
   } else if (latcontrol == "2") {
     label.setText(QString::fromStdString("LQR"));
-  }
+  } else if (latcontrol == "3") {
+    label.setText(QString::fromStdString("Torque"));
+  }  
 }
 
 PidKp::PidKp() : AbstractControl("Kp", "Adjust Kp", "../assets/offroad/icon_shell.png") {
