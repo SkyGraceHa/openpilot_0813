@@ -4,8 +4,6 @@ from selfdrive.controls.lib.latcontrol_pid import ERROR_RATE_FRAME
 from selfdrive.controls.lib.pid import PIDController
 from selfdrive.controls.lib.latcontrol import LatControl, MIN_STEER_SPEED
 from cereal import log
-from common.params import Params
-from decimal import Decimal
 
 CURVATURE_SCALE = 200
 JERK_THRESHOLD = 0.2
@@ -25,8 +23,6 @@ class LatControlTorque(LatControl):
     self.friction = CP.lateralTuning.torque.friction
     self.errors = []
 
-    self.params = Params()
-    
     self.live_tune_enabled = False
 
     self.reset()
@@ -49,7 +45,7 @@ class LatControlTorque(LatControl):
         
       self.mpc_frame = 0
 
-  def update(self, active, CS, CP, VM, params, last_actuators, desired_curvature, desired_curvature_rate, llk):
+  def update(self, active, CS, CP,s VM, params, last_actuators, desired_curvature, desired_curvature_rate, llk):
     self.ll_timer += 1
     if self.ll_timer > 100:
       self.ll_timer = 0
