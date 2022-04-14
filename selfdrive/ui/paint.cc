@@ -451,11 +451,11 @@ static void ui_draw_debug(UIState *s) {
   nvgTextAlign(s->vg, NVG_ALIGN_MIDDLE | NVG_ALIGN_MIDDLE);
 
   if (scene.nDebugUi1 & !scene.mapbox_running) {
-    ui_draw_text(s, ui_viz_rx, ui_viz_ry+680+(scene.mapbox_running ? 18:0), scene.alertTextMsg1.c_str(), scene.mapbox_running?34:45, COLOR_WHITE_ALPHA(125), "sans-semibold");
-    ui_draw_text(s, ui_viz_rx, ui_viz_ry+720+(scene.mapbox_running ? 3:0), scene.alertTextMsg2.c_str(), scene.mapbox_running?34:45, COLOR_WHITE_ALPHA(125), "sans-semibold");
+    ui_draw_text(s, ui_viz_rx, ui_viz_ry+720+(scene.mapbox_running ? 18:0), scene.alertTextMsg1.c_str(), scene.mapbox_running?34:45, COLOR_WHITE_ALPHA(125), "sans-semibold");
+    ui_draw_text(s, ui_viz_rx, ui_viz_ry+760+(scene.mapbox_running ? 3:0), scene.alertTextMsg2.c_str(), scene.mapbox_running?34:45, COLOR_WHITE_ALPHA(125), "sans-semibold");
   }
   if (scene.nDebugUi3) {
-    ui_draw_text(s, ui_viz_rx, ui_viz_ry+760+(scene.mapbox_running ? 18:0), scene.alertTextMsg3.c_str(), scene.mapbox_running?34:45, COLOR_WHITE_ALPHA(125), "sans-semibold");
+    ui_draw_text(s, ui_viz_rx, ui_viz_ry+680+(scene.mapbox_running ? 18:0), scene.alertTextMsg3.c_str(), scene.mapbox_running?34:45, COLOR_WHITE_ALPHA(125), "sans-semibold");
   }
 
   
@@ -497,14 +497,14 @@ static void ui_draw_debug(UIState *s) {
       ui_print(s, ui_viz_rx, ui_viz_ry+640, "DS:%.0f", (*s->sm)["carState"].getCarState().getSafetyDist());
     }
     if (scene.osm_enabled) {
-      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+240, "SL:%.0f", scene.liveMapData.ospeedLimit);
-      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+280, "SLA:%.0f", scene.liveMapData.ospeedLimitAhead);
-      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+320, "SLAD:%.0f", scene.liveMapData.ospeedLimitAheadDistance);
-      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+360, "TSL:%.0f", scene.liveMapData.oturnSpeedLimit);
-      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+400, "TSLED:%.0f", scene.liveMapData.oturnSpeedLimitEndDistance);
-      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+440, "TSLS:%d", scene.liveMapData.oturnSpeedLimitSign);
-      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+480, "TCO:%.2f", -scene.lateralPlan.totalCameraOffset);
-      ui_draw_text(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+520, scene.liveMapData.ocurrentRoadName.c_str(), 34, COLOR_WHITE_ALPHA(125), "KaiGenGothicKR-Medium");
+      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+240, "SL:%.0f", scene.liveMapData.ospeedLimit);
+      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+280, "SLA:%.0f", scene.liveMapData.ospeedLimitAhead);
+      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+320, "SLAD:%.0f", scene.liveMapData.ospeedLimitAheadDistance);
+      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+360, "TSL:%.0f", scene.liveMapData.oturnSpeedLimit);
+      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+400, "TSLED:%.0f", scene.liveMapData.oturnSpeedLimitEndDistance);
+      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+440, "TSLS:%d", scene.liveMapData.oturnSpeedLimitSign);
+      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+480, "TCO:%.2f", -scene.lateralPlan.totalCameraOffset);
+      ui_draw_text(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+520, scene.liveMapData.ocurrentRoadName.c_str(), 34, COLOR_WHITE_ALPHA(125), "KaiGenGothicKR-Medium");
     }
     nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
     if (scene.lateralControlMethod == 0) {
