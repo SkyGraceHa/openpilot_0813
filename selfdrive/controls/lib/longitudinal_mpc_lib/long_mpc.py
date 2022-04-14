@@ -24,7 +24,7 @@ LONG_MPC_DIR = os.path.dirname(os.path.abspath(__file__))
 EXPORT_DIR = os.path.join(LONG_MPC_DIR, "c_generated_code")
 JSON_FILE = os.path.join(LONG_MPC_DIR, "acados_ocp_long.json")
 
-SOURCES = ['lead0', 'lead1', 'cruise']
+SOURCES = ['lead0', 'lead1', 'stop', 'cruise']
 
 X_DIM = 3
 U_DIM = 1
@@ -336,9 +336,10 @@ class LongitudinalMpc:
     self.desired_TR = desired_TR
     self.set_weights()
 
-  def update(self, carstate, radarstate, v_cruise):
+  def update(self, carstate, radarstate, model, v_cruise):
     self.v_ego = carstate.vEgo
     v_ego = self.x0[1]
+    stopping = model.stopLine.prob > 0.5
 
     # opkr
     self.lo_timer += 1
@@ -348,7 +349,7 @@ class LongitudinalMpc:
       self.dynamic_TR_mode = int(Params().get("DynamicTRGap", encoding="utf8"))
       self.custom_tr_enabled = Params().get_bool("CustomTREnabled")
 
-    self.status = radarstate.leadOne.status or radarstate.leadTwo.status
+    self.status = radarstate.leadOne.status or radarstate.leadTwo.status or stopping
 
     lead_xv_0 = self.process_lead(radarstate.leadOne)
     lead_xv_1 = self.process_lead(radarstate.leadTwo)
@@ -380,6 +381,10 @@ class LongitudinalMpc:
     # and then treat that as a stopped car/obstacle at this new distance.
     lead_0_obstacle = lead_xv_0[:,0] + get_stopped_equivalence_factor(lead_xv_0[:,1])
     lead_1_obstacle = lead_xv_1[:,0] + get_stopped_equivalence_factor(lead_xv_1[:,1])
+    if stopping:
+      stop_line_obstacle = (model.stopLine.x + 6.0) * np.ones(N+1)
+    else:
+      stop_line_obstacle = 400 * np.ones(N+1)
 
     # Fake an obstacle for cruise, this ensures smooth acceleration to set speed
     # when the leads are no factor.
@@ -390,7 +395,7 @@ class LongitudinalMpc:
                                v_upper)
     cruise_obstacle = np.cumsum(T_DIFFS * v_cruise_clipped) + get_safe_obstacle_distance(v_cruise_clipped, self.desired_TR)
 
-    x_obstacles = np.column_stack([lead_0_obstacle, lead_1_obstacle, cruise_obstacle])
+    x_obstacles = np.column_stack([lead_0_obstacle, lead_1_obstacle, stop_line_obstacle, cruise_obstacle])
     self.source = SOURCES[np.argmin(x_obstacles[0])]
     self.params[:,2] = np.min(x_obstacles, axis=1)
     self.params[:,3] = np.copy(self.prev_a)

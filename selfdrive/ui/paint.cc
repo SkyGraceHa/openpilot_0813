@@ -99,6 +99,24 @@ static void ui_draw_circle_image(const UIState *s, int center_x, int center_y, i
   }
 }
 
+static void ui_draw_line(UIState *s, const line_vertices_data &vd, NVGcolor *color, NVGpaint *paint) {
+  if (vd.cnt == 0) return;
+
+  const vertex_data *v = &vd.v[0];
+  nvgBeginPath(s->vg);
+  nvgMoveTo(s->vg, v[0].x, v[0].y);
+  for (int i = 1; i < vd.cnt; i++) {
+    nvgLineTo(s->vg, v[i].x, v[i].y);
+  }
+  nvgClosePath(s->vg);
+  if (color) {
+    nvgFillColor(s->vg, *color);
+  } else if (paint) {
+    nvgFillPaint(s->vg, *paint);
+  }
+  nvgFill(s->vg);
+}
+
 static void draw_lead(UIState *s, const cereal::RadarState::LeadData::Reader &lead_data, const vertex_data &vd) {
   // Draw lead car indicator
   const float speed = std::max(0.0, (*s->sm)["carState"].getCarState().getVEgo()*(s->scene.is_metric ? 3.6 : 2.2369363));
@@ -141,22 +159,9 @@ static void draw_lead(UIState *s, const cereal::RadarState::LeadData::Reader &le
   }
 }
 
-static void ui_draw_line(UIState *s, const line_vertices_data &vd, NVGcolor *color, NVGpaint *paint) {
-  if (vd.cnt == 0) return;
-
-  const vertex_data *v = &vd.v[0];
-  nvgBeginPath(s->vg);
-  nvgMoveTo(s->vg, v[0].x, v[0].y);
-  for (int i = 1; i < vd.cnt; i++) {
-    nvgLineTo(s->vg, v[i].x, v[i].y);
-  }
-  nvgClosePath(s->vg);
-  if (color) {
-    nvgFillColor(s->vg, *color);
-  } else if (paint) {
-    nvgFillPaint(s->vg, *paint);
-  }
-  nvgFill(s->vg);
+static void ui_draw_stop_line(UIState *s, const cereal::ModelDataV2::StopLineData::Reader &stop_line_data, const line_vertices_data &vd) {
+  NVGcolor color = nvgRGBAf(1.0, 0.0, 0.0, stop_line_data.getProb());
+  ui_draw_line(s, vd, &color, nullptr);
 }
 
 static void ui_draw_vision_lane_lines(UIState *s) {
@@ -222,7 +227,7 @@ static void ui_draw_world(UIState *s) {
   // Draw lane edges and vision/mpc tracks
   ui_draw_vision_lane_lines(s);
 
-  // Draw lead indicators if openpilot is handling longitudinal
+  // Draw lead and stop line indicators if openpilot is handling longitudinal
   //if (s->scene.longitudinal_control) {
   if (true) {
     auto lead_one = (*s->sm)["radarState"].getRadarState().getLeadOne();
@@ -232,6 +237,12 @@ static void ui_draw_world(UIState *s) {
     }
     if (lead_two.getStatus() && (std::abs(lead_one.getDRel() - lead_two.getDRel()) > 3.0)) {
       draw_lead(s, lead_two, s->scene.lead_vertices[1]);
+    }
+    if (s->scene.stop_line) {
+      auto stop_line = (*s->sm)["modelV2"].getModelV2().getStopLine();
+      if (stop_line.getProb() > .5) {
+        ui_draw_stop_line(s, stop_line, s->scene.stop_line_vertices);
+      }
     }
   }
   nvgResetScissor(s->vg);
@@ -1195,10 +1206,10 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     NVGcolor val_color = COLOR_GREEN_ALPHA(200);
     //show Orange if more than 30 degrees
     //show red if  more than 50 degrees
-    if(((int)(scene.angleSteers) < -30) || ((int)(scene.angleSteers) > 30)) {
+    if(((int)(scene.angleSteers) < -90) || ((int)(scene.angleSteers) > 90)) {
       val_color = COLOR_ORANGE_ALPHA(200);
     }
-    if(((int)(scene.angleSteers) < -50) || ((int)(scene.angleSteers) > 50)) {
+    if(((int)(scene.angleSteers) < -180) || ((int)(scene.angleSteers) > 180)) {
       val_color = COLOR_RED_ALPHA(200);
     }
     // steering is in degrees

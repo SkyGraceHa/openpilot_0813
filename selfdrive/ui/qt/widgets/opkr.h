@@ -726,6 +726,18 @@ public:
   }
 };
 
+class ShowStopLineToggle : public ToggleControl {
+  Q_OBJECT
+
+public:
+  ShowStopLineToggle() : ToggleControl("Show Stop Line", "Show stop line on the screen.", "../assets/offroad/icon_shell.png", Params().getBool("ShowStopLine")) {
+    QObject::connect(this, &ShowStopLineToggle::toggleFlipped, [=](int state) {
+      bool status = state ? true : false;
+      Params().putBool("ShowStopLine", status);
+    });
+  }
+};
+
 // openpilot preview
 class OpenpilotView : public AbstractControl {
   Q_OBJECT

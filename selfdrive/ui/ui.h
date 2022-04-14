@@ -252,6 +252,7 @@ typedef struct UIScene {
   float ctrl_speed;
   float accel;
   bool animated_rpm;
+  bool stop_line;
 
   cereal::DeviceState::Reader deviceState;
   cereal::CarState::Reader car_state;
@@ -271,6 +272,7 @@ typedef struct UIScene {
   line_vertices_data track_vertices;
   line_vertices_data lane_line_vertices[4];
   line_vertices_data road_edge_vertices[2];
+  line_vertices_data stop_line_vertices;
 
   bool dm_active, engageable;
 

@@ -203,6 +203,7 @@ def manager_init() -> None:
     ("AvoidLKASFaultBeyond", "0"),
     ("UseStockDecelOnSS", "0"),
     ("AnimatedRPM", "1"),
+    ("ShowStopLine", "0"),
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

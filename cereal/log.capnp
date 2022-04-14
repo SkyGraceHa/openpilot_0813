@@ -745,6 +745,9 @@ struct ModelDataV2 {
   leads @11 :List(LeadDataV2);
   leadsV3 @18 :List(LeadDataV3);
 
+  # predicted stop line
+  stopLine @21 :StopLineData;
+
   meta @12 :MetaData;
 
   # All SI units and in device frame
@@ -787,6 +790,28 @@ struct ModelDataV2 {
     aStd @10 :List(Float32);
   }
 
+  struct StopLineData {
+    prob @0 :Float32;
+
+    x @1 :Float32;
+    xStd @2 :Float32;
+    y @3 :Float32;
+    yStd @4 :Float32;
+    z @5 :Float32;
+    zStd @6 :Float32;
+
+    roll @7 :Float32;
+    rollStd @8 :Float32;
+    pitch @9 :Float32;
+    pitchStd @10 :Float32;
+    yaw @11 :Float32;
+    yawStd @12 :Float32;
+
+    speedAtLine @13 :Float32;
+    speedAtLineStd @14 :Float32;
+    secondsUntilLine @15 :Float32;
+    secondsUntilLineStd @16 :Float32;
+  }
 
   struct MetaData {
     engagedProb @0 :Float32;
@@ -871,6 +896,7 @@ struct LongitudinalPlan @0xe00b5b3eba12876c {
     lead1 @2;
     lead2 @3;
     e2e @4;
+    stop @5;
   }
 
   # deprecated

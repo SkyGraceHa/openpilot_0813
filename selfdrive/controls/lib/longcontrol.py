@@ -195,6 +195,8 @@ class LongControl():
       self.long_plan_source = "lead2"
     elif long_plan.longitudinalPlanSource == LongitudinalPlanSource.e2e:
       self.long_plan_source = "e2e"
+    elif long_plan.longitudinalPlanSource == LongitudinalPlanSource.stop:
+      self.long_plan_source = "stop"
     else:
       self.long_plan_source = "---"
 

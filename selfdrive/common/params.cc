@@ -354,6 +354,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"AvoidLKASFaultBeyond", PERSISTENT},
     {"UseStockDecelOnSS", PERSISTENT},
     {"AnimatedRPM", PERSISTENT},
+    {"ShowStopLine", PERSISTENT},
 };
 
 } // namespace
