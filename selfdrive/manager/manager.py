@@ -73,6 +73,10 @@ def manager_init() -> None:
     ("PidKi", "50"),
     ("PidKd", "150"),
     ("PidKf", "7"),
+    ("TorqKp", "14"),
+    ("TorqKi", "10"),
+    ("TorqKf", "80"),
+    ("friction", "60"),
     ("CameraOffsetAdj", "60"),
     ("PathOffsetAdj", "0"),
     ("SteerRatioAdj", "1550"),
@@ -199,6 +203,7 @@ def manager_init() -> None:
     ("AvoidLKASFaultBeyond", "0"),
     ("UseStockDecelOnSS", "0"),
     ("AnimatedRPM", "1"),
+    ("ShowStopLine", "0"),
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

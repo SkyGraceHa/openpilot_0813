@@ -99,6 +99,24 @@ static void ui_draw_circle_image(const UIState *s, int center_x, int center_y, i
   }
 }
 
+static void ui_draw_line(UIState *s, const line_vertices_data &vd, NVGcolor *color, NVGpaint *paint) {
+  if (vd.cnt == 0) return;
+
+  const vertex_data *v = &vd.v[0];
+  nvgBeginPath(s->vg);
+  nvgMoveTo(s->vg, v[0].x, v[0].y);
+  for (int i = 1; i < vd.cnt; i++) {
+    nvgLineTo(s->vg, v[i].x, v[i].y);
+  }
+  nvgClosePath(s->vg);
+  if (color) {
+    nvgFillColor(s->vg, *color);
+  } else if (paint) {
+    nvgFillPaint(s->vg, *paint);
+  }
+  nvgFill(s->vg);
+}
+
 static void draw_lead(UIState *s, const cereal::RadarState::LeadData::Reader &lead_data, const vertex_data &vd) {
   // Draw lead car indicator
   const float speed = std::max(0.0, (*s->sm)["carState"].getCarState().getVEgo()*(s->scene.is_metric ? 3.6 : 2.2369363));
@@ -141,22 +159,9 @@ static void draw_lead(UIState *s, const cereal::RadarState::LeadData::Reader &le
   }
 }
 
-static void ui_draw_line(UIState *s, const line_vertices_data &vd, NVGcolor *color, NVGpaint *paint) {
-  if (vd.cnt == 0) return;
-
-  const vertex_data *v = &vd.v[0];
-  nvgBeginPath(s->vg);
-  nvgMoveTo(s->vg, v[0].x, v[0].y);
-  for (int i = 1; i < vd.cnt; i++) {
-    nvgLineTo(s->vg, v[i].x, v[i].y);
-  }
-  nvgClosePath(s->vg);
-  if (color) {
-    nvgFillColor(s->vg, *color);
-  } else if (paint) {
-    nvgFillPaint(s->vg, *paint);
-  }
-  nvgFill(s->vg);
+static void ui_draw_stop_line(UIState *s, const cereal::ModelDataV2::StopLineData::Reader &stop_line_data, const line_vertices_data &vd) {
+  NVGcolor color = nvgRGBAf(1.0, 0.0, 0.0, stop_line_data.getProb());
+  ui_draw_line(s, vd, &color, nullptr);
 }
 
 static void ui_draw_vision_lane_lines(UIState *s) {
@@ -222,7 +227,7 @@ static void ui_draw_world(UIState *s) {
   // Draw lane edges and vision/mpc tracks
   ui_draw_vision_lane_lines(s);
 
-  // Draw lead indicators if openpilot is handling longitudinal
+  // Draw lead and stop line indicators if openpilot is handling longitudinal
   //if (s->scene.longitudinal_control) {
   if (true) {
     auto lead_one = (*s->sm)["radarState"].getRadarState().getLeadOne();
@@ -232,6 +237,12 @@ static void ui_draw_world(UIState *s) {
     }
     if (lead_two.getStatus() && (std::abs(lead_one.getDRel() - lead_two.getDRel()) > 3.0)) {
       draw_lead(s, lead_two, s->scene.lead_vertices[1]);
+    }
+    if (s->scene.stop_line) {
+      auto stop_line = (*s->sm)["modelV2"].getModelV2().getStopLine();
+      if (stop_line.getProb() > .5) {
+        ui_draw_stop_line(s, stop_line, s->scene.stop_line_vertices);
+      }
     }
   }
   nvgResetScissor(s->vg);
@@ -440,11 +451,11 @@ static void ui_draw_debug(UIState *s) {
   nvgTextAlign(s->vg, NVG_ALIGN_MIDDLE | NVG_ALIGN_MIDDLE);
 
   if (scene.nDebugUi1 & !scene.mapbox_running) {
-    ui_draw_text(s, ui_viz_rx, ui_viz_ry+680+(scene.mapbox_running ? 18:0), scene.alertTextMsg1.c_str(), scene.mapbox_running?34:45, COLOR_WHITE_ALPHA(125), "sans-semibold");
-    ui_draw_text(s, ui_viz_rx, ui_viz_ry+720+(scene.mapbox_running ? 3:0), scene.alertTextMsg2.c_str(), scene.mapbox_running?34:45, COLOR_WHITE_ALPHA(125), "sans-semibold");
+    ui_draw_text(s, ui_viz_rx, ui_viz_ry+720+(scene.mapbox_running ? 18:0), scene.alertTextMsg1.c_str(), scene.mapbox_running?34:45, COLOR_WHITE_ALPHA(125), "sans-semibold");
+    ui_draw_text(s, ui_viz_rx, ui_viz_ry+760+(scene.mapbox_running ? 3:0), scene.alertTextMsg2.c_str(), scene.mapbox_running?34:45, COLOR_WHITE_ALPHA(125), "sans-semibold");
   }
   if (scene.nDebugUi3) {
-    ui_draw_text(s, ui_viz_rx, ui_viz_ry+760+(scene.mapbox_running ? 18:0), scene.alertTextMsg3.c_str(), scene.mapbox_running?34:45, COLOR_WHITE_ALPHA(125), "sans-semibold");
+    ui_draw_text(s, ui_viz_rx, ui_viz_ry+680+(scene.mapbox_running ? 18:0), scene.alertTextMsg3.c_str(), scene.mapbox_running?34:45, COLOR_WHITE_ALPHA(125), "sans-semibold");
   }
 
   
@@ -486,14 +497,14 @@ static void ui_draw_debug(UIState *s) {
       ui_print(s, ui_viz_rx, ui_viz_ry+640, "DS:%.0f", (*s->sm)["carState"].getCarState().getSafetyDist());
     }
     if (scene.osm_enabled) {
-      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+240, "SL:%.0f", scene.liveMapData.ospeedLimit);
-      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+280, "SLA:%.0f", scene.liveMapData.ospeedLimitAhead);
-      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+320, "SLAD:%.0f", scene.liveMapData.ospeedLimitAheadDistance);
-      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+360, "TSL:%.0f", scene.liveMapData.oturnSpeedLimit);
-      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+400, "TSLED:%.0f", scene.liveMapData.oturnSpeedLimitEndDistance);
-      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+440, "TSLS:%d", scene.liveMapData.oturnSpeedLimitSign);
-      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+480, "TCO:%.2f", -scene.lateralPlan.totalCameraOffset);
-      ui_draw_text(s, ui_viz_rx+(scene.mapbox_running ? 150:200), ui_viz_ry+520, scene.liveMapData.ocurrentRoadName.c_str(), 34, COLOR_WHITE_ALPHA(125), "KaiGenGothicKR-Medium");
+      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+240, "SL:%.0f", scene.liveMapData.ospeedLimit);
+      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+280, "SLA:%.0f", scene.liveMapData.ospeedLimitAhead);
+      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+320, "SLAD:%.0f", scene.liveMapData.ospeedLimitAheadDistance);
+      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+360, "TSL:%.0f", scene.liveMapData.oturnSpeedLimit);
+      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+400, "TSLED:%.0f", scene.liveMapData.oturnSpeedLimitEndDistance);
+      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+440, "TSLS:%d", scene.liveMapData.oturnSpeedLimitSign);
+      ui_print(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+480, "TCO:%.2f", -scene.lateralPlan.totalCameraOffset);
+      ui_draw_text(s, ui_viz_rx+(scene.mapbox_running ? 150:220), ui_viz_ry+520, scene.liveMapData.ocurrentRoadName.c_str(), 34, COLOR_WHITE_ALPHA(125), "KaiGenGothicKR-Medium");
     }
     nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
     if (scene.lateralControlMethod == 0) {
@@ -502,6 +513,8 @@ static void ui_draw_debug(UIState *s) {
       ui_draw_text(s, ui_viz_rx_center, bdr_s+310, "INDI", 60, COLOR_YELLOW_ALPHA(200), "sans-bold");
     } else if (scene.lateralControlMethod == 2) {
       ui_draw_text(s, ui_viz_rx_center, bdr_s+310, "LQR", 60, COLOR_YELLOW_ALPHA(200), "sans-bold");
+    } else if (scene.lateralControlMethod == 3) {
+      ui_draw_text(s, ui_viz_rx_center, bdr_s+310, "Torque", 60, COLOR_YELLOW_ALPHA(200), "sans-bold");
     }
   }
   if (scene.cal_view) {
@@ -1193,10 +1206,10 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     NVGcolor val_color = COLOR_GREEN_ALPHA(200);
     //show Orange if more than 30 degrees
     //show red if  more than 50 degrees
-    if(((int)(scene.angleSteers) < -30) || ((int)(scene.angleSteers) > 30)) {
+    if(((int)(scene.angleSteers) < -90) || ((int)(scene.angleSteers) > 90)) {
       val_color = COLOR_ORANGE_ALPHA(200);
     }
-    if(((int)(scene.angleSteers) < -50) || ((int)(scene.angleSteers) > 50)) {
+    if(((int)(scene.angleSteers) < -180) || ((int)(scene.angleSteers) > 180)) {
       val_color = COLOR_RED_ALPHA(200);
     }
     // steering is in degrees
@@ -1754,6 +1767,22 @@ static void ui_draw_live_tune_panel(UIState *s) {
     ui_print(s, s->fb_w/2, y_pos + height/2, "%0.5f", s->scene.lqrDcGain*0.00001);
     nvgFontSize(s->vg, 120);
     ui_print(s, s->fb_w/2, y_pos - 95, "LQR:3.DcGain");
+  } else if (s->scene.live_tune_panel_list == (s->scene.list_count+0) && s->scene.lateralControlMethod == 3) {
+    ui_print(s, s->fb_w/2, y_pos + height/2, "%3.1f", s->scene.torqKp*0.1);
+    nvgFontSize(s->vg, 120);
+    ui_print(s, s->fb_w/2, y_pos - 95, "Torq1.Kp");
+  } else if (s->scene.live_tune_panel_list == (s->scene.list_count+1) && s->scene.lateralControlMethod == 3) {
+    ui_print(s, s->fb_w/2, y_pos + height/2, "%0.3f", s->scene.torqKi*0.001);
+    nvgFontSize(s->vg, 120);
+    ui_print(s, s->fb_w/2, y_pos - 95, "Torq2.Ki");
+  } else if (s->scene.live_tune_panel_list == (s->scene.list_count+2) && s->scene.lateralControlMethod == 3) {
+    ui_print(s, s->fb_w/2, y_pos + height/2, "%0.3f", s->scene.torqKf*0.001);
+    nvgFontSize(s->vg, 120);
+    ui_print(s, s->fb_w/2, y_pos - 95, "Torq3.Kf");
+  } else if (s->scene.live_tune_panel_list == (s->scene.list_count+3) && s->scene.lateralControlMethod == 3) {
+    ui_print(s, s->fb_w/2, y_pos + height/2, "%0.3f", s->scene.torqFriction*0.001);
+    nvgFontSize(s->vg, 120);
+    ui_print(s, s->fb_w/2, y_pos - 95, "Torq4.friction");
   }
   nvgFillColor(s->vg, nvgRGBA(171,242,0,150));
   nvgFill(s->vg);

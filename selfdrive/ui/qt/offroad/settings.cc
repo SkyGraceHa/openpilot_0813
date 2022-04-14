@@ -557,6 +557,7 @@ UIPanel::UIPanel(QWidget *parent) : QFrame(parent) {
   layout->addWidget(new GoogleMapEnabledToggle());
   layout->addWidget(new OPKRTopTextView());
   layout->addWidget(new RPMAnimatedToggle());
+  layout->addWidget(new ShowStopLineToggle());
 }
 
 DrivingPanel::DrivingPanel(QWidget *parent) : QFrame(parent) {
@@ -716,6 +717,11 @@ TuningPanel::TuningPanel(QWidget *parent) : QFrame(parent) {
     layout->addWidget(new Scale());
     layout->addWidget(new LqrKi());
     layout->addWidget(new DcGain());
+  } else if (lat_control == "3") {
+    layout->addWidget(new TorqKp());
+    layout->addWidget(new TorqKi());
+    layout->addWidget(new TorqKf());
+    layout->addWidget(new friction());
   }
 
   layout->addWidget(horizontal_line());

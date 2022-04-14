@@ -76,7 +76,7 @@ class LatControlINDI(LatControl):
         
       self.mpc_frame = 0
 
-  def update(self, active, CS, CP, VM, params, last_actuators, desired_curvature, desired_curvature_rate):
+  def update(self, active, CS, CP, VM, params, last_actuators, desired_curvature, desired_curvature_rate, llk):
     self.speed = CS.vEgo
 
     self.RC = interp(self.speed, self._RC[0], self._RC[1])

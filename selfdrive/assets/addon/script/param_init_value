@@ -21,6 +21,10 @@ ActuatorEffectiveness:20
 Scale:1500
 LqrKi:15
 DcGain:270
+TorqKp:14
+TorKi:10
+TorqKf:80
+friction:60
 IgnoreZone:0
 PidKp:25
 PidKi:50
@@ -128,3 +132,4 @@ AvoidLKASFaultMaxFrame:90
 AvoidLKASFaultBeyond:0
 UseStockDecelOnSS:0
 AnimatedRPM:1
+ShowStopLine:0

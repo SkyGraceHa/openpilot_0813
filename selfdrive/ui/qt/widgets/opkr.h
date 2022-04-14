@@ -726,6 +726,18 @@ public:
   }
 };
 
+class ShowStopLineToggle : public ToggleControl {
+  Q_OBJECT
+
+public:
+  ShowStopLineToggle() : ToggleControl("Show Stop Line", "Show stop line on the screen.", "../assets/offroad/icon_shell.png", Params().getBool("ShowStopLine")) {
+    QObject::connect(this, &ShowStopLineToggle::toggleFlipped, [=](int state) {
+      bool status = state ? true : false;
+      Params().putBool("ShowStopLine", status);
+    });
+  }
+};
+
 // openpilot preview
 class OpenpilotView : public AbstractControl {
   Q_OBJECT
@@ -1403,6 +1415,66 @@ class DcGain : public AbstractControl {
 
 public:
   DcGain();
+
+private:
+  QPushButton btnplus;
+  QPushButton btnminus;
+  QLabel label;
+  Params params;
+  
+  void refresh();
+};
+
+class TorqKp : public AbstractControl {
+  Q_OBJECT
+
+public:
+  TorqKp();
+
+private:
+  QPushButton btnplus;
+  QPushButton btnminus;
+  QLabel label;
+  Params params;
+  
+  void refresh();
+};
+
+class TorqKi : public AbstractControl {
+  Q_OBJECT
+
+public:
+  TorqKi();
+
+private:
+  QPushButton btnplus;
+  QPushButton btnminus;
+  QLabel label;
+  Params params;
+  
+  void refresh();
+};
+
+class TorqKf : public AbstractControl {
+  Q_OBJECT
+
+public:
+  TorqKf();
+
+private:
+  QPushButton btnplus;
+  QPushButton btnminus;
+  QLabel label;
+  Params params;
+  
+  void refresh();
+};
+
+class friction : public AbstractControl {
+  Q_OBJECT
+
+public:
+  friction();
 
 private:
   QPushButton btnplus;

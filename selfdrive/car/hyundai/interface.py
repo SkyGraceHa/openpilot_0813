@@ -97,6 +97,10 @@ class CarInterface(CarInterfaceBase):
     Scale = float(Decimal(params.get("Scale", encoding="utf8")) * Decimal('1.0'))
     LqrKi = float(Decimal(params.get("LqrKi", encoding="utf8")) * Decimal('0.001'))
     DcGain = float(Decimal(params.get("DcGain", encoding="utf8")) * Decimal('0.00001'))
+    TorqKp = float(Decimal(params.get("TorqKp", encoding="utf8")) * Decimal('0.1'))
+    TorqKi = float(Decimal(params.get("TorqKi", encoding="utf8")) * Decimal('0.001'))
+    TorqKf = float(Decimal(params.get("TorqKf", encoding="utf8")) * Decimal('0.001'))
+    friction = float(Decimal(params.get("friction", encoding="utf8")) * Decimal('0.001'))
 
     tire_stiffness_factor = float(Decimal(params.get("TireStiffnessFactorAdj", encoding="utf8")) * Decimal('0.01'))
     ret.steerActuatorDelay = float(Decimal(params.get("SteerActuatorDelayAdj", encoding="utf8")) * Decimal('0.01'))
@@ -153,6 +157,15 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.lqr.k = [-110., 451.]
       ret.lateralTuning.lqr.l = [0.33, 0.318]
       ret.lateralTuning.lqr.dcGain = DcGain
+    elif lat_control_method == 3:      
+      MAX_TORQUE = 2.5
+      FRICTION = .1
+      ret.lateralTuning.init('torque')
+      ret.lateralTuning.torque.useSteeringAngle = True
+      ret.lateralTuning.torque.kp = TorqKp # 3.5 / MAX_TORQUE = 1.4 # Neokii 1.4
+      ret.lateralTuning.torque.ki = TorqKi # 0.5 / MAX_TORQUE = 0.2 # Neokii 0.01
+      ret.lateralTuning.torque.kf = TorqKf # 1.0 / MAX_TORQUE = 0.4 # Neokii 0.08
+      ret.lateralTuning.torque.friction = friction # FRICTION = 0.1 # Neokii 0.06
 
     # genesis
     if candidate == CAR.GENESIS:

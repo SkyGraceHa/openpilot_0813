@@ -210,6 +210,10 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"PidKi", PERSISTENT},
     {"PidKd", PERSISTENT},
     {"PidKf", PERSISTENT},
+    {"TorqKp", PERSISTENT},
+    {"TorqKi", PERSISTENT},
+    {"TorqKf", PERSISTENT},
+    {"friction", PERSISTENT},
     {"CameraOffsetAdj", PERSISTENT},
     {"PathOffsetAdj", PERSISTENT},
     {"SteerRatioAdj", PERSISTENT},
@@ -350,6 +354,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"AvoidLKASFaultBeyond", PERSISTENT},
     {"UseStockDecelOnSS", PERSISTENT},
     {"AnimatedRPM", PERSISTENT},
+    {"ShowStopLine", PERSISTENT},
 };
 
 } // namespace
